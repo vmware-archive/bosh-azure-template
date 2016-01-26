@@ -3,7 +3,8 @@ import os
 import sys
 import re
 import json
-import urllib
+import urllib2
+import base64
 import traceback
 import yaml
 
@@ -60,14 +61,21 @@ for m in manifests['manifests']
 m_list.append('bosh_yml')
 
 # Get github path
-github_path = sys.argv[1]
+github_path = "https://api.github.com/repos/cf-platform-eng/bosh-azure-template/contents/
 
 # Render the yml template for bosh-init
 for template in m_list
 
     # Download the manifest if it doesn't exits
     if not os.path.exists(template):
-        urllib.urlretrieve ("{0}/manifests/{1}".format(github_path, template), "manifests/{0}".format(template))
+        req = urllib2.Request("{0}/manifests/{1}".format(github_path, template))
+        req.add_header("Authorization", "token d817959d53b8c53b5bf1710cd1be5079277db8ad")
+        req.add_header("Accept", "application/vnd.github.v3.raw")
+
+        res = urllib2.urlopen(req)
+
+        with open(template, "w") as f:
+            f.write(res.read())
 
     if os.path.exists(template):
         with open (template, 'r') as tmpfile:

@@ -124,9 +124,6 @@
     "imagePublisher": "Canonical",
     "imageOffer": "UbuntuServer",
     "ubuntuOSVersion": "14.04.2-LTS",
-    "repository": "Azure",
-    "branch": "master",
-    "githubPath": "[concat('https://raw.githubusercontent.com/', variables('repository'), '/azure-quickstart-templates/', variables('branch'), '/bosh-setup/')]"
   },
   "resources": [
     {
@@ -279,9 +276,9 @@
         "typeHandlerVersion": "1.2",
         "settings": {
           "fileUris": [
-            "[concat(variables('githubPath'),'launch_script.sh')]"
+            "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-template/master/launch_script.sh?token=AAAPhmtjsoYcKSCaFnhu9TtcZQiaiw-lks5WsPh5wA%3D%3D"
           ],
-          "commandToExecute": "[concat('sh launch_script.sh',' ',variables('githubPath'))]",
+          "commandToExecute": "sh launch_script.sh",
           "VNET-NAME": "[variables('virtualNetworkName')]",
           "SUBNET-NAME": "[variables('subnet1Name')]",
           "SUBNET-NAME-FOR-CF": "[variables('subnet2Name')]",
