@@ -1,0 +1,21 @@
+# /api/v2/products/:product_id/releases/:release_id/eula_acceptance
+# /api/v2/products/elastic-runtime/releases/1357/product_files/3684/download
+
+manifests:
+  - release-name: elastic-runtime
+    release-number: "1357"
+    file-number: "3684"
+    stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
+    file: elastic-runtime.yml
+    errands:
+      - push-console
+      - blah
+
+  - release-name: p-mysql
+    release-number: "1358"
+    file-number: "3681"
+    stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
+    file: mysql.yml
+    errands:
+      - push-console
+      - blah

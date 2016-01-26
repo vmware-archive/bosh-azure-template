@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 import os
+import sys
 import re
 import json
+import urllib
 import traceback
+import yaml
+
 from subprocess import call
 from Utils.WAAgentUtil import waagent
 import Utils.HandlerUtil as Util
@@ -45,17 +49,35 @@ with open ('bosh_cert.pem', 'r') as tmpfile:
 ssh_cert = "|\n" + ssh_cert
 ssh_cert="\n        ".join([line for line in ssh_cert.split('\n')])
 
+f = open('manifests/index.yml')
+manifests = yaml.safe_load(f)
+f.close()
+
+m_list = []
+for m in manifests['manifests']
+    m_list.append(m['file'])
+
+m_list.append('bosh_yml')
+
+# Get github path
+github_path = sys.argv[1]
+
 # Render the yml template for bosh-init
-bosh_template = 'bosh.yml'
-if os.path.exists(bosh_template):
-    with open (bosh_template, 'r') as tmpfile:
-        contents = tmpfile.read()
-    for k in ["RESOURCE-GROUP-NAME", "STORAGE-ACCESS-KEY", "STORAGE-ACCOUNT-NAME", "SUBNET-NAME", "SUBNET-NAME-FOR-CF", "SUBSCRIPTION-ID", "VNET-NAME", "TENANT-ID", "CLIENT-ID", "CLIENT-SECRET"]:
-        v = settings[k]
-        contents = re.compile(re.escape(k)).sub(v, contents)
-    contents = re.compile(re.escape("SSH-CERTIFICATE")).sub(ssh_cert, contents)
-    with open (os.path.join('bosh', bosh_template), 'w') as tmpfile:
-        tmpfile.write(contents)
+for template in m_list
+
+    # Download the manifest if it doesn't exits
+    if not os.path.exists(template):
+        urllib.urlretrieve ("{0}/manifests/{1}".format(github_path, template), "manifests/{0}".format(template))
+
+    if os.path.exists(template):
+        with open (template, 'r') as tmpfile:
+            contents = tmpfile.read()
+        for k in ["RESOURCE-GROUP-NAME", "STORAGE-ACCESS-KEY", "STORAGE-ACCOUNT-NAME", "SUBNET-NAME", "SUBNET-NAME-FOR-CF", "SUBSCRIPTION-ID", "VNET-NAME", "TENANT-ID", "CLIENT-ID", "CLIENT-SECRET"]:
+            v = settings[k]
+            contents = re.compile(re.escape(k)).sub(v, contents)
+        contents = re.compile(re.escape("SSH-CERTIFICATE")).sub(ssh_cert, contents)
+        with open (os.path.join('bosh', bosh_template), 'w') as tmpfile:
+            tmpfile.write(contents)
 
 # Copy all the files in ./bosh into the home directory
 call("cp -r ./bosh/* {0}".format(home_dir), shell=True)
@@ -85,4 +107,3 @@ if enable_dns:
         err_msg += "\nExternal_IP_of_Devbox is the dynamic IP which can be found in Azure Portal."
         with open(install_log, 'a') as f:
             f.write(err_msg)
-

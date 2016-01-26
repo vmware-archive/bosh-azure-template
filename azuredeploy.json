@@ -95,6 +95,13 @@
       "metadata": {
         "description": "secret of the client. See https://github.com/cloudfoundry-incubator/bosh-azure-cpi-release/blob/master/docs/guidance.md"
       }
+    },
+    "pivnetAPIToken": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "API Token for Pivotal Network"
+      }
     }
   },
   "variables": {
