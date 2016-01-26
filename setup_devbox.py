@@ -69,7 +69,6 @@ for template in m_list
     # Download the manifest if it doesn't exits
     if not os.path.exists(template):
         req = urllib2.Request("{0}/manifests/{1}".format(github_path, template))
-        req.add_header("Authorization", "token d817959d53b8c53b5bf1710cd1be5079277db8ad")
         req.add_header("Accept", "application/vnd.github.v3.raw")
 
         res = urllib2.urlopen(req)
