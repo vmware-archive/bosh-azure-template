@@ -12,6 +12,3 @@ cd ../../
 
 # set up jump/dev box and template manifests
 python setup_devbox.py
-
-# begin deployment process
-python deploy_bosh_and_releases.py
