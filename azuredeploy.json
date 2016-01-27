@@ -287,7 +287,7 @@
           "fileUris": [
             "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-template/master/launch_script.sh"
           ],
-          "commandToExecute": "sh launch_script.sh",
+          "commandToExecute": "[concat('sh launch_script.sh ', variables('adminUserName'))]",
           "VNET-NAME": "[variables('virtualNetworkName')]",
           "SUBNET-NAME": "[variables('subnet1Name')]",
           "SUBNET-NAME-FOR-CF": "[variables('subnet2Name')]",

@@ -23,4 +23,4 @@ wget https://s3.amazonaws.com/bosh-init-artifacts/bosh-init-0.0.51-linux-amd64
 chmod +x ./bosh-init-*
 sudo mv ./bosh-init-* /usr/local/bin/bosh-init
 
-echo "Finish"
+echo "Completed installing bosh-init"
