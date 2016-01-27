@@ -55,7 +55,7 @@ manifests = yaml.safe_load(f)
 f.close()
 
 m_list = []
-for m in manifests['manifests']
+for m in manifests['manifests']:
     m_list.append(m['file'])
 
 m_list.append('bosh_yml')
@@ -64,7 +64,7 @@ m_list.append('bosh_yml')
 github_path = "https://api.github.com/repos/cf-platform-eng/bosh-azure-template/contents/
 
 # Render the yml template for bosh-init
-for template in m_list
+for template in m_list:
 
     # Download the manifest if it doesn't exits
     if not os.path.exists(template):
