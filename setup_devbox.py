@@ -3,7 +3,7 @@ import os
 import sys
 import re
 import json
-import urllib2
+import urllib
 import base64
 import traceback
 import yaml
@@ -56,9 +56,9 @@ f.close()
 
 m_list = []
 for m in manifests['manifests']:
-    m_list.append(m['file'])
+    m_list.append("manifests/{0}".format(m['file']))
 
-m_list.append('bosh_yml')
+m_list.append('bosh.yml')
 
 # Get github path
 github_path = "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-template/master"
@@ -69,12 +69,7 @@ for template in m_list:
 
     # Download the manifest if it doesn't exits
     if not os.path.exists(template):
-        req = urllib2.Request("{0}/manifests/{1}".format(github_path, template))
-        # req.add_header("Accept", "application/vnd.github.v3.raw")
-        res = urllib2.urlopen(req)
-
-        with open(template, "w") as f:
-            f.write(res.read())
+        urllib.urlretrieve("{0}/{1}".format(github_path, template), template)
 
     if os.path.exists(template):
         with open (template, 'r') as tmpfile:
