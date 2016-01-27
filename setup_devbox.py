@@ -61,7 +61,8 @@ for m in manifests['manifests']:
 m_list.append('bosh_yml')
 
 # Get github path
-github_path = "https://api.github.com/repos/cf-platform-eng/bosh-azure-template/contents/"
+github_path = "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-template/master"
+# github_path = "https://api.github.com/repos/cf-platform-eng/bosh-azure-template/contents/"
 
 # Render the yml template for bosh-init
 for template in m_list:
@@ -69,8 +70,7 @@ for template in m_list:
     # Download the manifest if it doesn't exits
     if not os.path.exists(template):
         req = urllib2.Request("{0}/manifests/{1}".format(github_path, template))
-        req.add_header("Accept", "application/vnd.github.v3.raw")
-
+        # req.add_header("Accept", "application/vnd.github.v3.raw")
         res = urllib2.urlopen(req)
 
         with open(template, "w") as f:
