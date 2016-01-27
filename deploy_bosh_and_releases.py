@@ -7,7 +7,7 @@ import Utils.HandlerUtil as Util
 # Get settings from CustomScriptForLinux extension configurations
 waagent.LoggerInit('/var/log/waagent.log', '/dev/stdout')
 
-hutil =  Util.HandlerUtility(waagent.Log, waagent.Error, "bosh-deploy-script")
+hutil =  Util.HandlerUtility(waagent.Log, waagent.Error, "bosh-all-deploy-script")
 hutil.do_parse_context("enable")
 settings = hutil.get_public_settings()
 
