@@ -83,7 +83,7 @@ for template in m_list:
             v = settings[k]
             contents = re.compile(re.escape(k)).sub(v, contents)
         contents = re.compile(re.escape("SSH-CERTIFICATE")).sub(ssh_cert, contents)
-        with open (os.path.join('bosh', bosh_template), 'w') as tmpfile:
+        with open (os.path.join('bosh', template), 'w') as tmpfile:
             tmpfile.write(contents)
 
 # Copy all the files in ./bosh into the home directory
