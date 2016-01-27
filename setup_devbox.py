@@ -61,7 +61,7 @@ for m in manifests['manifests']:
 m_list.append('bosh_yml')
 
 # Get github path
-github_path = "https://api.github.com/repos/cf-platform-eng/bosh-azure-template/contents/
+github_path = "https://api.github.com/repos/cf-platform-eng/bosh-azure-template/contents/"
 
 # Render the yml template for bosh-init
 for template in m_list:
