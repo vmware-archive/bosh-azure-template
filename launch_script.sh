@@ -9,4 +9,12 @@ done
 
 \cp -R * ../../
 cd ../../
+
+# set up jump/dev box and template manifests
 python setup_devbox.py
+
+# deploy bosh director
+export BOSH_INIT_LOG_LEVEL='Debug'
+export BOSH_INIT_LOG_PATH='./bosh-init-debug.log'
+
+bosh-init deploy bosh.yml >>./install.log 2>&1
