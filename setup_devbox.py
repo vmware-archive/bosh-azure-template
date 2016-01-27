@@ -15,6 +15,8 @@ from azure.storage import BlobService
 from azure.storage import TableService
 
 call("mkdir -p ./bosh", shell=True)
+call("mkdir -p ./bosh/manifests", shell=True)
+
 call("chmod +x deploy_bosh.sh", shell=True)
 call("cp deploy_bosh.sh ./bosh/", shell=True)
 
