@@ -85,7 +85,7 @@ for template in m_list:
 # Copy all the files in ./bosh into the home directory
 call("cp -r ./bosh/* {0}".format(home_dir), shell=True)
 call("cp ./deploy_bosh_and_releases.py {0}".format(home_dir), shell=True)
-call("cp ./manifests/index.yml {0}/manifests".format(home_dir), shell=True)
+call("cp ./manifests/index.yml {0}/manifests/".format(home_dir), shell=True)
 
 call("chown -R {0} {1}".format(username, home_dir), shell=True)
 call("chmod 400 {0}/bosh".format(home_dir), shell=True)
