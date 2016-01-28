@@ -16,7 +16,7 @@ p = Popen(['bosh', 'target'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 output, err = p.communicate()
 
 # assume if no bosh is target, there is no director
-if "Target not set" in output:
+if "Target not set" in err:
     call("bosh-init deploy bosh.yml", shell=True)
 
     p = Popen(['bosh', 'target', '10.0.0.4'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
@@ -24,7 +24,7 @@ if "Target not set" in output:
     rc = p.returncode
 
 # load manifests in to memory
-f = open('manifests/index.yml')
+f = open('./manifests/index.yml')
 manifests = yaml.safe_load(f)
 f.close()
 
