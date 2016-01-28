@@ -4,8 +4,20 @@ import yaml
 from subprocess import call
 from subprocess import Popen, PIPE
 
-home_dir = os.environ["HOME"]
+from Utils.WAAgentUtil import waagent
+import Utils.HandlerUtil as Util
+
+# Get settings from CustomScriptForLinux extension configurations
+waagent.LoggerInit('/var/log/waagent.log', '/dev/stdout')
+hutil =  Util.HandlerUtility(waagent.Log, waagent.Error, "bosh-deploy-script")
+hutil.do_parse_context("enable")
+settings = hutil.get_public_settings()
+
+username = settings["username"]
+home_dir = os.path.join("/home", username)
 install_log = os.path.join(home_dir, "install.log")
+
+os.environ["HOME"] = home_dir
 
 # deploy director
 os.environ["BOSH_INIT_LOG_LEVEL"] = 'INFO'
