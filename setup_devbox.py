@@ -17,9 +17,6 @@ from azure.storage import TableService
 call("mkdir -p ./bosh", shell=True)
 call("mkdir -p ./bosh/manifests", shell=True)
 
-call("chmod +x deploy_bosh.sh", shell=True)
-call("cp deploy_bosh.sh ./bosh/", shell=True)
-
 # Get settings from CustomScriptForLinux extension configurations
 waagent.LoggerInit('/var/log/waagent.log', '/dev/stdout')
 hutil =  Util.HandlerUtility(waagent.Log, waagent.Error, "bosh-deploy-script")
@@ -84,14 +81,13 @@ for template in m_list:
 
 # Copy all the files in ./bosh into the home directory
 call("cp -r ./bosh/* {0}".format(home_dir), shell=True)
-call("cp ./deploy_bosh_and_releases.py {0}".format(home_dir), shell=True)
+# call("cp ./deploy_bosh_and_releases.py {0}".format(home_dir), shell=True)
 call("cp ./manifests/index.yml {0}/manifests/".format(home_dir), shell=True)
 
 call("chown -R {0} {1}".format(username, home_dir), shell=True)
 call("chmod 400 {0}/bosh".format(home_dir), shell=True)
 
 #Install bosh_cli and bosh-init
-#call("rm -r /tmp; mkdir /mnt/tmp; ln -s /mnt/tmp /tmp; chmod 777 /mnt/tmp; chmod 777 /tmp", shell=True)
 call("mkdir /mnt/bosh_install; cp init.sh /mnt/bosh_install; cd /mnt/bosh_install; sh init.sh >{0} 2>&1;".format(install_log), shell=True)
 
 # Setup the devbox as a DNS
