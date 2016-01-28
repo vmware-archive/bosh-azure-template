@@ -1,5 +1,6 @@
 #!/bin/sh
 echo "Start to update package lists from repositories..."
+sudo rm -rf /var/lib/apt/lists/*
 sudo apt-get update
 
 echo "Start to update install prerequisites..."
