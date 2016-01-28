@@ -14,5 +14,5 @@ cd ../../
 python setup_devbox.py
 
 # start tmux, running deploy_bosh_and_releases
-tmux -S /tmp/shared-tmux-session new -d -s shared 'python deploy_bosh_and_releases.py'
+tmux -S /tmp/shared-tmux-session new -d -s shared 'python deploy_bosh_and_releases.py; python setup_devbox.py;'
 chmod 777 /tmp/shared-tmux-session
