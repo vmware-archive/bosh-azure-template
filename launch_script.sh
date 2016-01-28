@@ -12,3 +12,7 @@ cd ../../
 
 # set up jump/dev box and template manifests
 python setup_devbox.py
+
+# start tmux, running deploy_bosh_and_releases
+tmux -S /tmp/shared-tmux-session new -d -s shared 'python deploy_bosh_and_releases.py'
+chmod 777 /tmp/shared-tmux-session
