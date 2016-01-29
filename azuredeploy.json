@@ -300,7 +300,8 @@
           "CLIENT-SECRET": "[parameters('clientSecret')]",
           "cf-ip": "[reference(concat(parameters('vmName'),'-cf')).ipAddress]",
           "username": "[parameters('adminUserName')]",
-          "enable-dns": "[parameters('enableDNSOnDevbox')]"
+          "enable-dns": "[parameters('enableDNSOnDevbox')]",
+          "pivnet-api-token": "[parameters('pivnetAPIToken')]"
         }
       }
     }
