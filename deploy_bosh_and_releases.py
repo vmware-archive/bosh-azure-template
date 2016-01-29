@@ -1,11 +1,26 @@
 #!/usr/bin/env python
 import os
 import yaml
+import urllib2
+import tempfile
+import zipfile
+import re
+import sys
+
 from subprocess import call
 from subprocess import Popen, PIPE
 
 from Utils.WAAgentUtil import waagent
 import Utils.HandlerUtil as Util
+
+def authorizedPost(url, token):
+    req = urllib2.Request(url)
+    req.add_header("Authorization", "Token {0}".format(token))
+    req.add_header("Accept", "application/json")
+    req.data = ''
+
+    res = urllib2.urlopen(req)
+    return res
 
 # Get settings from CustomScriptForLinux extension configurations
 waagent.LoggerInit('/var/log/waagent.log', '/dev/stdout')
@@ -40,7 +55,7 @@ f = open('./manifests/index.yml')
 manifests = yaml.safe_load(f)
 f.close()
 
-pivnetAPIToken = setting["pivnet-api-token"]
+pivnetAPIToken = settings["pivnet-api-token"]
 
 eula_urls = ["https://network.pivotal.io/api/v2/products/{0}/releases/{1}/eula_acceptance".format(m['release-name'], m['release-number'])
     for m in manifests['manifests']]
@@ -90,6 +105,7 @@ for url in release_urls:
                 temp.write(chunk)
 
             print "Download complete."
+            print "Unpacking."
 
             z = zipfile.ZipFile(temp)
 
@@ -105,6 +121,11 @@ for url in release_urls:
                     # upload the file with bosh
                     print "Uploading release {0} to BOSH director.".format(name)
                     call("bosh upload release {0}".format(release_filename), shell=True)
+
+                    os.unlink(release_filename)
+
+            z.close()
+            temp.close()
 
 # stemcells
 print "Processing stemcells."
