@@ -105,18 +105,17 @@ for url in release_urls:
                 temp.write(chunk)
 
             print "Download complete."
-            print "Unpacking."
 
             z = zipfile.ZipFile(temp)
-
             for name in z.namelist():
 
                 # is this a release?
                 if is_release_file.match(name):
+
                     release_filename = "/tmp/{0}".format(name)
-                    release_file = open(release_filename, 'wb')
-                    release_file.write(z.read(name))
-                    release_file.close()
+
+                    print "Unpacking {0}.".format(name)
+                    z.extract(name, "/tmp")
 
                     # upload the file with bosh
                     print "Uploading release {0} to BOSH director.".format(name)
