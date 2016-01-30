@@ -17,10 +17,10 @@ sudo gem update --system
 sudo gem pristine --all
 
 echo "Start to install bosh_cli..."
-sudo gem install bosh_cli -v 1.3016.0 --no-ri --no-rdoc
+sudo gem install bosh_cli -v 1.3184.0 --no-ri --no-rdoc
 
 echo "Start to install bosh-init..."
-wget https://s3.amazonaws.com/bosh-init-artifacts/bosh-init-0.0.51-linux-amd64
+wget https://s3.amazonaws.com/bosh-init-artifacts/bosh-init-0.0.81-linux-amd64
 chmod +x ./bosh-init-*
 sudo mv ./bosh-init-* /usr/local/bin/bosh-init
 
