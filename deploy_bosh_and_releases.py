@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-import os
 import yaml
 import urllib2
 import tempfile
 import zipfile
 import re
-import sys
+import subprocess, os, sys
 
 from subprocess import call
 from subprocess import Popen, PIPE
@@ -32,6 +31,13 @@ username = settings["username"]
 home_dir = os.path.join("/home", username)
 install_log = os.path.join(home_dir, "install.log")
 
+# Unbuffer output to install_log
+sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+
+tee = subprocess.Popen(["tee", install_log], stdin=subprocess.PIPE)
+os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
+os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
+
 os.environ["HOME"] = home_dir
 
 # deploy director
@@ -49,6 +55,9 @@ if "Target not set" in err:
     p = Popen(['bosh', 'target', '10.0.0.4'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
     output, err = p.communicate(b"admin\r\nadmin\r\n")
     rc = p.returncode
+
+# change owner for bosh.yaml
+call("chown -R {0} {1}/.bosh_config".format(username, home_dir), shell=True)
 
 # load manifests in to memory
 f = open('./manifests/index.yml')
