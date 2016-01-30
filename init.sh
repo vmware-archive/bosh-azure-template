@@ -1,6 +1,6 @@
 #!/bin/sh
 echo "Start to update package lists from repositories..."
-sudo apt-get clean
+# sudo apt-get clean
 sudo apt-get update
 
 echo "Start to update install prerequisites..."
