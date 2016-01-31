@@ -50,7 +50,11 @@ output, err = p.communicate()
 
 # assume if no bosh is target, there is no director
 if "Target not set" in err:
-    call("bosh-init deploy ./bosh/bosh.yml", shell=True)
+
+    res = None
+
+    while res != 0:
+        res = call("bosh-init deploy ./bosh/bosh.yml", shell=True)
 
     p = Popen(['bosh', 'target', '10.0.0.4'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
     output, err = p.communicate(b"admin\r\nadmin\r\n")
