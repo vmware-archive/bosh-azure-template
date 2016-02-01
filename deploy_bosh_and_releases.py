@@ -34,7 +34,7 @@ install_log = os.path.join(home_dir, "install.log")
 # Unbuffer output to install_log
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-tee = subprocess.Popen(["tee", install_log], stdin=subprocess.PIPE)
+tee = subprocess.Popen(["tee", "-a", install_log], stdin=subprocess.PIPE)
 os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
 os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
 
