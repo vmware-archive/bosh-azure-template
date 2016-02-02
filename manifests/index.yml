@@ -15,7 +15,7 @@ manifests:
     release-number: "1357"
     file-number: "3684"
     stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
-    file: elastic-runtime.yml
+    file: 01-routers-and-lb.yml
     errands:
       - push-console
       - blah

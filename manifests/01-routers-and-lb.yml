@@ -28,7 +28,7 @@ compilation:
   network: default
   reuse_compilation_vms: true
   cloud_properties:
-    instance_type: m1.xlarge
+    instance_type: Standard_D2
 
 update:
   canaries: 1
@@ -56,7 +56,7 @@ networks:
     - 10.0.16.69-10.0.16.253
     cloud_properties:
       virtual_network_name: VNET-NAME  # <--- Replace with virtual network name
-      subnet_name: SUBNET-NAME # <--- Replace with subnet name for cloud foundry VMs
+      subnet_name: SUBNET-NAME-FOR-CF # <--- Replace with subnet name for cloud foundry VMs
 - name: public
   type: vip
   cloud_properties:
@@ -106,39 +106,43 @@ disk_pools:
 jobs:
   - name: nats
     templates:
+      - name: consul_agent
+        release: cf
       - name: nats
         release: cf
-      - name: metron_agent
-        release: cf
+      # - name: metron_agent
+      #   release: cf
     instances: 1
     resource_pool: common
     networks:
       - name: default
         default: [dns, gateway]
 
-- name: consul
-  templates:
-    - name: consul_agent
-      release: cf
-    - name: metron_agent
-      release: cf
-  instances: 1
-  resource_pool: common
-  persistent_disk_pool: consul
-  networks:
-    - name: default
-      default: [dns, gateway]
-  properties:
-    consul:
-      agent:
-        mode: server
+  - name: consul
+    templates:
+      - name: consul_agent
+        release: cf
+      # - name: metron_agent
+      #   release: cf
+    instances: 1
+    resource_pool: common
+    persistent_disk_pool: consul
+    networks:
+      - name: default
+        default: [dns, gateway]
+    properties:
+      consul:
+        agent:
+          mode: server
 
   - name: router
     templates:
+      - name: consul_agent
+        release: cf
       - name: gorouter
         release: cf
-      - name: metron_agent
-        release: cf
+      # - name: metron_agent
+      #   release: cf
     instances: 1
     resource_pool: common
     networks:
@@ -159,23 +163,24 @@ properties:
 
   metron_agent:
     zone: default
-    deployment: <%= deployment_name %>
+    deployment: router-and-lb
 
   nats:
     user: nats
-    password: "<%= common_password %>"
+    password: COMMON_PASSWORD
     port: 4222
-    address: 0.nats.default.<%= deployment_name %>.microbosh
+    address: nats-0.node.cf.internal
     machines:
-      - 0.nats.default.<%= deployment_name %>.microbosh
+      - nats-0.node.cf.internal
 
   consul:
     encrypt_keys:
-      - password
+      - COMMON_PASSWORD
     agent:
+      datacenter: cf
       servers:
         lan:
-            - 0.consul.default.<%= deployment_name %>.microbosh
+            - consul-0.node.cf.internal # should be a static IP?
     ca_cert: &consul_ca_cert |
       -----BEGIN CERTIFICATE-----
       MIIC+zCCAeOgAwIBAgIBADANBgkqhkiG9w0BAQUFADAfMQswCQYDVQQGEwJVUzEQ
@@ -300,9 +305,9 @@ properties:
     secure_cookies: false
     status:
       user: router_status
-      password: password
+      password: COMMON_PASSWORD
     enable_ssl: false
     servers:
       z1:
-        - 0.router.default.<%= deployment_name %>.microbosh
+        - router.service.cf.internal
       z2: []

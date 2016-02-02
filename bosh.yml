@@ -39,6 +39,7 @@ jobs:
   - {name: nats, release: bosh}
   - {name: redis, release: bosh}
   - {name: postgres, release: bosh}
+  - {name: powerdns, release: bosh}
   - {name: blobstore, release: bosh}
   - {name: director, release: bosh}
   - {name: health_monitor, release: bosh}
@@ -69,6 +70,12 @@ jobs:
       password: postgres-password
       database: bosh
       adapter: postgres
+
+    dns:
+      address: 10.0.0.4 # <--- Replace with the static IP
+      domain_name: internal
+      db: *db
+      recursor: 8.8.8.8
 
     registry:
       address: 10.0.0.4
