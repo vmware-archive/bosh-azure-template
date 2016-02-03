@@ -166,5 +166,5 @@ for url in stemcell_urls:
 
 # deploy!
 for m in manifests['manifests']:
-    call("bosh deployment {0}/manifests/".format(home_dir, m['file']), shell=True)
+    call("bosh deployment {0}/manifests/{1}".format(home_dir, m['file']), shell=True)
     call("bosh -n deploy", shell=True)
