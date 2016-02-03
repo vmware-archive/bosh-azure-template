@@ -69,7 +69,7 @@ f = open('./manifests/index.yml')
 manifests = yaml.safe_load(f)
 f.close()
 
-# run bosh status and get the id back to inject in to manifest
+# run bosh status and get the id back to inject in to manifests
 p = Popen(['bosh', 'status', '--uuid'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 bosh_uuid, err = p.communicate()
 

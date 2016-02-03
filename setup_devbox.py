@@ -50,7 +50,7 @@ with open ('bosh_cert.pem', 'r') as tmpfile:
 ssh_cert = "|\n" + ssh_cert
 ssh_cert="\n        ".join([line for line in ssh_cert.split('\n')])
 
-settings['SSH_CERTIFICATE'] == ssh_cert
+settings['SSH_CERTIFICATE'] = ssh_cert
 
 f = open('manifests/index.yml')
 manifests = yaml.safe_load(f)
@@ -72,20 +72,20 @@ for setting in settings:
     norm_settings[setting.replace("-", "_")] = settings[setting]
 
 # Render the yml template for bosh-init
-for template in m_list:
+for template_path in m_list:
 
     # Download the manifest if it doesn't exits
-    if not os.path.exists(template):
-        urllib.urlretrieve("{0}/{1}".format(github_path, template), template)
+    if not os.path.exists(template_path):
+        urllib.urlretrieve("{0}/{1}".format(github_path, template_path), template_path)
 
-    if os.path.exists(template):
-        with open (template, 'r') as tmpfile:
-            contents = tmpfile.read()
+    if os.path.exists(template_path):
+        with open (template_path, 'r') as f:
+            contents = f.read()
             template = Template(contents)
             contents = template.render(norm_settings)
 
-    with open (os.path.join('bosh', template), 'w') as tmpfile:
-        tmpfile.write(contents)
+    with open (os.path.join('bosh', template_path), 'w') as f:
+        f.write(contents)
 
 # Copy all the files in ./bosh into the home directory
 call("cp -r ./bosh/* {0}".format(home_dir), shell=True)
