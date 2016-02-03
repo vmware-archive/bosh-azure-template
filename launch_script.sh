@@ -1,3 +1,8 @@
+sudo apt-get update
+sudo apt-get install -y python-pip
+
+sudo pip install Jinja2
+
 mkdir manifests
 
 for f in bosh.yml manifests/index.yml setup_dns.py create_cert.sh setup_devbox.py deploy_bosh_and_releases.py init.sh 98-msft-love-cf

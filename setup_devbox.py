@@ -8,6 +8,7 @@ import base64
 import traceback
 import yaml
 
+from jinja2 import Template
 from subprocess import call
 from Utils.WAAgentUtil import waagent
 import Utils.HandlerUtil as Util
@@ -49,6 +50,8 @@ with open ('bosh_cert.pem', 'r') as tmpfile:
 ssh_cert = "|\n" + ssh_cert
 ssh_cert="\n        ".join([line for line in ssh_cert.split('\n')])
 
+settings['SSH_CERTIFICATE'] == ssh_cert
+
 f = open('manifests/index.yml')
 manifests = yaml.safe_load(f)
 f.close()
@@ -62,6 +65,12 @@ m_list.append('bosh.yml')
 # Get github path
 github_path = "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-template/master"
 
+norm_settings = {}
+norm_settings["DIRECTOR_UUID"] = "{{ DIRECTOR_UUID }}"
+
+for setting in settings:
+    norm_settings[setting.replace("-", "_")] = settings[setting]
+
 # Render the yml template for bosh-init
 for template in m_list:
 
@@ -72,12 +81,11 @@ for template in m_list:
     if os.path.exists(template):
         with open (template, 'r') as tmpfile:
             contents = tmpfile.read()
-        for k in ["RESOURCE-GROUP-NAME", "STORAGE-ACCESS-KEY", "STORAGE-ACCOUNT-NAME", "SUBNET-NAME", "SUBNET-NAME-FOR-CF", "SUBSCRIPTION-ID", "VNET-NAME", "TENANT-ID", "CLIENT-ID", "CLIENT-SECRET"]:
-            v = settings[k]
-            contents = re.compile(re.escape(k)).sub(v, contents)
-        contents = re.compile(re.escape("SSH-CERTIFICATE")).sub(ssh_cert, contents)
-        with open (os.path.join('bosh', template), 'w') as tmpfile:
-            tmpfile.write(contents)
+            template = Template(contents)
+            contents = template.render(norm_settings)
+
+    with open (os.path.join('bosh', template), 'w') as tmpfile:
+        tmpfile.write(contents)
 
 # Copy all the files in ./bosh into the home directory
 call("cp -r ./bosh/* {0}".format(home_dir), shell=True)

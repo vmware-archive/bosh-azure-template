@@ -15,10 +15,10 @@ networks:
   subnets:
   - range: 10.0.0.0/24
     gateway: 10.0.0.1
-    dns: [8.8.8.8]
+    dns: [8.8.8.8, 8.8.4.4]
     cloud_properties:
-      virtual_network_name: VNET-NAME # <--- Replace with virtual network name
-      subnet_name: SUBNET-NAME # <--- Replace with subnet name for BOSH VM
+      virtual_network_name: {{ VNET_NAME }} # <--- Replace with virtual network name
+      subnet_name: {{ SUBNET_NAME }} # <--- Replace with subnet name for BOSH VM
 
 resource_pools:
 - name: vms
@@ -72,7 +72,7 @@ jobs:
       adapter: postgres
 
     dns:
-      address: 10.0.0.4 # <--- Replace with the static IP
+      address: 10.0.0.4
       domain_name: internal
       db: *db
       recursor: 8.8.8.8
@@ -106,15 +106,15 @@ jobs:
 
     azure: &azure
       environment: AzureCloud
-      subscription_id: SUBSCRIPTION-ID # <--- Replace with your subscription id
-      storage_account_name: STORAGE-ACCOUNT-NAME # <--- Replace with your storage account name
-      storage_access_key: STORAGE-ACCESS-KEY # <--- Replace with the access key of your storage account
-      resource_group_name: RESOURCE-GROUP-NAME # <--- Replace with your resource group name
-      tenant_id: TENANT-ID # <--- Replace with your tenant id of the service principal
-      client_id: CLIENT-ID # <--- Replace with your client id of the service principal
-      client_secret: CLIENT-SECRET # <--- Replace with your client secret of the service principal
+      subscription_id: {{ SUBSCRIPTION_ID }} # <--- Replace with your subscription id
+      storage_account_name: {{ STORAGE_ACCOUNT_NAME }} # <--- Replace with your storage account name
+      storage_access_key: {{ STORAGE_ACCESS_KEY }} # <--- Replace with the access key of your storage account
+      resource_group_name: {{ RESOURCE_GROUP_NAME }} # <--- Replace with your resource group name
+      tenant_id: {{ TENANT_ID }} # <--- Replace with your tenant id of the service principal
+      client_id: {{ CLIENT_ID }} # <--- Replace with your client id of the service principal
+      client_secret: {{ CLIENT_SECRET }} # <--- Replace with your client secret of the service principal
       ssh_user: vcap
-      ssh_certificate: SSH-CERTIFICATE # <--- Replace with the content of your ssh certificate
+      ssh_certificate: {{ SSH_CERTIFICATE }} # <--- Replace with the content of your ssh certificate
 
     agent: {mbus: "nats://nats:nats-password@10.0.0.4:4222"}
 

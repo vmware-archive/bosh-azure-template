@@ -6,6 +6,7 @@ import zipfile
 import re
 import subprocess, os, sys
 
+from jinja2 import Template
 from subprocess import call
 from subprocess import Popen, PIPE
 
@@ -67,6 +68,22 @@ call("chown -R {0} {1}/.bosh_config".format(username, home_dir), shell=True)
 f = open('./manifests/index.yml')
 manifests = yaml.safe_load(f)
 f.close()
+
+# run bosh status and get the id back to inject in to manifest
+p = Popen(['bosh', 'status', '--uuid'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+bosh_uuid, err = p.communicate()
+
+for m in manifests['manifests']:
+    with open ("./manifests/".format(m['file']), 'r+') as f:
+
+        contents = f.read()
+        template = Template(contents)
+        contents = template.render(DIRECTOR_UUID=bosh_uuid)
+
+        f.seek(0)
+        f.write(contents)
+        f.trucate()
+        f.close()
 
 pivnetAPIToken = settings["pivnet-api-token"]
 
@@ -143,6 +160,10 @@ for url in release_urls:
 print "Processing stemcells."
 
 for url in stemcell_urls:
-
     print "Processing stemcell {0}".format(url)
     call("bosh upload stemcell {0}".format(url), shell=True)
+
+# deploy!
+for m in manifests['manifests']:
+    call("bosh deployment {0}".format("./manifests/".format(m['file']), shell=True)
+    call("bosh deploy -n", shell=True)

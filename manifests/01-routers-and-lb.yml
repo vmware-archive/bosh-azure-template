@@ -1,7 +1,6 @@
 ---
-
 name: router-and-lb
-director_uuid: 28df278a-6353-40d4-ac08-06edf92595fe
+director_uuid: {{ DIRECTOR_UUID }}
 
 releases:
   - name: cf-mysql
@@ -44,7 +43,7 @@ networks:
     gateway: 10.0.16.1
     dns:
     - 8.8.8.8
-    - 173.15.120.77
+    - 8.8.4.4
     static:
     - 10.0.16.4
     - 10.0.16.5
@@ -55,8 +54,8 @@ networks:
     - 10.0.16.22
     - 10.0.16.69-10.0.16.253
     cloud_properties:
-      virtual_network_name: VNET-NAME  # <--- Replace with virtual network name
-      subnet_name: SUBNET-NAME-FOR-CF # <--- Replace with subnet name for cloud foundry VMs
+      virtual_network_name: {{ VNET_NAME }}  # <--- Replace with virtual network name
+      subnet_name: {{ SUBNET_NAME_FOR_CF }} # <--- Replace with subnet name for cloud foundry VMs
 - name: public
   type: vip
   cloud_properties:
@@ -104,6 +103,27 @@ disk_pools:
     disk_size: 1024
 
 jobs:
+  - name: consul
+    templates:
+      - name: consul_agent
+        release: cf
+      # - name: metron_agent
+      #   release: cf
+    instances: 1
+    resource_pool: common
+    persistent_disk_pool: consul
+    networks:
+      - name: default
+        default: [dns, gateway]
+        static_ips:
+        - 10.0.16.4
+    properties:
+      consul:
+        agent:
+          mode: server
+    update:
+      serial: true
+
   - name: nats
     templates:
       - name: consul_agent
@@ -117,23 +137,6 @@ jobs:
     networks:
       - name: default
         default: [dns, gateway]
-
-  - name: consul
-    templates:
-      - name: consul_agent
-        release: cf
-      # - name: metron_agent
-      #   release: cf
-    instances: 1
-    resource_pool: common
-    persistent_disk_pool: consul
-    networks:
-      - name: default
-        default: [dns, gateway]
-    properties:
-      consul:
-        agent:
-          mode: server
 
   - name: router
     templates:
@@ -169,18 +172,18 @@ properties:
     user: nats
     password: COMMON_PASSWORD
     port: 4222
-    address: nats-0.node.cf.internal
+    address: nats-0.node.dc1.cf.internal
     machines:
-      - nats-0.node.cf.internal
+      - nats-0.node.dc1.cf.internal
 
   consul:
     encrypt_keys:
       - COMMON_PASSWORD
     agent:
-      datacenter: cf
+      datacenter: dc1
       servers:
         lan:
-            - consul-0.node.cf.internal # should be a static IP?
+            - 10.0.16.4 # should be a static IP?
     ca_cert: &consul_ca_cert |
       -----BEGIN CERTIFICATE-----
       MIIC+zCCAeOgAwIBAgIBADANBgkqhkiG9w0BAQUFADAfMQswCQYDVQQGEwJVUzEQ
@@ -309,5 +312,5 @@ properties:
     enable_ssl: false
     servers:
       z1:
-        - router.service.cf.internal
+        - router.service.dc1.cf.internal
       z2: []
