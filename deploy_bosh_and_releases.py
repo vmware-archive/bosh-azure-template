@@ -75,7 +75,7 @@ print "Director uuid is {0}".format(bosh_uuid)
 
 # set the director id on the manifests
 for m in manifests['manifests']:
-    with open ("./manifests/{0}".format(m['file']), 'r+') as f:
+    with open ("{0}/manifests/{1}".format(home_dir, m['file']), 'r+') as f:
 
         contents = f.read()
         template = Template(contents)
@@ -166,5 +166,5 @@ for url in stemcell_urls:
 
 # deploy!
 for m in manifests['manifests']:
-    call("bosh deployment ./manifests/".format(m['file']), shell=True)
+    call("bosh deployment {0}/manifests/".format(home_dir, m['file']), shell=True)
     call("bosh -n deploy", shell=True)
