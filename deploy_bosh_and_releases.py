@@ -70,12 +70,12 @@ manifests = yaml.safe_load(f)
 f.close()
 
 # run bosh status and get the id back to inject in to manifests
-p = Popen(['bosh', 'status', '--uuid'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-bosh_uuid, err = p.communicate()
+bosh_uuid = subprocess.Popen(["bosh", "status", "--uuid"], stdout=subprocess.PIPE).communicate()[0]
+print "Director uuid is {0}".format(bosh_uuid)
 
 # set the director id on the manifests
 for m in manifests['manifests']:
-    with open ("./manifests/".format(m['file']), 'r+') as f:
+    with open ("./manifests/{0}".format(m['file']), 'r+') as f:
 
         contents = f.read()
         template = Template(contents)
@@ -83,7 +83,7 @@ for m in manifests['manifests']:
 
         f.seek(0)
         f.write(contents)
-        f.trucate()
+        f.truncate()
         f.close()
 
 pivnetAPIToken = settings["pivnet-api-token"]
@@ -167,4 +167,4 @@ for url in stemcell_urls:
 # deploy!
 for m in manifests['manifests']:
     call("bosh deployment ./manifests/".format(m['file']), shell=True)
-    call("bosh deploy -n", shell=True)
+    call("bosh -n deploy", shell=True)

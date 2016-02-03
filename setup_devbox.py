@@ -65,11 +65,9 @@ m_list.append('bosh.yml')
 # Get github path
 github_path = "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-template/master"
 
-norm_settings = {}
+# Normalize settings from ARM template
+norm_settings = [setting.replace("-", "_")] setting in settings
 norm_settings["DIRECTOR_UUID"] = "{{ DIRECTOR_UUID }}"
-
-for setting in settings:
-    norm_settings[setting.replace("-", "_")] = settings[setting]
 
 # Render the yml template for bosh-init
 for template_path in m_list:

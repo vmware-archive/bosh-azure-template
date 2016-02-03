@@ -17,8 +17,8 @@ networks:
     gateway: 10.0.0.1
     dns: [8.8.8.8, 8.8.4.4]
     cloud_properties:
-      virtual_network_name: {{ VNET_NAME }} # <--- Replace with virtual network name
-      subnet_name: {{ SUBNET_NAME }} # <--- Replace with subnet name for BOSH VM
+      virtual_network_name: {{ VNET_NAME }}
+      subnet_name: {{ SUBNET_NAME }}
 
 resource_pools:
 - name: vms
@@ -106,15 +106,15 @@ jobs:
 
     azure: &azure
       environment: AzureCloud
-      subscription_id: {{ SUBSCRIPTION_ID }} # <--- Replace with your subscription id
-      storage_account_name: {{ STORAGE_ACCOUNT_NAME }} # <--- Replace with your storage account name
-      storage_access_key: {{ STORAGE_ACCESS_KEY }} # <--- Replace with the access key of your storage account
-      resource_group_name: {{ RESOURCE_GROUP_NAME }} # <--- Replace with your resource group name
-      tenant_id: {{ TENANT_ID }} # <--- Replace with your tenant id of the service principal
-      client_id: {{ CLIENT_ID }} # <--- Replace with your client id of the service principal
-      client_secret: {{ CLIENT_SECRET }} # <--- Replace with your client secret of the service principal
+      subscription_id: {{ SUBSCRIPTION_ID }}
+      storage_account_name: {{ STORAGE_ACCOUNT_NAME }}
+      storage_access_key: {{ STORAGE_ACCESS_KEY }}
+      resource_group_name: {{ RESOURCE_GROUP_NAME }}
+      tenant_id: {{ TENANT_ID }}
+      client_id: {{ CLIENT_ID }}
+      client_secret: {{ CLIENT_SECRET }}
       ssh_user: vcap
-      ssh_certificate: {{ SSH_CERTIFICATE }} # <--- Replace with the content of your ssh certificate
+      ssh_certificate: {{ SSH_CERTIFICATE }}
 
     agent: {mbus: "nats://nats:nats-password@10.0.0.4:4222"}
 
@@ -126,8 +126,8 @@ cloud_provider:
   ssh_tunnel:
     host: 10.0.0.4
     port: 22
-    user: vcap # The user must be as same as above ssh_user
-    private_key: ~/bosh # Path relative to this manifest file
+    user: vcap
+    private_key: ~/bosh
 
   mbus: https://mbus-user:mbus-password@10.0.0.4:6868
 
