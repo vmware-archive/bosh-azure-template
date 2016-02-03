@@ -73,6 +73,7 @@ f.close()
 p = Popen(['bosh', 'status', '--uuid'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 bosh_uuid, err = p.communicate()
 
+# set the director id on the manifests
 for m in manifests['manifests']:
     with open ("./manifests/".format(m['file']), 'r+') as f:
 

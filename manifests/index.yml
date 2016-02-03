@@ -2,14 +2,14 @@
 # /api/v2/products/elastic-runtime/releases/1357/product_files/3684/download
 
 manifests:
-  - release-name: p-mysql
-    release-number: "1358"
-    file-number: "3681"
-    stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
-    file: mysql.yml
-    errands:
-      - push-console
-      - blah
+  # - release-name: p-mysql
+  #   release-number: "1358"
+  #   file-number: "3681"
+  #   stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
+  #   file: mysql.yml
+  #   errands:
+  #     - push-console
+  #     - blah
 
   - release-name: elastic-runtime
     release-number: "1357"
