@@ -1,4 +1,44 @@
 ---
+
+ssl_pem: &ssl_pem |
+  -----BEGIN CERTIFICATE-----
+  MIIBrTCCARYCCQD9UsVrXxL6xDANBgkqhkiG9w0BAQUFADAbMQ0wCwYDVQQKEwRC
+  b3NoMQowCAYDVQQDFAEqMB4XDTE2MDIwNDIxMDQ1MloXDTI2MDIwMTIxMDQ1Mlow
+  GzENMAsGA1UEChMEQm9zaDEKMAgGA1UEAxQBKjCBnzANBgkqhkiG9w0BAQEFAAOB
+  jQAwgYkCgYEAxpdph+Pyya/CvphButX45kEk0UM5VQb9zRM4M2/YYVd1h89BWrgl
+  k/7JM416KtzB7YFzXiefXJGCEXdroH5f9hqS1DZHv2fjl9u6gsi8GXn5yiSnt6KH
+  +FqJCiKF+ldg0KlY5ROULGbr0xBHYMK/KdDm8YhF85jaxFWOrpcXe4UCAwEAATAN
+  BgkqhkiG9w0BAQUFAAOBgQAmJPkuvOiddBIlPMD+HW5U1NyFRR3erGgN0sYsbeXk
+  k1UhJih+E6TPL09/Kukwlpu/0EizG6lMvt2zGAWkoyYQMbi9LmIfjXSQ8ye061FC
+  P29/HjhGqKMakSQvIPpofM21aQqfd1DvdEIgwTfkkbE+3SXDN584HE4vK5XlQZjQ
+  jQ==
+  -----END CERTIFICATE-----
+  -----BEGIN CERTIFICATE REQUEST-----
+  MIIBWjCBxAIBADAbMQ0wCwYDVQQKEwRCb3NoMQowCAYDVQQDFAEqMIGfMA0GCSqG
+  SIb3DQEBAQUAA4GNADCBiQKBgQDGl2mH4/LJr8K+mEG61fjmQSTRQzlVBv3NEzgz
+  b9hhV3WHz0FauCWT/skzjXoq3MHtgXNeJ59ckYIRd2ugfl/2GpLUNke/Z+OX27qC
+  yLwZefnKJKe3oof4WokKIoX6V2DQqVjlE5QsZuvTEEdgwr8p0ObxiEXzmNrEVY6u
+  lxd7hQIDAQABoAAwDQYJKoZIhvcNAQEFBQADgYEAbCwoRCAoFusAZQVLj+7SZ6Oy
+  hBiY8pC7hCyCgd8EuDxkcqetzMrQgH+mm7UmstUskGGj0eBw+r3H70F4IfzjHgrh
+  nQ1opdx0ktRgqosUJRxaGsr3aVnWn/O/mUnQFu95AjGAFRGBUMWy399ba9GfMbU9
+  TLhMHmTh32SRBuSYdHM=
+  -----END CERTIFICATE REQUEST-----
+  -----BEGIN PRIVATE KEY-----
+  MIICXAIBAAKBgQDGl2mH4/LJr8K+mEG61fjmQSTRQzlVBv3NEzgzb9hhV3WHz0Fa
+  uCWT/skzjXoq3MHtgXNeJ59ckYIRd2ugfl/2GpLUNke/Z+OX27qCyLwZefnKJKe3
+  oof4WokKIoX6V2DQqVjlE5QsZuvTEEdgwr8p0ObxiEXzmNrEVY6ulxd7hQIDAQAB
+  AoGAEkWwMg6pMiF3262KrrQtWJI53v8+cTJZe9r+2sy5rgssBzjsnHpBCuLwhEvK
+  J9N0DHRStyESKqRAwXapcnTuQz71iuQNeWgHzDE2izqb96qE2v3B+l8Vhymytoq0
+  G4AcXnNPx16o7vo+juzGaO7baKtHTufT2Bg1gQ2olnaGU8ECQQD3vFAT5pxPZBD3
+  qtNqAB3j02Y4vhpgQHHE6xHw8wQnj4A2Y4c3hUSsCi8cS6Ac2DdFimYzr/qTsz5n
+  vnP7WHxNAkEAzTdnSFFzsfZOC0IEZlNHTfSR1Ma2F5MVhM92DaFNdrjWMadkNYoJ
+  0DaVobwrEeRAHzBMiNuZ64dqn7ZpWIy4GQJBAJzxEZHp8HBjJlSgRdrLRCRGkmW0
+  GSWM7gYgHXeVnLYrNMBAATNtG/oZYYr9ZeugFjPZ37Ey9P2I+ini/7rlbakCQA2K
+  +3jtTypOa+YYTDwIgOsnGbymBHxXy5LBMjRCEd+k4RXTyywxWOZxw7wxs9Hxcz3b
+  rSFXBLhjbmjt29PpLXkCQAfUKJLVUGsu/nBhoKqNvdMJ5Z5uA0xPfo6/D0Bw3PvH
+  PgRSTHKqmp/QffcmoKUJLjKq39whZYEAAN8zls8Nimw=
+  -----END PRIVATE KEY-----
+
 name: router-and-lb
 director_uuid: {{ DIRECTOR_UUID }}
 
@@ -152,6 +192,23 @@ jobs:
       - name: default
         default: [dns, gateway]
 
+  - name: haproxy
+    templates:
+      - name: haproxy
+        release: cf
+      # - name: metron_agent
+      #   release: cf
+      - name: consul_agent
+        release: cf
+    instances: 1
+    resource_pool: common
+    networks:
+      - name: default
+        default: [dns, gateway]
+      - name: vip
+        static_ips:
+          - {{ CF_PUBLIC_IP_ADDRESS }}
+
 properties:
   network_name: default
   networks:
@@ -163,6 +220,9 @@ properties:
     https_only_mode: true
 
   syslog_daemon_config: {}
+
+  ha_proxy:
+    ssl_pem: *ssl_pem
 
   metron_agent:
     zone: default
@@ -313,4 +373,3 @@ properties:
     servers:
       z1:
         - router.service.dc1.cf.internal
-      z2: []

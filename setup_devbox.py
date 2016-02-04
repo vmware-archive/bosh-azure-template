@@ -68,6 +68,7 @@ github_path = "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-temp
 # Normalize settings from ARM template
 norm_settings = {}
 norm_settings["DIRECTOR_UUID"] = "{{ DIRECTOR_UUID }}"
+norm_settings["CF_PUBLIC_IP_ADDRESS"] = settings["cf-ip"]
 
 for setting in settings:
     norm_settings[setting.replace("-", "_")] = settings[setting]
