@@ -1,12 +1,8 @@
 sudo apt-get update
-sudo apt-get install -y python-pip git
+sudo apt-get install -y python-pip
 
-sudo pip install Jinja2
-
-# sudo pip install azure
-git clone https://github.com/Azure/azure-sdk-for-python
-cd azure-sdk-for-python; git checkout v1.0.3; cd ..
-python ./azure-sdk-for-python/setup.py install
+sudo easy_install jinja2
+sudo easy_install azure
 
 mkdir manifests
 
