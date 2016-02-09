@@ -210,39 +210,7 @@
       "apiVersion": "2015-05-01-preview",
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('subnet2NSG')]",
-      "location": "[variables('location')]",
-      "properties": {
-        "securityRules": [
-          {
-            "name": "allow-https-to-haproxy",
-            "properties": {
-              "description": "Allow Inbound HTTPS To HAProxy",
-              "protocol": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "443",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "[concat(reference(concat(parameters('vmName'),'-cf')).ipAddress, '/32')]",
-              "access": "Allow",
-              "priority": 1000,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "allow-http-to-haproxy",
-            "properties": {
-              "description": "Allow Inbound HTTP To HAProxy",
-              "protocol": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "80",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "[concat(reference(concat(parameters('vmName'),'-cf')).ipAddress, '/32')]",
-              "access": "Allow",
-              "priority": 1100,
-              "direction": "Inbound"
-            }
-          }
-        ]
-      }
+      "location": "[variables('location')]"
     },
     {
       "apiVersion": "[variables('api-version')]",
