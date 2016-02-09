@@ -2,6 +2,7 @@ sudo apt-get update
 sudo apt-get install -y python-pip
 
 sudo pip install Jinja2
+sudo pip install azure
 
 mkdir manifests
 

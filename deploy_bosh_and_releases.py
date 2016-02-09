@@ -5,10 +5,16 @@ import tempfile
 import zipfile
 import re
 import subprocess, os, sys
+import azure.mgmt.network
+import requests
+requests.packages.urllib3.disable_warnings()
+import time
+import json
 
 from jinja2 import Template
 from subprocess import call
 from subprocess import Popen, PIPE
+from azure.mgmt.common import SubscriptionCloudCredentials
 
 from Utils.WAAgentUtil import waagent
 import Utils.HandlerUtil as Util
@@ -21,6 +27,37 @@ def authorizedPost(url, token):
 
     res = urllib2.urlopen(req)
     return res
+
+def get_token_from_client_credentials(endpoint, client_id, client_secret):
+    payload = {
+        'grant_type': 'client_credentials',
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'resource': 'https://management.core.windows.net/',
+    }
+    response = requests.post(endpoint, data=payload).json()
+    return response['access_token']
+
+def get_job_ip_address(username, password, host, deployment_name, job_name):
+    url = "https://{0}:25555/deployments/{1}/vms?format=full".format(host, deployment_name)
+    response = requests.get(url, auth=(username, password), verify=False)
+    id = response.json()['id']
+
+    result_url = "https://{0}:25555/tasks/{1}/output?type=result".format(host, id)
+    response = requests.get(result_url, auth=(username, password), verify=False)
+
+    while not response.content:
+        time.sleep(1)
+        response = requests.get(result_url, auth=(username, password), verify=False)
+
+    for vm in response.content.split("\n"):
+        if vm:
+            vm_dict = json.loads(vm)
+            if vm_dict['job_name'] == job_name:
+                return vm_dict['ips'][0]
+
+    return null
+
 
 # Get settings from CustomScriptForLinux extension configurations
 waagent.LoggerInit('/var/log/waagent.log', '/dev/stdout')
@@ -168,3 +205,50 @@ for url in stemcell_urls:
 for m in manifests['manifests']:
     call("bosh deployment {0}/manifests/{1}".format(home_dir, m['file']), shell=True)
     call("bosh -n deploy", shell=True)
+
+# cf specific configuration (configure security groups for haproxy)
+bosh_address = settings("bosh-ip")
+deployment_name = "router-and-lb"
+subscription_id = settings('SUBSCRIPTION-ID')
+tenant = settings('TENANT-ID')
+endpoint = "https://login.microsoftonline.com/{0}/oauth2/token".format(tenant)
+client_token = settings('CLIENT-ID')
+client_secret = settings('CLIENT-SECRET')
+
+ip = get_job_ip_address("admin", "admin", bosh_address, deployment_name, "haproxy")
+
+token = get_token_from_client_credentials(endpoint, client_token, client_secret)
+creds = SubscriptionCloudCredentials(subscription_id, token)
+
+network_client = azure.mgmt.network.NetworkResourceProviderClient(creds)
+rules_client = azure.mgmt.network.networkresourceprovider.SecurityRuleOperations(network_client)
+
+ha_proxy_address = "10.0.16.200"
+
+rule = azure.mgmt.network.SecurityRule(
+    description="",
+    protocol="*",
+    source_port_range="*",
+    destination_port_range="80",
+    source_address_prefix="*",
+    destination_address_prefix=ha_proxy_address,
+    access="Allow",
+    priority=1100,
+    direction="InBound"
+)
+
+rules_client.create_or_update("cf", settings('NSG-NAME-FOR-CF'), "http_inbound", rule)
+
+rule = azure.mgmt.network.SecurityRule(
+    description="",
+    protocol="*",
+    source_port_range="*",
+    destination_port_range="443",
+    source_address_prefix="*",
+    destination_address_prefix=ha_proxy_address,
+    access="Allow",
+    priority=1200,
+    direction="InBound"
+)
+
+rules_client.create_or_update("cf", "CFSecurityGroup", "http_inbound", rule)

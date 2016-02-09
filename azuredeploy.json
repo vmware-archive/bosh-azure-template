@@ -22,11 +22,25 @@
         "description": "name of the subnet for Bosh"
       }
     },
+    "NSGNameForBosh": {
+      "type": "string",
+      "defaultValue": "BoshSecurityGroup",
+      "metadata": {
+        "description": "name of the security group for Bosh"
+      }
+    },
     "subnetNameForCloudFoundry": {
       "type": "string",
       "defaultValue": "CloudFoundry",
       "metadata": {
         "description": "name of the subnet for CloudFoundy"
+      }
+    },
+    "NSGNameForCF": {
+      "type": "string",
+      "defaultValue": "CFSecurityGroup",
+      "metadata": {
+        "description": "name of the security group for CF"
       }
     },
     "vmName": {
@@ -117,8 +131,10 @@
     "subnet1Name": "[parameters('subnetNameForBosh')]",
     "subnet1Prefix": "10.0.0.0/24",
     "subnet1Ref": "[concat(variables('vnetID'),'/subnets/', variables('subnet1Name'))]",
+    "subnet1NSG": "[parameters('NSGNameForBosh')]",
     "subnet2Name": "[parameters('subnetNameForCloudFoundry')]",
-    "subnet2Prefix": "10.0.16.0/24",
+    "subnet2Prefix": "10.0.16.0/20",
+    "subnet2NSG": "[parameters('NSGNameForCF')]",
     "nicName": "[parameters('vmName')]",
     "devboxPrivateIPAddress": "10.0.0.100",
     "devboxPublicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'),'-devbox'))]",
@@ -142,7 +158,7 @@
       "name": "[concat(parameters('vmName'),'-devbox')]",
       "location": "[variables('location')]",
       "properties": {
-        "publicIPAllocationMethod": "Dynamic",
+        "publicIPAllocationMethod": "dynamic",
         "dnsSettings": {
           "domainNameLabel": "[parameters('vmName')]"
         }
@@ -167,10 +183,76 @@
       }
     },
     {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('subnet1NSG')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "allow-ssh-to-jumpbox",
+            "properties": {
+              "description": "Allow Inbound SSH To Jumpbox",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(variables('devboxPrivateIPAddress'), '/32')]",
+              "access": "Allow",
+              "priority": 1000,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('subnet2NSG')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "allow-https-to-haproxy",
+            "properties": {
+              "description": "Allow Inbound HTTPS To HAProxy",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "443",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(reference(concat(parameters('vmName'),'-cf')).ipAddress, '/32')]",
+              "access": "Allow",
+              "priority": 1000,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-http-to-haproxy",
+            "properties": {
+              "description": "Allow Inbound HTTP To HAProxy",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "80",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(reference(concat(parameters('vmName'),'-cf')).ipAddress, '/32')]",
+              "access": "Allow",
+              "priority": 1100,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
       "apiVersion": "[variables('api-version')]",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[variables('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('subnet1NSG'))]",
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('subnet2NSG'))]"
+      ],
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
@@ -181,13 +263,19 @@
           {
             "name": "[variables('subnet1Name')]",
             "properties": {
-              "addressPrefix": "[variables('subnet1Prefix')]"
+              "addressPrefix": "[variables('subnet1Prefix')]",
+              "networkSecurityGroup":{
+                  "id":"[resourceId('Microsoft.Network/networkSecurityGroups', variables('subnet1NSG'))]"
+              }
             }
           },
           {
             "name": "[variables('subnet2Name')]",
             "properties": {
-              "addressPrefix": "[variables('subnet2Prefix')]"
+              "addressPrefix": "[variables('subnet2Prefix')]",
+              "networkSecurityGroup":{
+                  "id":"[resourceId('Microsoft.Network/networkSecurityGroups', variables('subnet2NSG'))]"
+              }
             }
           }
         ]
@@ -291,6 +379,7 @@
           "VNET-NAME": "[variables('virtualNetworkName')]",
           "SUBNET-NAME": "[variables('subnet1Name')]",
           "SUBNET-NAME-FOR-CF": "[variables('subnet2Name')]",
+          "NSG-NAME-FOR-CF": "[variables('subnet2NSG')]",
           "SUBSCRIPTION-ID": "[subscription().subscriptionId]",
           "STORAGE-ACCOUNT-NAME": "[parameters('newStorageAccountName')]",
           "STORAGE-ACCESS-KEY": "[listKeys(variables('storageid'),variables('api-version')).key1]",
@@ -299,6 +388,7 @@
           "CLIENT-ID": "[parameters('clientID')]",
           "CLIENT-SECRET": "[parameters('clientSecret')]",
           "cf-ip": "[reference(concat(parameters('vmName'),'-cf')).ipAddress]",
+          "bosh-ip": "[reference(concat(parameters('vmName'),'-bosh')).ipAddress]",
           "username": "[parameters('adminUserName')]",
           "enable-dns": "[parameters('enableDNSOnDevbox')]",
           "pivnet-api-token": "[parameters('pivnetAPIToken')]"
