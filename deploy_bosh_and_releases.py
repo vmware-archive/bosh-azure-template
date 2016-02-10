@@ -7,7 +7,6 @@ import re
 import subprocess, os, sys
 import azure.mgmt.network
 import requests
-requests.packages.urllib3.disable_warnings()
 import time
 import json
 
