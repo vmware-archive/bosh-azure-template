@@ -3,11 +3,11 @@ name: bosh
 
 releases:
 - name: bosh
-  url: http://cloudfoundry.blob.core.windows.net/azureci/bosh-214+dev.1.tgz
-  sha1: c28477c7e08cce06add980bed0ab1ab113a7c825
+  url: https://bosh.io/d/github.com/cloudfoundry/bosh?v=253
+  sha1: 940956a23b642af3bb24b3cac37c4da746d6f9a9
 - name: bosh-azure-cpi
-  url: http://cloudfoundry.blob.core.windows.net/azureci/bosh-azure-cpi-0+dev.1.tgz
-  sha1: e8aea0783d0de2d38ddb0b671265bc9ea46629d7
+  url: https://bosh.io/d/github.com/cloudfoundry-incubator/bosh-azure-cpi-release?v=6
+  sha1: 5bad0885c1107ea86bf6584b7492d48ac755d3f2
 
 networks:
 - name: private
@@ -24,8 +24,8 @@ resource_pools:
 - name: vms
   network: private
   stemcell:
-    url: http://cloudfoundry.blob.core.windows.net/azureci/stemcell-ubuntu.tgz
-    sha1: 4b221f753d662a7c3e472be140c88075902f2b68
+    url: https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent?v=3192
+    sha1: d096582bddf1771df4194c795edf6a96b90c8190
   cloud_properties:
     instance_type: Standard_D2
 
