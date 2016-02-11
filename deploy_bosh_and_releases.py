@@ -206,13 +206,13 @@ for m in manifests['manifests']:
     call("bosh -n deploy", shell=True)
 
 # cf specific configuration (configure security groups for haproxy)
-bosh_address = settings("bosh-ip")
+bosh_address = "10.0.0.4"
 deployment_name = "router-and-lb"
-subscription_id = settings('SUBSCRIPTION-ID')
-tenant = settings('TENANT-ID')
+subscription_id = settings['SUBSCRIPTION-ID']
+tenant = settings['TENANT-ID']
 endpoint = "https://login.microsoftonline.com/{0}/oauth2/token".format(tenant)
-client_token = settings('CLIENT-ID')
-client_secret = settings('CLIENT-SECRET')
+client_token = settings['CLIENT-ID']
+client_secret = settings['CLIENT-SECRET']
 
 ip = get_job_ip_address("admin", "admin", bosh_address, deployment_name, "haproxy")
 
@@ -236,7 +236,7 @@ rule = azure.mgmt.network.SecurityRule(
     direction="InBound"
 )
 
-rules_client.create_or_update("cf", settings('NSG-NAME-FOR-CF'), "http_inbound", rule)
+rules_client.create_or_update("cf", settings['NSG-NAME-FOR-CF'], "http_inbound", rule)
 
 rule = azure.mgmt.network.SecurityRule(
     description="",
