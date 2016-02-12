@@ -4,6 +4,7 @@ sudo apt-get install -y python-pip
 sudo pip install jinja2
 sudo pip install azure
 sudo pip install azure-mgmt
+sudo pip install click
 
 mkdir manifests
 

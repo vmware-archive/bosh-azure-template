@@ -1,3 +1,4 @@
 azuredeploy.parameters.json
 deploy
 destroy
+*.pyc
