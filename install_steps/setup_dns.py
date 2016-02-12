@@ -1,5 +1,7 @@
 def do_step(context):
     settings = context.meta['settings']
+    username = settings["username"]
+    home_dir = os.path.join("/home", username)
 
     # Setup the devbox as a DNS
     enable_dns = settings["enable-dns"]
@@ -20,5 +22,5 @@ def do_step(context):
             err_msg += "\nExternal_IP_of_Devbox is the dynamic IP which can be found in Azure Portal."
             with open(install_log, 'a') as f:
                 f.write(err_msg)
-    
+
     return context

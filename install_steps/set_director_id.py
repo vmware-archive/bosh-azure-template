@@ -1,6 +1,9 @@
 def do_step(context):
-    
+
     settings = context.meta['settings']
+    username = settings["username"]
+    home_dir = os.path.join("/home", username)
+
 
     # run bosh status and get the id back to inject in to manifests
     bosh_uuid = subprocess.Popen(["bosh", "status", "--uuid"], stdout=subprocess.PIPE).communicate()[0]
