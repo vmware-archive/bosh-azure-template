@@ -1,4 +1,7 @@
 def do_step(context):
+
+    settings = context.meta['settings']
+
     f = open('manifests/index.yml')
     manifests = yaml.safe_load(f)
     f.close()
@@ -35,3 +38,5 @@ def do_step(context):
 
         with open (os.path.join('bosh', template_path), 'w') as f:
             f.write(contents)
+
+    return context

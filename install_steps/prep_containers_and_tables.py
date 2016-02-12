@@ -22,3 +22,4 @@ def do_step(context):
     table_service.create_table('stemcells')
 
     context.meta['settings'] = settings
+    return context

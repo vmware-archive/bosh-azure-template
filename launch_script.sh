@@ -8,6 +8,8 @@ sudo pip install click
 
 mkdir manifests
 
+#TODO : Change this to a Github release
+
 for f in bosh.yml manifests/index.yml setup_dns.py create_cert.sh setup_devbox.py deploy_bosh_and_releases.py init.sh 98-msft-love-cf
 do
    curl --silent \

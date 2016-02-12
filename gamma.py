@@ -30,6 +30,12 @@ def get_settings():
 
     return settings
 
+def write_settings(settings_dict):
+    settings_path = os.path.join('bosh','settings')
+
+    with open (settings_path, "w") as tmpfile:
+        tmpfile.write(json.dumps(settings_dict, indent=4, sort_keys=True))
+
 @click.group(chain=True, invoke_without_command=True)
 @click.pass_context
 def cli(ctx):
@@ -43,6 +49,13 @@ def cli(ctx):
         cli(commands)
     else:
         pass
+
+@cli.resultcallback()
+def step_callback(ctx_array):
+    last = ctx_array[len(ctx_array) - 1]
+
+    if last.meta['settings']:
+        write_settings(last.meta['settings'])
 
 @cli.command('01_prep_containers')
 @click.pass_context
