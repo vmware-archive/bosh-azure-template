@@ -5,6 +5,7 @@ import install_steps
 import Utils.HandlerUtil as Util
 import json
 import os
+from subprocess import call
 
 from Utils.WAAgentUtil import waagent
 from install_steps import prep_containers_and_tables, \
@@ -16,6 +17,8 @@ def get_settings():
     hutil = Util.HandlerUtility(waagent.Log, waagent.Error, "bosh-deploy-script")
     hutil.do_parse_context("enable")
     settings_path = os.path.join('bosh','settings')
+
+    call("mkdir -p ./bosh", shell=True)
 
     if not os.path.isfile(settings_path):
         settings = hutil.get_public_settings()
@@ -40,10 +43,6 @@ def cli(ctx):
         cli(commands)
     else:
         pass
-
-@cli.callback()
-def finished(val):
-    print val
 
 @cli.command('01_prep_containers')
 @click.pass_context

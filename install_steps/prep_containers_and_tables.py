@@ -6,6 +6,8 @@ from azure.storage import TableService
 
 def do_step(context):
 
+    settings = context.meta['settings']
+
     # Prepare the containers
     storage_account_name = settings["STORAGE-ACCOUNT-NAME"]
     storage_access_key = settings["STORAGE-ACCESS-KEY"]

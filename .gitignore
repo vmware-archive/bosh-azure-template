@@ -2,3 +2,7 @@ azuredeploy.parameters.json
 deploy
 destroy
 *.pyc
+bosh/
+azure/
+Utils/
+HandlerEnvironment.json
