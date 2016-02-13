@@ -4,9 +4,12 @@ import json
 import apt
 import tarfile
 import tempfile
+import shutil
 
+from shutil import copytree
 from os import environ
 from os import listdir
+from os import symlink
 from os.path import isfile, join
 
 # install packages
@@ -68,5 +71,5 @@ if code is 200:
     tfile = tarfile.open(filename, 'r:gz')
     tfile.extractall(".")
 
-call('\cp -R * ../../')
-call('ln -s /usr/local/lib/python2.7/dist-packages/azure/mgmt azure/mgmt')
+copytree('.' '../..')
+symlink('/usr/local/lib/python2.7/dist-packages/azure/mgmt', '../../azure/mgmt')
