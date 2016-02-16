@@ -2,15 +2,22 @@
 import click
 import sys
 import install_steps
-import Utils.HandlerUtil as Util
+
+use_waagent = true
+try:
+    import Utils.HandlerUtil as Util
+    from Utils.WAAgentUtil import waagent
+except ImportError:
+    print "Could not import waagent libs"
+    use_waagent = false
+
 import json
 import os
 from subprocess import call
 
-from Utils.WAAgentUtil import waagent
 from install_steps import prep_containers_and_tables, \
     create_bosh_cert, process_template_manifests, copy_files_home, \
-    install_bosh_init_and_cli, setup_dns, deploy_bosh, set_director_id, \
+    install_bosh_init, setup_dns, deploy_bosh, set_director_id, \
     download_from_pivnet_upload_to_bosh, deploy, configure_security_groups
 
 def get_settings():
@@ -77,10 +84,10 @@ def process_template_manifests(ctx):
 def copy_files_home(ctx):
     return install_steps.copy_files_home.do_step(ctx)
 
-@cli.command('05_install_bosh_init_and_cli')
+@cli.command('05_install_bosh_init')
 @click.pass_context
-def install_bosh_init_and_cli(ctx):
-    return install_steps.install_bosh_init_and_cli.do_step(ctx)
+def install_bosh_init(ctx):
+    return install_steps.install_bosh_init.do_step(ctx)
 
 @cli.command('06_setup_dns')
 @click.pass_context

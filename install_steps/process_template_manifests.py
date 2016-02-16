@@ -1,3 +1,7 @@
+import yaml
+import os
+from jinja2 import Template
+
 def do_step(context):
 
     settings = context.meta['settings']
@@ -20,7 +24,7 @@ def do_step(context):
     norm_settings["DIRECTOR_UUID"] = "{{ DIRECTOR_UUID }}"
     norm_settings["CF_PUBLIC_IP_ADDRESS"] = settings["cf-ip"]
 
-    for setting in context['meta']['settings']:
+    for setting in context.meta['settings']:
         norm_settings[setting.replace("-", "_")] = settings[setting]
 
     # Render the yml template for bosh-init

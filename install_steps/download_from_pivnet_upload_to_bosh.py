@@ -1,3 +1,15 @@
+import urllib2
+import tempfile
+
+def authorizedPost(url, token):
+    req = urllib2.Request(url)
+    req.add_header("Authorization", "Token {0}".format(token))
+    req.add_header("Accept", "application/json")
+    req.data = ''
+
+    res = urllib2.urlopen(req)
+    return res
+
 def do_step(context):
     settings = context.meta['settings']
 
