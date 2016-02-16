@@ -1,6 +1,5 @@
 from urllib2 import urlopen
 from urllib2 import Request
-import ssl
 import json
 import base64
 import time
@@ -11,15 +10,11 @@ class BoshClient:
         self.username = username
         self.password = password
 
-        self.ssl_ctx = ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-
     def get(self, url):
         request = Request(url)
         base64string = base64.encodestring('%s:%s' % (self.username, self.password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
-        result = urlopen(request, context=self.ssl_ctx).read()
+        result = urlopen(request).read()
         return result
 
     def post(self, url, data, files=None):
@@ -37,7 +32,7 @@ class BoshClient:
         base64string = base64.encodestring('%s:%s' % (self.username, self.password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
 
-        result = urlopen(request, context=self.ssl_ctx)
+        result = urlopen(request)
         return result
 
     def wait_for_task(self, task_id):

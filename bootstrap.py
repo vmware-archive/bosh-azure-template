@@ -15,7 +15,11 @@ from os import symlink
 from os.path import isfile, join
 
 # install packages
-package_list = ['python-pip']
+package_list = ["python-pip", "build-essential", "tmux", "ruby2.0", \
+    "ruby2.0-dev", "libxml2-dev", "libsqlite3-dev", "libxslt1-dev", \
+    "libpq-dev", "libmysqlclient-dev", "zlibc", "zlib1g-dev", "openssl", \
+    "libxslt1-dev", "libssl-dev", "libreadline6", "libreadline6-dev", \
+    "libyaml-dev", "sqlite3", "libffi-dev"]
 
 print "Updating apt cache"
 cache = apt.cache.Cache()
