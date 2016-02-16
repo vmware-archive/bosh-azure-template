@@ -5,6 +5,7 @@ import apt
 import tarfile
 import tempfile
 import shutil
+import sys
 
 from shutil import copytree
 from os import environ
