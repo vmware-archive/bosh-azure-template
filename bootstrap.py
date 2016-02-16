@@ -4,11 +4,10 @@ import json
 import apt
 import tarfile
 import tempfile
-import shutil
 import sys
 import time
 
-from shutil import copytree
+from distutils import dir_util
 from os import environ
 from os import listdir
 from os import symlink
@@ -74,5 +73,5 @@ if code is 200:
     tfile = tarfile.open(filename, 'r:gz')
     tfile.extractall(".")
 
-copytree('.', '../..')
+dir_util.copy_tree(".", "../..")
 symlink('/usr/local/lib/python2.7/dist-packages/azure/mgmt', '../../azure/mgmt')
