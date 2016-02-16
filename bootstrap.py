@@ -6,6 +6,7 @@ import tarfile
 import tempfile
 import shutil
 import sys
+import time
 
 from shutil import copytree
 from os import environ
@@ -13,29 +14,20 @@ from os import listdir
 from os import symlink
 from os.path import isfile, join
 
-# install python-pip and it's dependencies...
-package_list = ["binutils", "build-essential", "cpp", "cpp-4.8", "dpkg-dev", \
-    "fakeroot", "g++", "g++-4.8", "gcc", "gcc-4.8", "libalgorithm-diff-perl", \
-    "libalgorithm-diff-xs-perl", "libalgorithm-merge-perl", "libasan0", \
-    "libatomic1", "libc-dev-bin", "libc6-dev", "libcloog-isl4", \
-    "libdpkg-perl", "libfakeroot", "libfile-fcntllock-perl", "libgcc-4.8-dev", \
-    "libgomp1", "libisl10", "libitm1", "libmpc3", "libmpfr4", "libquadmath0", \
-    "libstdc++-4.8-dev", "libtsan0", "linux-libc-dev", "make", "manpages-dev", \
-    "python-chardet-whl", "python-colorama", "python-colorama-whl", \
-    "python-distlib", "python-distlib-whl", "python-html5lib", \
-    "python-html5lib-whl", "python-pip", "python-pip-whl", \
-    "python-requests-whl", "python-setuptools", "python-setuptools-whl", \
-    "python-six-whl", "python-urllib3-whl", "python-wheel", "python3-pkg-resources"]
+# install packages
+package_list = ['python-pip']
 
 print "Updating apt cache"
 cache = apt.cache.Cache()
 cache.update()
 
+time.sleep(30)
+
 for package in package_list:
     pkg = cache[package]
 
     if not pkg.is_installed:
-        pkg.mark_install()
+        pkg.mark_install(auto_inst=True)
 
 try:
     cache.commit()
@@ -83,5 +75,5 @@ if code is 200:
     tfile = tarfile.open(filename, 'r:gz')
     tfile.extractall(".")
 
-copytree('.' '../..')
+copytree('.', '../..')
 symlink('/usr/local/lib/python2.7/dist-packages/azure/mgmt', '../../azure/mgmt')
