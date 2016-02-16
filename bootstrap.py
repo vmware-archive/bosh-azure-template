@@ -20,8 +20,7 @@ package_list = ['python-pip']
 print "Updating apt cache"
 cache = apt.cache.Cache()
 cache.update()
-
-time.sleep(30)
+cache.open(None)
 
 for package in package_list:
     pkg = cache[package]
