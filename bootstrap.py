@@ -8,6 +8,7 @@ import sys
 import time
 
 from distutils import dir_util
+from os import chdir
 from os import environ
 from os import listdir
 from os import symlink
@@ -75,3 +76,5 @@ if code is 200:
 
 dir_util.copy_tree(".", "../..")
 symlink('/usr/local/lib/python2.7/dist-packages/azure/mgmt', '../../azure/mgmt')
+
+os.chdir("../..")

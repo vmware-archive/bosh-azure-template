@@ -1,7 +1,11 @@
+import os                                                                                                                                                                                             │·····················································································································
+import traceback
+
 def do_step(context):
     settings = context.meta['settings']
     username = settings["username"]
     home_dir = os.path.join("/home", username)
+    install_log = os.path.join(home_dir, "install.log")
 
     # Setup the devbox as a DNS
     enable_dns = settings["enable-dns"]
