@@ -14,7 +14,7 @@ files_to_archive = [
     '98-msft-love-cf', 'gamma.py']
 
 for path in ["install_steps", "manifests"]:
-    files_to_archive += [join(path, f) for f in listdir(path) if isfile(join(path, f))]
+    files_to_archive += [join(path, f) for f in listdir(path) if isfile(join(path, f)) and not f.endswith('.pyc')]
 
 tar = tarfile.open("gamma-release.tgz", "w:gz")
 for name in files_to_archive:
