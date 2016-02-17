@@ -2,17 +2,10 @@
 import click
 import sys
 import install_steps
-
-use_waagent = true
-try:
-    import Utils.HandlerUtil as Util
-    from Utils.WAAgentUtil import waagent
-except ImportError:
-    print "Could not import waagent libs"
-    use_waagent = false
-
 import json
 import os
+import Utils.HandlerUtil as Util
+from Utils.WAAgentUtil import waagent
 from subprocess import call
 
 from install_steps import prep_containers_and_tables, \

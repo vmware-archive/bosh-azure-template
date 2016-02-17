@@ -13,6 +13,7 @@ from os import environ
 from os import listdir
 from os import symlink
 from os.path import isfile, join
+from subprocess import call
 
 # install packages
 package_list = ["python-pip", "build-essential", "tmux", "ruby2.0", \
@@ -82,3 +83,7 @@ dir_util.copy_tree(".", "../..")
 symlink('/usr/local/lib/python2.7/dist-packages/azure/mgmt', '../../azure/mgmt')
 
 os.chdir("../..")
+
+# start tmux, running deploy_bosh_and_releases
+tmux -S /tmp/shared-tmux-session new -d -s shared './gamma.py'
+chmod 777 /tmp/shared-tmux-session
