@@ -78,3 +78,21 @@ class BoshClient:
         result = self.post(releases_url, payload, 'application/json')
         task_id = json.loads(result.read())["id"]
         return task_id
+
+    def ip_table(self, deployment_name):
+        url = "{0}/deployments/{1}/vms?format=full".format(self.bosh_url, deployment_name)
+        res = self.get(url)
+        task_id = json.loads(res)['id']
+        self.wait_for_task(task_id)
+
+        task_url = "{0}/tasks/{1}/output?type=result".format(self.bosh_url, task_id)
+        response = self.get(task_url)
+        ips = {}
+
+        for vm in response.split("\n"):
+            if vm:
+                vm_dict = json.loads(vm)
+                ips[vm_dict['job_name']] = vm_dict['ips']
+
+        self.address_table = ips
+        return self.address_table
