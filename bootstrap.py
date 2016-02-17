@@ -82,7 +82,7 @@ if code is 200:
 dir_util.copy_tree(".", "../..")
 symlink('/usr/local/lib/python2.7/dist-packages/azure/mgmt', '../../azure/mgmt')
 
-os.chdir("../..")
+chdir("../..")
 
 # start tmux, running deploy_bosh_and_releases
 call("tmux -S /tmp/shared-tmux-session new -d -s shared './gamma.py'", shell=True)
