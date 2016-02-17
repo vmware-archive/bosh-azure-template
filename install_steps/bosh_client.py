@@ -17,15 +17,10 @@ class BoshClient:
         result = urlopen(request).read()
         return result
 
-    def post(self, url, data, files=None):
+    def post(self, url, data, content_type):
         request = Request(url)
         request.data = data
-
-        if files is not None:
-            request.files = files
-            request.add_header("Content-Type", "multipart/form-data")
-        else:
-            request.add_header("Content-Type", "application/json")
+        request.add_header("Content-Type", content_type)
 
         base64string = base64.encodestring('%s:%s' % (self.username, self.password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
@@ -54,6 +49,12 @@ class BoshClient:
         self.deployments = json.loads(self.get(deployments_url))
         return self.deployments
 
+    def create_deployment(self, manifest):
+        deployments_url = "{0}/deployments".format(self.bosh_url)
+        result = self.post(deployments_url, manifest, 'text/yaml')
+        task_id = json.loads(result.read())["id"]
+        return task_id
+
     def get_releases(self):
         releases_url = "{0}/releases".format(self.bosh_url)
         self.releases = json.loads(self.get(releases_url))
@@ -67,13 +68,13 @@ class BoshClient:
     def upload_stemcell(self, stemcell_url):
         stemcells_url = "{0}/stemcells".format(self.bosh_url)
         payload = '{"location":"%s"}' % stemcell_url
-        result = self.post(stemcells_url, payload)
+        result = self.post(stemcells_url, payload, 'application/json')
         task_id = json.loads(result.read())["id"]
         return task_id
 
     def upload_release(self, release_url):
         releases_url = "{0}/releases".format(self.bosh_url)
         payload = '{"location":"%s"}' % release_url
-        result = self.post(releases_url, payload)
+        result = self.post(releases_url, payload, 'application/json')
         task_id = json.loads(result.read())["id"]
         return task_id

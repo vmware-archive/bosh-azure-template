@@ -46,9 +46,9 @@ releases:
   - name: cf-mysql
     version: "23"
   - name: cf
-    version: "225.7"
+    version: "225.12"
   - name: diego
-    version: "0.1441.2"
+    version: "0.1446.1"
   - name: garden-linux
     version: "0.330.0"
   - name: etcd
