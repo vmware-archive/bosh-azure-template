@@ -3,6 +3,7 @@ import bosh_client
 from urllib2 import URLError
 from subprocess import call
 
+
 def do_step(context):
 
     settings = context.meta['settings']

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import json
-import optparse
 import os
 import sys
 from optparse import OptionParser
@@ -125,13 +124,14 @@ def parse_dns_info(parser):
         parser.print_help()
         sys.exit()
 
-    call("ifconfig eth0 | sed -n '/inet addr/p' | awk -F'[: ]+' '{print $4}' > /tmp/dns-internal-ip", shell=True)
+    call(
+        "ifconfig eth0 | sed -n '/inet addr/p' | awk -F'[: ]+' '{print $4}' > /tmp/dns-internal-ip",
+        shell=True)
     with open('/tmp/dns-internal-ip', 'r') as f:
         dns_internal_ip = f.read().strip()
     if not dns_internal_ip:
         print "Can not get the internal IP of DNS (IP of eth0). Exit!"
         sys.exit()
-
 
     dns_external_ip = None
     cf_external_ip = None
@@ -169,7 +169,9 @@ def parse_settings(file):
 def change_eth0_to_static(dev_box_ip):
     with open(ETH0_CFG, 'r') as f:
         contents = f.read()
-    contents = contents.replace('iface eth0 inet dhcp', ETH0_STATIC.format(dev_box_ip))
+    contents = contents.replace(
+        'iface eth0 inet dhcp',
+        ETH0_STATIC.format(dev_box_ip))
     set_config(ETH0_CFG, contents)
 
 if __name__ == '__main__':
@@ -188,7 +190,8 @@ if __name__ == '__main__':
                       action="store_true", dest="verbose",
                       help="Print verbose information")
 
-    domain_name, cf_external_ip, dns_external_ip, cf_internal_ip, dns_internal_ip = parse_dns_info(parser)
+    domain_name, cf_external_ip, dns_external_ip, cf_internal_ip, dns_internal_ip = parse_dns_info(
+        parser)
     domain_name_prefix = domain_name.split('.')[0]
     zone_name = '.'.join(domain_name.split('.')[1:])
     print "Will setup DNS for the domain {0}".format(domain_name)
@@ -197,23 +200,39 @@ if __name__ == '__main__':
     call('apt-get -qq update', shell=True)
     call('apt-get install -yqq bind9 bind9utils', shell=True)
 
-    dns_conf = DNS_CONF.format(zone_name, DNS_DIR, LAN_ZONE_FILE, WAN_ZONE_FILE)
+    dns_conf = DNS_CONF.format(
+        zone_name,
+        DNS_DIR,
+        LAN_ZONE_FILE,
+        WAN_ZONE_FILE)
     dns_conf_file = os.path.join(DNS_DIR, DNS_CONF_FILE)
     set_config(dns_conf_file, dns_conf)
 
     dns_conf_opt_file = os.path.join(DNS_DIR, DNS_CONF_OPT_FILE)
     set_config(dns_conf_opt_file, DNS_CONF_OPT)
 
-    lan_zone_conf = ZONE_CONF.format(dns_internal_ip, cf_internal_ip, zone_name, domain_name_prefix)
+    lan_zone_conf = ZONE_CONF.format(
+        dns_internal_ip,
+        cf_internal_ip,
+        zone_name,
+        domain_name_prefix)
     lan_zone_file = os.path.join(DNS_DIR, LAN_ZONE_FILE)
     set_config(lan_zone_file, lan_zone_conf)
 
-    wan_zone_conf = ZONE_CONF.format(dns_external_ip, cf_external_ip, zone_name, domain_name_prefix)
+    wan_zone_conf = ZONE_CONF.format(
+        dns_external_ip,
+        cf_external_ip,
+        zone_name,
+        domain_name_prefix)
     wan_zone_file = os.path.join(DNS_DIR, WAN_ZONE_FILE)
     set_config(wan_zone_file, wan_zone_conf)
 
     change_eth0_to_static(dns_internal_ip)
-    call('echo "nameserver {0}" > {1}'.format(dns_internal_ip, RESOLV_CONF), shell=True)
+    call(
+        'echo "nameserver {0}" > {1}'.format(
+            dns_internal_ip,
+            RESOLV_CONF),
+        shell=True)
     call('resolvconf -u', shell=True)
     # Restart bind9
     call('/etc/init.d/bind9 restart', shell=True)

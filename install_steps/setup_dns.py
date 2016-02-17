@@ -1,5 +1,9 @@
 import os
 import traceback
+import re
+import urllib2
+from subprocess import call
+
 
 def do_step(context):
     settings = context.meta['settings']
@@ -11,7 +15,6 @@ def do_step(context):
     enable_dns = settings["enable-dns"]
     if enable_dns:
         try:
-            import urllib2
             cf_ip = settings["cf-ip"]
             dns_ip = re.search('\d+\.\d+\.\d+\.\d+', urllib2.urlopen("http://www.whereismyip.com").read()).group(0)
             call("python setup_dns.py -d cf.azurelovecf.com -i 10.0.16.4 -e {0} -n {1} >/dev/null 2>&1".format(cf_ip, dns_ip), shell=True)

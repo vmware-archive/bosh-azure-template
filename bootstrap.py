@@ -3,24 +3,35 @@ import urllib2
 import json
 import apt
 import tarfile
-import tempfile
 import sys
-import time
 
 from distutils import dir_util
 from os import chdir
-from os import environ
-from os import listdir
 from os import symlink
-from os.path import isfile, join
 from subprocess import call
 
 # install packages
-package_list = ["python-pip", "build-essential", "tmux", "ruby2.0", \
-    "ruby2.0-dev", "libxml2-dev", "libsqlite3-dev", "libxslt1-dev", \
-    "libpq-dev", "libmysqlclient-dev", "zlibc", "zlib1g-dev", "openssl", \
-    "libxslt1-dev", "libssl-dev", "libreadline6", "libreadline6-dev", \
-    "libyaml-dev", "sqlite3", "libffi-dev"]
+package_list = [
+    "python-pip",
+    "build-essential",
+    "tmux",
+    "ruby2.0",
+    "ruby2.0-dev",
+    "libxml2-dev",
+    "libsqlite3-dev",
+    "libxslt1-dev",
+    "libpq-dev",
+    "libmysqlclient-dev",
+    "zlibc",
+    "zlib1g-dev",
+    "openssl",
+    "libxslt1-dev",
+    "libssl-dev",
+    "libreadline6",
+    "libreadline6-dev",
+    "libyaml-dev",
+    "sqlite3",
+    "libffi-dev"]
 
 print "Updating apt cache"
 cache = apt.cache.Cache()
@@ -35,8 +46,9 @@ for package in package_list:
 
 try:
     cache.commit()
-except Exception, arg:
-    print >> sys.stderr, "Sorry, package installation failed [{err}]".format(err=str(arg))
+except Exception as arg:
+    print >> sys.stderr, "Sorry, package installation failed [{err}]".format(
+        err=str(arg))
 
 import pip
 
@@ -48,7 +60,7 @@ gh_url = 'https://api.github.com/repos/cf-platform-eng/bosh-azure-template/relea
 
 req = urllib2.Request(gh_url)
 headers = req.headers = {
-  'Content-Type':'application/json'
+    'Content-Type': 'application/json'
 }
 
 # upload the release asset
@@ -71,7 +83,8 @@ if code is 200:
         while True:
             chunk = res.read(CHUNK)
 
-            if not chunk: break
+            if not chunk:
+                break
             temp.write(chunk)
 
         print "Download complete."

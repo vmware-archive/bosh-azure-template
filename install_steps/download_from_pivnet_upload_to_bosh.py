@@ -8,6 +8,7 @@ import re
 import os
 from azure.storage import BlobService
 
+
 def authorizedPost(url, token):
     req = urllib2.Request(url)
     req.add_header("Authorization", "Token {0}".format(token))
@@ -17,6 +18,7 @@ def authorizedPost(url, token):
     res = urllib2.urlopen(req)
     return res
 
+
 def do_step(context):
     settings = context.meta['settings']
     pivnetAPIToken = settings["pivnet-api-token"]
@@ -25,20 +27,25 @@ def do_step(context):
     manifests = yaml.safe_load(f)
     f.close()
 
-    eula_urls = ["https://network.pivotal.io/api/v2/products/{0}/releases/{1}/eula_acceptance".format(m['release-name'], m['release-number'])
-        for m in manifests['manifests']]
+    eula_urls = [
+        "https://network.pivotal.io/api/v2/products/{0}/releases/{1}/eula_acceptance".format(
+            m['release-name'],
+            m['release-number']) for m in manifests['manifests']]
 
-    release_urls = ["https://network.pivotal.io/api/v2/products/{0}/releases/{1}/product_files/{2}/download".format(m['release-name'], m['release-number'], m['file-number'])
-        for m in manifests['manifests']]
+    release_urls = [
+        "https://network.pivotal.io/api/v2/products/{0}/releases/{1}/product_files/{2}/download".format(
+            m['release-name'],
+            m['release-number'],
+            m['file-number']) for m in manifests['manifests']]
 
     stemcell_urls = [m['stemcell'] for m in manifests['manifests']]
 
     # accept eula for each product
     for url in eula_urls:
-	print url
+        print url
         res = authorizedPost(url, pivnetAPIToken)
         code = res.getcode()
-	print code
+        print code
 
     # releases
     is_release_file = re.compile("^releases\/.+")
@@ -50,7 +57,9 @@ def do_step(context):
     storage_access_key = settings["STORAGE-ACCESS-KEY"]
 
     blob_service = BlobService(storage_account_name, storage_access_key)
-    blob_service.create_container(container_name='tempreleases', x_ms_blob_public_access='container')
+    blob_service.create_container(
+        container_name='tempreleases',
+        x_ms_blob_public_access='container')
 
     print "Processing releases."
     for url in release_urls:
@@ -75,10 +84,14 @@ def do_step(context):
                     total += CHUNK
                     pcent = (float(total) / float(length)) * 100
 
-                    sys.stdout.write("Download progress: %.2f%% (%.2fM)\r" % (pcent, total / 1000000.0) )
+                    sys.stdout.write(
+                        "Download progress: %.2f%% (%.2fM)\r" %
+                        (pcent, total / 1000000.0))
                     sys.stdout.flush()
 
-                    if not chunk: break
+                    if not chunk:
+                        break
+
                     temp.write(chunk)
 
                 print "Download complete."
@@ -94,34 +107,35 @@ def do_step(context):
                         print "Unpacking {0}.".format(name)
                         z.extract(name, "/tmp")
 
-			print "Uploading {0} to Azure blob store".format(name)
+                        print "Uploading {0} to Azure blob store".format(name)
 
-			blob_service.put_block_blob_from_path(
-			    'tempreleases',
-    			    name,
-    		            "/tmp/{0}".format(name),
+                        blob_service.put_block_blob_from_path(
+                            'tempreleases',
+                            name,
+                            "/tmp/{0}".format(name),
                             x_ms_blob_content_type='application/x-compressed'
-			)	
+                        )
 
                         os.unlink(release_filename)
-			blob_url = "http://{0}.blob.core.windows.net/{1}/{2}".format(storage_account_name, 'tempreleases', name)                        
-                        
-			print "Uploading release {0} to BOSH director.".format(name)
+                        blob_url = "http://{0}.blob.core.windows.net/{1}/{2}".format(
+                            storage_account_name, 'tempreleases', name)
 
-			task_id = client.upload_release(blob_url)
-			client.wait_for_task(task_id)
+                        print "Uploading release {0} to BOSH director.".format(name)
+
+                        task_id = client.upload_release(blob_url)
+                        client.wait_for_task(task_id)
 
                 z.close()
                 temp.close()
 
-    blob_service.delete_container("tempreleases")  
+    blob_service.delete_container("tempreleases")
 
     # stemcells
     print "Processing stemcells."
 
     for url in stemcell_urls:
         print "Processing stemcell {0}".format(url)
-	task_id = client.upload_stemcell(url)
-	client.wait_for_task(task_id)
+        task_id = client.upload_stemcell(url)
+        client.wait_for_task(task_id)
 
     return context

@@ -4,6 +4,7 @@ from subprocess import call
 from distutils import dir_util
 from shutil import copy
 
+
 def do_step(context):
     settings = context.meta['settings']
 

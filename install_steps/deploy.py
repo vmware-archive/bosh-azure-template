@@ -2,6 +2,7 @@ import bosh_client
 import os
 import yaml
 
+
 def do_step(context):
     settings = context.meta['settings']
     username = settings["username"]
@@ -15,10 +16,12 @@ def do_step(context):
 
     # deploy!
     for m in manifests['manifests']:
-	print "Deploying {0}/manifests/{1}...".format(home_dir, m['file'])
-	manifest = open("{0}/manifests/{1}".format(home_dir, m['file'])).read()
-	task_id = client.create_deployment(manifest)
-	client.wait_for_task(task_id)
-	print "Finished deploying {0}/manifests/{1}...".format(home_dir, m['file'])
+        print "Deploying {0}/manifests/{1}...".format(home_dir, m['file'])
+
+        manifest = open("{0}/manifests/{1}".format(home_dir, m['file'])).read()
+        task_id = client.create_deployment(manifest)
+
+        client.wait_for_task(task_id)
+        print "Finished deploying {0}/manifests/{1}...".format(home_dir, m['file'])
 
     return context

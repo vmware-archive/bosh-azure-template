@@ -5,8 +5,8 @@ from azure.mgmt.common import SubscriptionCloudCredentials
 from urllib2 import Request
 from urllib2 import urlopen
 from urllib import urlencode
-
 import json
+
 
 def get_token_from_client_credentials(endpoint, client_id, client_secret):
     payload = {
@@ -19,6 +19,7 @@ def get_token_from_client_credentials(endpoint, client_id, client_secret):
     request.data = urlencode(payload)
     result = urlopen(request)
     return json.loads(result.read())['access_token']
+
 
 def do_step(context):
     settings = context.meta['settings']

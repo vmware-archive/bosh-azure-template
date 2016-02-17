@@ -4,6 +4,7 @@ import json
 import base64
 import time
 
+
 class BoshClient:
     def __init__(self, url, username, password):
         self.bosh_url = url

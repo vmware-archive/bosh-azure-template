@@ -10,11 +10,12 @@ from os import listdir
 from os.path import isfile, join
 
 files_to_archive = [
-    'bosh.yml', 'setup_dns.py', 'create_cert.sh', \
+    'bosh.yml', 'setup_dns.py', 'create_cert.sh',
     '98-msft-love-cf', 'gamma.py']
 
 for path in ["install_steps", "manifests"]:
-    files_to_archive += [join(path, f) for f in listdir(path) if isfile(join(path, f)) and not f.endswith('.pyc')]
+    files_to_archive += [join(path, f) for f in listdir(path)
+                         if isfile(join(path, f)) and not f.endswith('.pyc')]
 
 tar = tarfile.open("gamma-release.tgz", "w:gz")
 for name in files_to_archive:
@@ -45,8 +46,8 @@ payload = """{{
 req = urllib2.Request(gh_url)
 req.data = payload
 headers = req.headers = {
-  'Content-Type':'application/json',
-  'Authorization': "token {0}".format(github_token),
+    'Content-Type': 'application/json',
+    'Authorization': "token {0}".format(github_token),
 }
 
 # upload the release asset
@@ -54,9 +55,14 @@ handler = urllib2.urlopen(req)
 release = json.loads(handler.read())
 
 headers = {
-  'Content-Type':'application/x-compressed',
-  'Authorization': "token {0}".format(github_token),
+    'Content-Type': 'application/x-compressed',
+    'Authorization': "token {0}".format(github_token),
 }
-# asset_url = "{0}/{1}/assets?name={2}".format(gh_url, release['id'], 'gamma-release.tgz')
-upload_url = release['upload_url'].replace('{?name,label}', '?name={0}-{1}.tgz').format("gamma-release", tag_name)
-r = requests.post(upload_url, data=open('gamma-release.tgz', 'rb'), headers=headers)
+upload_url = release['upload_url'].replace(
+    '{?name,label}', '?name={0}-{1}.tgz').format("gamma-release", tag_name)
+r = requests.post(
+    upload_url,
+    data=open(
+        'gamma-release.tgz',
+        'rb'),
+    headers=headers)
