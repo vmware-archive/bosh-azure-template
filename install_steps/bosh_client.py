@@ -27,8 +27,6 @@ class BoshClient:
         else:
             request.add_header("Content-Type", "application/json")
 
-        print request.headers
-
         base64string = base64.encodestring('%s:%s' % (self.username, self.password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
 
@@ -55,6 +53,11 @@ class BoshClient:
         deployments_url = "{0}/deployments".format(self.bosh_url)
         self.deployments = json.loads(self.get(deployments_url))
         return self.deployments
+
+    def get_releases(self):
+        releases_url = "{0}/releases".format(self.bosh_url)
+        self.releases = json.loads(self.get(releases_url))
+        return self.releases
 
     def get_vms(self, deployment_name):
         vms_url = "{0}/deployments/{1}/vms".format(self.bosh_url, deployment_name)

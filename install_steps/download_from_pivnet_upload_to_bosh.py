@@ -1,5 +1,12 @@
 import urllib2
 import tempfile
+import yaml
+import bosh_client
+import zipfile
+import sys
+import re
+import os
+from azure.storage import BlobService
 
 def authorizedPost(url, token):
     req = urllib2.Request(url)
@@ -12,8 +19,11 @@ def authorizedPost(url, token):
 
 def do_step(context):
     settings = context.meta['settings']
-
     pivnetAPIToken = settings["pivnet-api-token"]
+
+    f = open('manifests/index.yml')
+    manifests = yaml.safe_load(f)
+    f.close()
 
     eula_urls = ["https://network.pivotal.io/api/v2/products/{0}/releases/{1}/eula_acceptance".format(m['release-name'], m['release-number'])
         for m in manifests['manifests']]
@@ -25,15 +35,24 @@ def do_step(context):
 
     # accept eula for each product
     for url in eula_urls:
+	print url
         res = authorizedPost(url, pivnetAPIToken)
         code = res.getcode()
+	print code
 
     # releases
     is_release_file = re.compile("^releases\/.+")
-    call("mkdir -p /tmp/releases", shell=True)
+    if not os.path.exists("/tmp/releases"):
+        os.makedirs("/tmp/releases")
+
+    client = bosh_client.BoshClient("https://10.0.0.4:25555", "admin", "admin")
+    storage_account_name = settings["STORAGE-ACCOUNT-NAME"]
+    storage_access_key = settings["STORAGE-ACCESS-KEY"]
+
+    blob_service = BlobService(storage_account_name, storage_access_key)
+    blob_service.create_container(container_name='tempreleases', x_ms_blob_public_access='container')
 
     print "Processing releases."
-
     for url in release_urls:
 
         print "Downloading {0}.".format(url)
@@ -75,21 +94,34 @@ def do_step(context):
                         print "Unpacking {0}.".format(name)
                         z.extract(name, "/tmp")
 
-                        # upload the file with bosh
-                        print "Uploading release {0} to BOSH director.".format(name)
-                        call("bosh upload release {0}".format(release_filename), shell=True)
+			print "Uploading {0} to Azure blob store".format(name)
+
+			blob_service.put_block_blob_from_path(
+			    'tempreleases',
+    			    name,
+    		            "/tmp/{0}".format(name),
+                            x_ms_blob_content_type='application/x-compressed'
+			)	
 
                         os.unlink(release_filename)
+			blob_url = "http://{0}.blob.core.windows.net/{1}/{2}".format(storage_account_name, 'tempreleases', name)                        
+                        
+			print "Uploading release {0} to BOSH director.".format(name)
+
+			task_id = client.upload_release(blob_url)
+			client.wait_for_task(task_id)
 
                 z.close()
                 temp.close()
+
+    blob_service.delete_container("tempreleases")  
 
     # stemcells
     print "Processing stemcells."
 
     for url in stemcell_urls:
         print "Processing stemcell {0}".format(url)
-        call("bosh upload stemcell {0}".format(url), shell=True)
-
+	task_id = client.upload_stemcell(url)
+	client.wait_for_task(task_id)
 
     return context
