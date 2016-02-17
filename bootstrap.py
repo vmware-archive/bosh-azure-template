@@ -85,5 +85,5 @@ symlink('/usr/local/lib/python2.7/dist-packages/azure/mgmt', '../../azure/mgmt')
 os.chdir("../..")
 
 # start tmux, running deploy_bosh_and_releases
-tmux -S /tmp/shared-tmux-session new -d -s shared './gamma.py'
-chmod 777 /tmp/shared-tmux-session
+call("tmux -S /tmp/shared-tmux-session new -d -s shared './gamma.py'", shell=True)
+call("chmod 777 /tmp/shared-tmux-session", shell=True)
