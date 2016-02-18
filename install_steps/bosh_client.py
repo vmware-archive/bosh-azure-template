@@ -3,6 +3,7 @@ from urllib2 import Request
 import json
 import base64
 import time
+import sys
 
 
 class BoshClient:
@@ -30,11 +31,23 @@ class BoshClient:
         return result
 
     def wait_for_task(self, task_id):
+        events = []
+
         task_url = "{0}/tasks/{1}".format(self.bosh_url, task_id)
         result = json.loads(self.get(task_url))
         while result['state'] == 'queued' or result['state'] == 'processing':
             result = json.loads(self.get(task_url))
-            time.sleep(1)
+            task_events = self.get_task_events(task_id)
+            for event in task_events:
+                existing = filter(lambda x: x['stage'] == event['stage'] and \
+			x['task'] == event['task'] and \
+			x['state'] == event['state'], events)
+		if len(existing) == 0:
+			events.append(event)
+			tags = "".join(event['tags'])
+			print "{0}\033[92m{1}\033[0m > \033[92m{2}\033[0m {3}".format(event['stage'], tags, event['task'], event['state'])
+
+            time.sleep(3)
         return result
 
     def get_uuid(self):
@@ -44,6 +57,19 @@ class BoshClient:
         info_url = "{0}/info".format(self.bosh_url)
         self.info = json.loads(self.get(info_url))
         return self.info
+
+    def get_task_events(self, task_id):
+        task_url = "{0}/tasks/{1}/output?type=event".format(self.bosh_url, task_id)
+        result = self.get(task_url)
+        items = []
+
+        for line in result.split("\n"):
+	    try:
+                items.append(json.loads(line))
+	    except ValueError:
+		pass
+
+        return items
 
     def get_deployments(self):
         deployments_url = "{0}/deployments".format(self.bosh_url)
