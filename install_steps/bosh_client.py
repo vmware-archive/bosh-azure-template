@@ -3,10 +3,10 @@ from urllib2 import Request
 import json
 import base64
 import time
-import sys
 
 
 class BoshClient:
+
     def __init__(self, url, username, password):
         self.bosh_url = url
         self.username = username
@@ -14,7 +14,10 @@ class BoshClient:
 
     def get(self, url):
         request = Request(url)
-        base64string = base64.encodestring('%s:%s' % (self.username, self.password)).replace('\n', '')
+        base64string = base64.encodestring(
+            '%s:%s' %
+            (self.username, self.password)).replace(
+            '\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
         result = urlopen(request).read()
         return result
@@ -24,7 +27,10 @@ class BoshClient:
         request.data = data
         request.add_header("Content-Type", content_type)
 
-        base64string = base64.encodestring('%s:%s' % (self.username, self.password)).replace('\n', '')
+        base64string = base64.encodestring(
+            '%s:%s' %
+            (self.username, self.password)).replace(
+            '\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
 
         result = urlopen(request)
@@ -39,13 +45,15 @@ class BoshClient:
             result = json.loads(self.get(task_url))
             task_events = self.get_task_events(task_id)
             for event in task_events:
-                existing = filter(lambda x: x['stage'] == event['stage'] and \
-			x['task'] == event['task'] and \
-			x['state'] == event['state'], events)
-		if len(existing) == 0:
-			events.append(event)
-			tags = "".join(event['tags'])
-			print "{0}\033[92m{1}\033[0m > \033[92m{2}\033[0m {3}".format(event['stage'], tags, event['task'], event['state'])
+                existing = filter(lambda x: x['stage'] == event['stage'] and
+                                  x['task'] == event['task'] and
+                                  x['state'] == event['state'], events)
+                if len(existing) == 0:
+                    events.append(event)
+                    tags = "".join(event['tags'])
+                    print "{0}\033[92m{1}\033[0m > \033[92m{2}\033[0m {3}" \
+                        .format(event['stage'].rjust(30, " "), tags,
+                                event['task'], event['state'])
 
             time.sleep(3)
         return result
@@ -59,15 +67,16 @@ class BoshClient:
         return self.info
 
     def get_task_events(self, task_id):
-        task_url = "{0}/tasks/{1}/output?type=event".format(self.bosh_url, task_id)
+        task_url = "{0}/tasks/{1}/output?type=event".format(
+            self.bosh_url, task_id)
         result = self.get(task_url)
         items = []
 
         for line in result.split("\n"):
-	    try:
+            try:
                 items.append(json.loads(line))
-	    except ValueError:
-		pass
+            except ValueError:
+                pass
 
         return items
 
@@ -88,7 +97,8 @@ class BoshClient:
         return self.releases
 
     def get_vms(self, deployment_name):
-        vms_url = "{0}/deployments/{1}/vms".format(self.bosh_url, deployment_name)
+        vms_url = "{0}/deployments/{1}/vms".format(
+            self.bosh_url, deployment_name)
         vms = json.loads(self.get(vms_url))
         return vms
 
@@ -107,12 +117,14 @@ class BoshClient:
         return task_id
 
     def ip_table(self, deployment_name):
-        url = "{0}/deployments/{1}/vms?format=full".format(self.bosh_url, deployment_name)
+        url = "{0}/deployments/{1}/vms?format=full".format(
+            self.bosh_url, deployment_name)
         res = self.get(url)
         task_id = json.loads(res)['id']
         self.wait_for_task(task_id)
 
-        task_url = "{0}/tasks/{1}/output?type=result".format(self.bosh_url, task_id)
+        task_url = "{0}/tasks/{1}/output?type=result".format(
+            self.bosh_url, task_id)
         response = self.get(task_url)
         ips = {}
 

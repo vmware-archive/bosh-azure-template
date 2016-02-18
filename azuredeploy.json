@@ -343,6 +343,7 @@
           "fileUris": [
             "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-template/click-refactor/bootstrap.py"
           ],
+          "adminSSHKey": "[parameters('adminSSHKey')]",
           "commandToExecute": "python ./bootstrap.py",
           "VNET-NAME": "[variables('virtualNetworkName')]",
           "SUBNET-NAME": "[variables('subnet1Name')]",
