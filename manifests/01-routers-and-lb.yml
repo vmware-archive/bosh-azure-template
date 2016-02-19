@@ -1,17 +1,14 @@
-{%
-    set root_domain=cf_ip+".xip.io"
-    set consul_ip="10.0.16.4"
-    set nats_ip="10.0.16.5"
-    set router_ip="10.0.16.6"
-    set etcd_ip="10.0.16.7"
-    set nfs_ip="10.0.16.8"
-    set mysql_ip="10.0.16.9"
-    set mysql_proxy_ip="10.0.16.10"
-
-    set system_domain="system."+root_domain
-    set app_domain="app."+root_domain
-    set deployment_name="router-and-lb"
-%}
+{% set root_domain=cf_ip+".xip.io" %}
+{% set consul_ip="10.0.16.4" %}
+{% set nats_ip="10.0.16.5" %}
+{% set router_ip="10.0.16.6" %}
+{% set etcd_ip="10.0.16.7" %}
+{% set nfs_ip="10.0.16.8" %}
+{% set mysql_ip="10.0.16.9" %}
+{% set mysql_proxy_ip="10.0.16.10" %}
+{% set system_domain="system."+root_domain %}
+{% set app_domain="app."+root_domain %}
+{% set deployment_name="router-and-lb" %}
 
 ---
 ssl_pem: &ssl_pem |
@@ -106,7 +103,7 @@ networks:
     - {{ nats_ip }} # nats
     - {{ router_ip }} # router
     - {{ etcd_ip }} # etcd
-    - {{ nsf_ip }}
+    - {{ nfs_ip }}
     - {{ mysql_ip }}
     - {{ mysql_proxy_ip }}
     reserved:
@@ -164,8 +161,6 @@ disk_pools:
 jobs:
   - name: nats
     templates:
-      - name: consul_agent
-        release: cf
       - name: nats
         release: cf
       - name: metron_agent
@@ -470,8 +465,6 @@ jobs:
 
   - name: router
     templates:
-      - name: consul_agent
-        release: cf
       - name: gorouter
         release: cf
       - name: metron_agent
@@ -493,6 +486,8 @@ jobs:
     networks:
       - name: default
         default: [dns, gateway]
+        static_ips:
+        - {{ mysql_proxy_ip }}
 
   - name: mysql
     templates:
@@ -1113,9 +1108,9 @@ properties:
     packages:
     resource_pool:
     bootstrap_admin_email: admin
-    bulk_api_password: "{{ 'cc_bulk_api' | paasword }}"
+    bulk_api_password: "{{ 'cc_bulk_api' | password }}"
     client_max_body_size: 1024M
-    db_encryption_key: "{{ 'db_encryption' | paasword }}"
+    db_encryption_key: "{{ 'db_encryption' | password }}"
     default_running_security_groups:
       - all_open
     default_staging_security_groups:
@@ -1915,7 +1910,7 @@ properties:
         "name": "Default Template",
         "subject": "CF Notification: \{\{.Subject\}\}",
         "html": "\u003ctable width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;font-family: Helvetica, Arial,sans-serif\"\u003e\n    \u003ctbody\u003e\n        \u003ctr\u003e\n            \u003ctd width=\"100%\" align=\"center\" bgcolor=\"#F8f8f8\" style=\"padding-right:10px;padding-left:10px\"\u003e\n                \u003ctable width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse\"\u003e\n                    \u003ctbody\u003e\n                        \u003ctr\u003e\n                            \u003ctd align=\"left\" valign=\"top\" style=\"padding-bottom:30px;padding-top:30px\"\u003e\n                              \u003cimg src=\"http://notifications-ui.\{\{.Domain\}\}/assets/pivotal_logo.png\"\n                                alt=\"Pivotal CF\" border=\"0\" style=\"display:block\" class=\"CToWUd\"\n                                width=\"166px\" height=\"35px\"\u003e\n                            \u003c/td\u003e\n                        \u003c/tr\u003e\n                    \u003c/tbody\u003e\n                \u003c/table\u003e\n                \u003ctable width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse\"\u003e\n                    \u003ctbody\u003e\n                        \u003ctr\u003e\n                            \u003ctd align=\"left\" valign=\"top\" bgcolor=\"#FFFFFF\"\u003e\n                                \u003ctable width=\"600\" cellpadding=\"40\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;border:1px solid #e0e4e5\"\u003e\n                                    \u003ctbody\u003e\n                                        \u003ctr\u003e\n                                            \u003ctd style=\"color:#666666;font-size:16px;line-height:22px\"\u003e\n                                                \u003cdiv\u003e\n                                                    \{\{.HTML\}\}\n                                                \u003c/div\u003e\n                                            \u003c/td\u003e\n                                        \u003c/tr\u003e\n                                    \u003c/tbody\u003e\n                                \u003c/table\u003e\n                            \u003c/td\u003e\n                        \u003c/tr\u003e\n                    \u003c/tbody\u003e\n                \u003c/table\u003e\n                \u003ctable width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;font-size:12px;color:#b4b4b4\"\u003e\n                    \u003ctbody\u003e\n                        \u003ctr\u003e\n                          \u003ctd align=\"left\" valign=\"middle\" style=\"padding-top:20px;padding-bottom:20px\"\u003eManage your \u003ca href=\"https://notifications-ui.\{\{.Domain\}\}/preferences\"\n                                target=\"_blank\"\u003enotification preferences\u003c/a\u003e or\n                              \u003ca href=\"https://notifications-ui.\{\{.Domain\}\}/unsubscribe/\{\{.UnsubscribeID\}\}\"\n                                target=\"_blank\"\u003eunsubscribe\u003c/a\u003e\n                            \u003c/td\u003e\n                        \u003c/tr\u003e\n                        \u003ctr\u003e\n                            \u003ctd align=\"left\" valign=\"middle\" style=\"padding-bottom:20px\"\u003ePivotal Cloud Foundry, and the Pivotal Cloud Foundry logo are registered\n                                trademarks or trademarks of Pivotal Software, Inc.\n                                in the United States and other countries. All other\n                                trademarks used herein are the property of their\n                                respective owners.\n                                \u003ca\u003e\n                            \u003c/td\u003e\n                        \u003c/tr\u003e\n                        \u003ctr\u003e\n                            \u003ctd align=\"left\" valign=\"middle\" style=\"padding-bottom:20px\"\u003e\u00A9 2015 Pivotal Software, Inc. All rights reserved.\n                                Published in the USA.\n                                \u003ca\u003e\n                            \u003c/td\u003e\n                        \u003c/tr\u003e\n                    \u003c/tbody\u003e\n                \u003c/table\u003e\n            \u003c/td\u003e\n        \u003c/tr\u003e\n    \u003c/tbody\u003e\n\u003c/table\u003e\n",
-        "text": "_____\n\n\nPivotal CF\n\n{{.Text}}\n\nManage your notification preferences:\nhttps://notifications-ui.\{\{.Domain\}\}/preferences\n\nUnsubscribe from Pivotal emails:\nhttps://notifications-ui.\{\{.Domain\}\}/unsubscribe/\{\{.UnsubscribeID\}\}\n\nPivotal Cloud Foundry, and the Pivotal Cloud Foundry logo are registered trademarks or trademarks of Pivotal Software, Inc. in the United States and other countries. All other trademarks used herein are the property of their respective owners.\n\n\u00A9 2015 Pivotal Software, Inc. All rights reserved. Published in the USA.\n\n______\n",
+        "text": "_____\n\n\nPivotal CF\n\n\{\{.Text\}\}\n\nManage your notification preferences:\nhttps://notifications-ui.\{\{.Domain\}\}/preferences\n\nUnsubscribe from Pivotal emails:\nhttps://notifications-ui.\{\{.Domain\}\}/unsubscribe/\{\{.UnsubscribeID\}\}\n\nPivotal Cloud Foundry, and the Pivotal Cloud Foundry logo are registered trademarks or trademarks of Pivotal Software, Inc. in the United States and other countries. All other trademarks used herein are the property of their respective owners.\n\n\u00A9 2015 Pivotal Software, Inc. All rights reserved. Published in the USA.\n\n______\n",
         "metadata": {}
       }
 
