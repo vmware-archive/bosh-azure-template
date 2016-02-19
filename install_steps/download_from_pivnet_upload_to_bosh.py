@@ -45,7 +45,6 @@ def do_step(context):
         print url
         res = authorizedPost(url, pivnetAPIToken)
         code = res.getcode()
-        print code
 
     # releases
     is_release_file = re.compile("^releases\/.+")
