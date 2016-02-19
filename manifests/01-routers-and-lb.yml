@@ -7,7 +7,7 @@
 {% set mysql_ip="10.0.16.9" %}
 {% set mysql_proxy_ip="10.0.16.10" %}
 {% set system_domain="system."+root_domain %}
-{% set app_domain="app."+root_domain %}
+{% set apps_domain="app."+root_domain %}
 {% set deployment_name="router-and-lb" %}
 
 ---
@@ -51,7 +51,7 @@ ssl_pem: &ssl_pem |
   f+4pffb9Gl/e6Fxh
   -----END PRIVATE KEY-----
 system_domain: &system_domain {{ system_domain }}
-apps_domain: &app_domain {{ app_domain }}
+apps_domain: &apps_domain {{ apps_domain }}
 
 name: {{ deployment_name }}
 director_uuid: {{ DIRECTOR_UUID }}
@@ -499,6 +499,8 @@ jobs:
     networks:
       - name: default
         default: [dns, gateway]
+        static_ips:
+        - {{ mysql_ip }}
 
   - name: cloud-controller
     templates:
@@ -1077,11 +1079,11 @@ properties:
         - {{ router_ip }}
       z2: []
 
-  domain: {{ root_domain }}
+  domain: {{ system_domain }}
   system_domain: {{ system_domain }}
   system_domain_organization: system
   app_domains:
-    - {{ app_domain }}
+    - {{ apps_domain }}
   support_address: https://support.pivotal.io
 
   ccdb:
@@ -1785,7 +1787,7 @@ properties:
         - {{ etcd_ip }}
 
   loggregator_endpoint:
-    shared_secret: "{{ 'loggregator' | password }}"
+    shared_secret: "{{ 'logging_secret' | password }}"
 
   logger_endpoint:
     port: 443
@@ -1795,13 +1797,13 @@ properties:
     zone: default
     status:
       user: doppler
-      password: "{{ 'doppler' | password }}"
+      password: "{{ 'logging_secret' | password }}"
       port: 5768
     message_drain_buffer_size: 100
     uaa_client_id: doppler
 
   doppler_endpoint:
-    shared_secret: "{{ 'doppler' | password }}"
+    shared_secret: "{{ 'logging_secret' | password }}"
 
   traffic_controller:
     zone: default
@@ -1838,7 +1840,7 @@ properties:
 
   cf:
     api_url: https://api.{{ system_domain }}
-    admin_username: cf_admin
+    admin_username: admin
     admin_password: "{{ 'cf_admin' | password }}"
     system_domain: {{ system_domain }}
 

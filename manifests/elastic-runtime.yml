@@ -1787,7 +1787,7 @@ properties:
         - {{ etcd_ip }}
 
   loggregator_endpoint:
-    shared_secret: "{{ 'loggregator' | password }}"
+    shared_secret: "{{ 'logging_secret' | password }}"
 
   logger_endpoint:
     port: 443
@@ -1797,13 +1797,13 @@ properties:
     zone: default
     status:
       user: doppler
-      password: "{{ 'doppler' | password }}"
+      password: "{{ 'logging_secret' | password }}"
       port: 5768
     message_drain_buffer_size: 100
     uaa_client_id: doppler
 
   doppler_endpoint:
-    shared_secret: "{{ 'doppler' | password }}"
+    shared_secret: "{{ 'logging_secret' | password }}"
 
   traffic_controller:
     zone: default
@@ -1840,7 +1840,7 @@ properties:
 
   cf:
     api_url: https://api.{{ system_domain }}
-    admin_username: cf_admin
+    admin_username: admin
     admin_password: "{{ 'cf_admin' | password }}"
     system_domain: {{ system_domain }}
 
