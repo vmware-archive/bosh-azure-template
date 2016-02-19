@@ -91,6 +91,16 @@ class BoshClient:
         task_id = json.loads(result.read())["id"]
         return task_id
 
+    def run_errand(self, deployment_name, errand_name):
+        errand_url = "{0}/deployments/{1}/errands/{2}/runs".format(
+            self.bosh_url,
+            deployment_name,
+            errand_name
+        )
+        result = self.post(errand_url, "{}", 'application/json')
+        task_id = json.loads(result.read())["id"]
+        return task_id
+
     def get_releases(self):
         releases_url = "{0}/releases".format(self.bosh_url)
         self.releases = json.loads(self.get(releases_url))

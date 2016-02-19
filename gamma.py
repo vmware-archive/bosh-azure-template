@@ -10,7 +10,8 @@ from subprocess import call
 from install_steps import prep_containers_and_tables, \
     create_bosh_cert, process_template_manifests, copy_files_home, \
     install_bosh_init, setup_dns, deploy_bosh, set_director_id, \
-    download_from_pivnet_upload_to_bosh, deploy, configure_security_groups
+    download_from_pivnet_upload_to_bosh, deploy, configure_security_groups, \
+    run_errands
 
 
 def get_settings():
@@ -128,6 +129,12 @@ def deploy(ctx):
 @click.pass_context
 def configure_security_groups(ctx):
     return install_steps.configure_security_groups.do_step(ctx)
+
+
+@cli.command('12_run_errands')
+@click.pass_context
+def run_errands(ctx):
+    return install_steps.run_errands.do_step(ctx)
 
 if __name__ == '__main__':
     cli()
