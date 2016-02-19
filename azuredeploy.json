@@ -341,7 +341,7 @@
         "typeHandlerVersion": "1.2",
         "settings": {
           "fileUris": [
-            "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-template/click-refactor/bootstrap.py"
+            "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-template/master/bootstrap.py"
           ],
           "adminSSHKey": "[parameters('adminSSHKey')]",
           "commandToExecute": "python ./bootstrap.py",
