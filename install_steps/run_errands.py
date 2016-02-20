@@ -27,9 +27,9 @@ def do_step(context):
             print "Errand finished with exit code {0}".format(result['exit_code'])
 
             print "=========== STDOUT ==========="
-            print result['stdout']
+            print result['stdout'].encode('utf8')
 
             print "=========== STDERR ==========="
-            print result['stderr']
+            print result['stderr'].encode('utf8')
 
     return context
