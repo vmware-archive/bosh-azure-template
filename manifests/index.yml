@@ -1,8 +1,4 @@
-# /api/v2/products/:product_id/releases/:release_id/eula_acceptance
-# /api/v2/products/elastic-runtime/releases/1357/product_files/3684/download
-
 manifests:
-
   - release-name: elastic-runtime
     deployment-name: elastic-runtime
     release-number: "1485"
