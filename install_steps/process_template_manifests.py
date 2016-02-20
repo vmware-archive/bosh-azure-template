@@ -5,10 +5,13 @@ from hashlib import sha256
 global sshpubkey
 
 
-def password(key):
+def password(key, short=False):
     global sshpubkey
-    return sha256("{0}:{1}".format(sshpubkey, key)).hexdigest()
-
+    password = sha256("{0}:{1}".format(sshpubkey, key)).hexdigest()
+    if short:
+        return password[:20]
+    else:
+        return password
 
 def do_step(context):
     global sshpubkey

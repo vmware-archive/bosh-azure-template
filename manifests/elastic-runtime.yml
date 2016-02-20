@@ -8,7 +8,7 @@
 {% set mysql_proxy_ip="10.0.16.10" %}
 {% set system_domain="system."+root_domain %}
 {% set apps_domain="app."+root_domain %}
-{% set deployment_name="router-and-lb" %}
+{% set deployment_name="elastic-runtime" %}
 
 ---
 ssl_pem: &ssl_pem |
@@ -1038,7 +1038,7 @@ properties:
       - {{ mysql_proxy_ip}}
   cluster_ips:
     - {{ mysql_ip }}
-  admin_password: "{{ 'cf_admin' | password }}"
+  admin_password: "{{ 'cf_admin' | password(True) }}"
   database_startup_timeout: 1200
   innodb_buffer_pool_size: 2147483648
   max_connections: 1500
@@ -1383,7 +1383,7 @@ properties:
         override: true
       userids_enabled: true
       users:
-      - admin|{{ 'cf_admin' | password }}|scim.write,scim.read,openid,cloud_controller.admin,dashboard.user,console.admin,console.support,doppler.firehose,notification_preferences.read,notification_preferences.write,notifications.manage,notification_templates.read,notification_templates.write,emails.write,notifications.write,zones.read,zones.write
+      - admin|{{ 'cf_admin' | password(True) }}|scim.write,scim.read,openid,cloud_controller.admin,dashboard.user,console.admin,console.support,doppler.firehose,notification_preferences.read,notification_preferences.write,notifications.manage,notification_templates.read,notification_templates.write,emails.write,notifications.write,zones.read,zones.write
       - push_apps_manager|{{ 'push_apps_manager' | password }}|cloud_controller.admin
       - smoke_tests|{{ 'smoke_tests' | password }}|cloud_controller.admin
       - system_services|{{ 'system_services' | password }}|cloud_controller.admin
@@ -1823,7 +1823,7 @@ properties:
     api: https://api.{{ system_domain }}
     apps_domain: {{ apps_domain }}
     admin_user: admin
-    admin_password: "{{ 'cf_admin' | password }}"
+    admin_password: "{{ 'cf_admin' | password(True) }}"
     include_logging: true
     include_internet_dependent: true
     include_operator: true
@@ -1841,7 +1841,7 @@ properties:
   cf:
     api_url: https://api.{{ system_domain }}
     admin_username: admin
-    admin_password: "{{ 'cf_admin' | password }}"
+    admin_password: "{{ 'cf_admin' | password(True) }}"
     system_domain: {{ system_domain }}
 
   services:
@@ -1898,7 +1898,7 @@ properties:
       crammd5_secret:
     cf:
       admin_user: admin
-      admin_password: "{{ 'cf_admin' | password }}"
+      admin_password: "{{ 'cf_admin' | password(True) }}"
     uaa:
       admin_client_id: admin
       admin_client_secret: "{{ 'admin_client_secret' | password }}"
@@ -1927,7 +1927,7 @@ properties:
     syslog_url:
     cf:
       admin_user: admin
-      admin_password: "{{ 'cf_admin' | password }}"
+      admin_password: "{{ 'cf_admin' | password(True) }}"
     uaa:
       admin_client: admin
       admin_secret: "{{ 'admin_client_secret' | password }}"
@@ -1940,7 +1940,7 @@ properties:
       password: "{{ 'autoscaling' | password }}"
     cf:
       admin_user: admin
-      admin_password: "{{ 'cf_admin' | password }}"
+      admin_password: "{{ 'cf_admin' | password(True) }}"
     instance_count: 1
     database:
       url: mysql://autoscale_admin:{{ 'autoscale_admin' | password }}@{{ mysql_proxy_ip}}:3306/autoscale_db
