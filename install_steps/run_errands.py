@@ -23,4 +23,13 @@ def do_step(context):
             task_id = client.run_errand(m['deployment-name'], errand)
             client.wait_for_task(task_id)
 
+            result = client.get_task_result(task_id)
+            print "Errand finished with exit code {0}".format(result['exit_code'])
+
+            print "=========== STDOUT ==========="
+            print result['stdout']
+
+            print "=========== STDERR ==========="
+            print result['stderr']
+
     return context

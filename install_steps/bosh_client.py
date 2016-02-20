@@ -51,8 +51,8 @@ class BoshClient:
                 if len(existing) == 0:
                     events.append(event)
                     tags = "".join(event['tags'])
-                    print "{0}\033[92m{1}\033[0m > \033[92m{2}\033[0m {3}" \
-                        .format(event['stage'].rjust(30, " "), tags,
+                    print "{0} > \033[92m{1}\033[0m {2}" \
+                        .format(event['stage'].rjust(30, " "),
                                 event['task'], event['state'])
 
             time.sleep(3)
@@ -100,6 +100,11 @@ class BoshClient:
         result = self.post(errand_url, "{}", 'application/json')
         task_id = json.loads(result.read())["id"]
         return task_id
+
+    def get_task_result(self, task_id):
+        task_url = "{0}/tasks/{1}/output?type=result".format(
+            self.bosh_url, task_id)
+        return json.loads(self.get(task_url))
 
     def get_releases(self):
         releases_url = "{0}/releases".format(self.bosh_url)
