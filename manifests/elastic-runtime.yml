@@ -60,9 +60,9 @@ releases:
   - name: cf-mysql
     version: "23"
   - name: cf
-    version: "225.12"
+    version: "225.13"
   - name: diego
-    version: "0.1446.1"
+    version: "0.1446.2"
   - name: garden-linux
     version: "0.330.0"
   - name: etcd
@@ -139,6 +139,14 @@ resource_pools:
     cloud_properties:
       instance_type: Standard_D2
 
+  - name: database
+    network: default
+    stemcell:
+      name: bosh-azure-hyperv-ubuntu-trusty-go_agent
+      version: latest
+    cloud_properties:
+      instance_type: Standard_D4
+
 disk_pools:
   - name: consul
     disk_size: 1024
@@ -191,8 +199,6 @@ jobs:
       consul:
         agent:
           mode: server
-    update:
-      serial: true
 
   - name: etcd
     templates:
@@ -226,7 +232,7 @@ jobs:
       - name: metron_agent
         release: cf
     instances: 1
-    resource_pool: common
+    resource_pool: database
     persistent_disk_pool: diego-database
     networks:
       - name: default
@@ -238,6 +244,8 @@ jobs:
         cluster:
           - name: diego_database
             instances: 1
+        peer_require_ssl: false
+        require_ssl: false
         ca_cert: &etcd_ca_cert |
           -----BEGIN CERTIFICATE-----
           MIIC+zCCAeOgAwIBAgIBADANBgkqhkiG9w0BAQUFADAfMQswCQYDVQQGEwJVUzEQ
@@ -446,23 +454,6 @@ jobs:
         static_ips:
           - {{ nfs_ip }}
 
-  - name: haproxy
-    templates:
-      - name: haproxy
-        release: cf
-      - name: metron_agent
-        release: cf
-      - name: consul_agent
-        release: cf
-    instances: 1
-    resource_pool: common
-    networks:
-      - name: default
-        default: [dns, gateway]
-      - name: public
-        static_ips:
-          - {{ CF_PUBLIC_IP_ADDRESS }}
-
   - name: router
     templates:
       - name: gorouter
@@ -494,13 +485,15 @@ jobs:
       - name: mysql
         release: cf-mysql
     instances: 1
-    resource_pool: common
+    resource_pool: database
     persistent_disk_pool: mysql
     networks:
       - name: default
         default: [dns, gateway]
         static_ips:
         - {{ mysql_ip }}
+    update:
+      serial: True
 
   - name: cloud-controller
     templates:
@@ -532,6 +525,8 @@ jobs:
         agent:
           services:
             cloud_controller_ng: {}
+    update:
+      serial: True
 
   - name: clock-global
     templates:
@@ -705,6 +700,23 @@ jobs:
             port: 8080
             uris:
               - "loggregator.{{ system_domain }}"
+
+  - name: haproxy
+    templates:
+      - name: haproxy
+        release: cf
+      - name: metron_agent
+        release: cf
+      - name: consul_agent
+        release: cf
+    instances: 1
+    resource_pool: common
+    networks:
+      - name: default
+        default: [dns, gateway]
+      - name: public
+        static_ips:
+          - {{ CF_PUBLIC_IP_ADDRESS }}
 
   - name: smoke-tests
     templates:
@@ -1607,6 +1619,7 @@ properties:
       auctioneer:
         api_url: http://auctioneer.service.cf.internal:9016
       etcd:
+        require_ssl: false
         machines:
           - etcd.service.cf.internal
         ca_cert: *etcd_ca_cert

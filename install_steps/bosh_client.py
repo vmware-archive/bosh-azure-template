@@ -43,14 +43,13 @@ class BoshClient:
         result = json.loads(self.get(task_url))
         while result['state'] == 'queued' or result['state'] == 'processing':
             result = json.loads(self.get(task_url))
-            task_events = self.get_task_events(task_id)
+            task_events = self.get_task_events(task_id)  # TODO: Check for errors
             for event in task_events:
                 existing = filter(lambda x: x['stage'] == event['stage'] and
                                   x['task'] == event['task'] and
                                   x['state'] == event['state'], events)
                 if len(existing) == 0:
                     events.append(event)
-                    tags = "".join(event['tags'])
                     print "{0} > \033[92m{1}\033[0m {2}" \
                         .format(event['stage'].rjust(30, " "),
                                 event['task'], event['state'])
