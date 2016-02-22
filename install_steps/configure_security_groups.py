@@ -25,7 +25,7 @@ def do_step(context):
     settings = context.meta['settings']
 
     # cf specific configuration (configure security groups for haproxy)
-    deployment_name = "router-and-lb"
+    deployment_name = "elastic-runtime"
     subscription_id = settings['SUBSCRIPTION-ID']
     tenant = settings['TENANT-ID']
     endpoint = "https://login.microsoftonline.com/{0}/oauth2/token".format(tenant)
