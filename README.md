@@ -1,16 +1,68 @@
-# Setup Bosh Deployment VM
+# Gamma - An Azure deployment template for BOSH and CF
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcf-platform-eng%2Fbosh-azure-template%2Fmaster%2Fazuredeploy.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
-</a>
+### Quickstart
 
-This template can help you setup the development environment to deploy [BOSH](http://bosh.io/) and [Cloud Foundry](https://www.cloudfoundry.org/) on Azure. It will create a virtual machine with a dynamic public IP address, a storage account, a virtual network, 2 subnets and 2 reserved public IP addresses.
+This repository contains, amongst other things, an Azure Resource Manager template for
+deploying BOSH and CloudFoundry.
 
-You can follow the guide [**HERE**](https://github.com/cloudfoundry-incubator/bosh-azure-cpi-release/blob/master/docs/guidance.md) to deploy Cloud Foundry on Azure. From the guide, you can also get how to set the parameters (e.g. tenantID).
 
-After the VM is created, you can logon to the VM and see ~/install.log to check whether the installation is finished.
-After the installation is finished, you can execute "./deploy_bosh.sh" in your home directory to deploy bosh and see ~/run.log to check whether bosh is deployed successfully.
+- Clone this repository `$ git clone https://github.com/cf-platform-eng/bosh-azure-template`
+- Create an Azure deployment parameters file for go with the template itself, call it 'azure-deploy-parameters.json'. The file needs to look like this;
 
-If you have any question about this template or the deployment of Cloud Foundry on Azure, please feel free to give your feedback [**HERE**](https://github.com/cloudfoundry-incubator/bosh-azure-cpi-release/issues).
+```
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "newStorageAccountName": {
+      "value": "mystorageaccount"
+    },
+    "vmName": {
+      "value": "myjumpboxvm"
+    },
+    "adminUsername": {
+      "value": "admin"
+    },
+    "adminSSHKey": {
+      "value": "ssh-rsa XXXXxxxx"
+    },
+    "tenantID": {
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    "clientID": {
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    "clientSecret": {
+      "value": "xxxxxxxxxxxxxxx"
+    },
+    "pivnetAPIToken": {
+      "value": "xxxxxxxxxxxxxxx"
+    }
+  }
+}
+```
 
-We look forward to hearing your feedback and suggestions!
+- Give each parameter a suitable value;
+
+    - newStorageAccountName - this is a unique name for you Azure storage account.
+    - vmName - a name unique to your account for the "jumpbox" vm the ARM template will create.
+    - adminUsername - a username for the account created on the "jumpbox"
+    - adminSSHKey - your rsa public key that will be trusted by the "jumpbox"
+    - tenantID - your tenant ID for the subscription you wish to use
+    - clientID - the client ID associated to the subscription
+    - clientSecret - the clients secret (password)
+    - pivnetAPIToken - all releases for BOSH are supported releases downloaded from Pivotal Network. Access to the network website is made available via the API token assigned to your account.
+
+
+- Once that file is complete, you can deploy it like this;
+
+```
+$ azure group create -n "cf" -l "West US"
+$ azure group deployment create -f azuredeploy.json -e azuredeploy.parameters.json -v cf cfdeploy
+```
+
+Once the azure CLI has returned, there should be a tmux process running on the "jumpbox", completing the rest of the install. Connect to the session like this;
+
+```
+ssh -t user@jumpboxname.westus.cloudapp.azure.com "tmux -S /tmp/shared-tmux-session attach -t shared"
+```
