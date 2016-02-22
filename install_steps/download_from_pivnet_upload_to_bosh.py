@@ -21,9 +21,10 @@ def authorizedPost(url, token):
 
 def do_step(context):
     settings = context.meta['settings']
+    index_file = context.meta['index-file']
     pivnetAPIToken = settings["pivnet-api-token"]
 
-    f = open('manifests/index.yml')
+    f = open("manifests/{0}".format(index_file))
     manifests = yaml.safe_load(f)
     f.close()
 

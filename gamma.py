@@ -43,11 +43,13 @@ def write_settings(settings_dict):
 
 
 @click.group(chain=True, invoke_without_command=True)
+@click.option('--index', default='index.yml', help='Manifest index file')
 @click.pass_context
-def cli(ctx):
+def cli(ctx, index):
     # Get settings from CustomScriptForLinux extension configurations
     waagent.LoggerInit('/var/log/waagent.log', '/dev/stdout')
     ctx.meta["settings"] = get_settings()
+    ctx.meta["index-file"] = index
     group = ctx.command
     commands = sorted([c for c in group.commands])
 

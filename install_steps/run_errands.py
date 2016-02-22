@@ -5,10 +5,12 @@ import yaml
 
 def do_step(context):
     settings = context.meta['settings']
+
     username = settings["username"]
     home_dir = os.path.join("/home", username)
+    index_file = context.meta['index-file']
 
-    f = open('manifests/index.yml')
+    f = open("manifests/{0}".format(index_file))
     manifests = yaml.safe_load(f)
     f.close()
 

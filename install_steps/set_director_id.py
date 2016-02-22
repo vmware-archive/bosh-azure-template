@@ -9,13 +9,14 @@ def do_step(context):
     settings = context.meta['settings']
     username = settings["username"]
     home_dir = os.path.join("/home", username)
+    index_file = context.meta['index-file']
 
     client = bosh_client.BoshClient("https://10.0.0.4:25555", "admin", "admin")
     bosh_uuid = client.get_info()['uuid']
 
     print "Director uuid is {0}".format(bosh_uuid)
 
-    f = open('manifests/index.yml')
+    f = open("manifests/{0}".format(index_file))
     manifests = yaml.safe_load(f)
     f.close()
 
