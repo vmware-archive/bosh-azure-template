@@ -1,11 +1,13 @@
 from subprocess import call
 from os import makedirs
+from os import path
 from shutil import copy
 
 
 def do_step(context):
 
-    makedirs("bosh/manifests")
+    if not path.isdir("bosh/manifests"):
+        makedirs("bosh/manifests")
 
     # Generate the private key and certificate
     call("sh create_cert.sh", shell=True)
