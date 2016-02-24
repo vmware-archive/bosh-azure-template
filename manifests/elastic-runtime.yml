@@ -60,9 +60,9 @@ releases:
   - name: cf-mysql
     version: "23"
   - name: cf
-    version: "225.13"
+    version: "225.12"
   - name: diego
-    version: "0.1446.2"
+    version: "0.1446.1"
   - name: garden-linux
     version: "0.330.0"
   - name: etcd
@@ -81,7 +81,7 @@ compilation:
   network: default
   reuse_compilation_vms: true
   cloud_properties:
-    instance_type: Standard_D2
+    instance_type: Standard_D2_v2
 
 update:
   canaries: 1
@@ -108,7 +108,7 @@ networks:
     - {{ mysql_proxy_ip }}
     reserved:
     - 10.0.16.2-10.0.16.3
-    - 10.0.16.69-10.0.16.253
+    - 10.0.16.61-10.0.31.254
     cloud_properties:
       virtual_network_name: {{ VNET_NAME }}  # <--- Replace with virtual network name
       subnet_name: {{ SUBNET_NAME_FOR_CF }} # <--- Replace with subnet name for cloud foundry VMs
@@ -129,7 +129,7 @@ resource_pools:
       name: bosh-azure-hyperv-ubuntu-trusty-go_agent
       version: latest
     cloud_properties:
-      instance_type: Standard_D1
+      instance_type: Standard_D1_v2
 
   - name: cells
     network: default
@@ -137,7 +137,7 @@ resource_pools:
       name: bosh-azure-hyperv-ubuntu-trusty-go_agent
       version: latest
     cloud_properties:
-      instance_type: Standard_D2
+      instance_type: Standard_D2_v2
 
   - name: database
     network: default
@@ -145,7 +145,7 @@ resource_pools:
       name: bosh-azure-hyperv-ubuntu-trusty-go_agent
       version: latest
     cloud_properties:
-      instance_type: Standard_D4
+      instance_type: Standard_D4_v2
 
 disk_pools:
   - name: consul
