@@ -1,15 +1,13 @@
+---
 manifests:
   - release-name: elastic-runtime  # pivnet release 1.6.16
     deployment-name: elastic-runtime
-    release-number: "1500"
-    file-number: "3917"
+    release-number: "1485"
+    file-number: "3888"
     stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
     file: elastic-runtime.yml
     errands:
      - smoke-tests
-     - diego-acceptance-tests
-     - acceptance-tests
-     - acceptance-tests-internetless
      - push-apps-manager
      - push-app-usage-service
      - notifications
@@ -18,5 +16,14 @@ manifests:
      - notifications-ui-tests
      - autoscaling
      - autoscaling-register-broker
-     - autoscaling-destroy-broker
      - autoscaling-tests
+
+  - release-name: p-mysql
+    deployment-name: p-mysql
+    release-number: "1509"
+    file-number: "3930"
+    stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
+    file: p-mysql.yml
+    errands:
+     - broker-registrar
+     - acceptance-tests

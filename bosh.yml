@@ -27,7 +27,7 @@ resource_pools:
     url: https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent?v=3192
     sha1: d096582bddf1771df4194c795edf6a96b90c8190
   cloud_properties:
-    instance_type: Standard_D2
+    instance_type: Standard_D2_v2
 
 disk_pools:
 - name: disks
