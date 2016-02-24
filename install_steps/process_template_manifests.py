@@ -1,5 +1,6 @@
 import yaml
 import os
+from uuid import uuid1
 from jinja2 import Environment
 from hashlib import sha256
 global sshpubkey
@@ -13,11 +14,17 @@ def password(key, short=False):
     else:
         return password
 
+
+def uuid(input):
+    return str(uuid1())
+
+
 def do_step(context):
     global sshpubkey
 
     env = Environment()
     env.filters['password'] = password
+    env.filters['uuid'] = uuid
 
     settings = context.meta['settings']
     sshpubkey = settings['adminSSHKey']
