@@ -116,6 +116,18 @@
       "metadata": {
         "description": "API Token for Pivotal Network"
       }
+    },
+    "installSize": {
+      "type": "string",
+      "defaultValue": "Medium",
+      "allowedValues": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "metadata": {
+        "description": "Size of the install"
+      }
     }
   },
   "variables": {
@@ -344,7 +356,7 @@
             "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-template/master/bootstrap.py"
           ],
           "adminSSHKey": "[parameters('adminSSHKey')]",
-          "commandToExecute": "python ./bootstrap.py",
+          "commandToExecute": "[concat('python ./bootstrap.py ', parameters('installSize'))]",
           "VNET-NAME": "[variables('virtualNetworkName')]",
           "SUBNET-NAME": "[variables('subnet1Name')]",
           "SUBNET-NAME-FOR-CF": "[variables('subnet2Name')]",
