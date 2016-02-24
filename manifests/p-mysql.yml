@@ -31,7 +31,13 @@ networks:
     - 8.8.8.8
     - 8.8.4.4
     static:
-    - {{ consul_ip }} # consul
+    - {{ mysql_partition_1 }}
+    - {{ mysql_partition_2 }}
+    - {{ mysql_partition_3 }}
+    - {{ mysql_proxy_1 }}
+    - {{ mysql_proxy_2 }}
+    - {{ mysql_broker_1 }}
+    - {{ mysql_broker_2 }}
     reserved:
     - 10.0.16.2-10.0.16.60
     - 10.0.16.79-10.0.31.254
