@@ -60,7 +60,7 @@ def cli(ctx, index):
 
 
 @cli.resultcallback()
-def step_callback(ctx_array):
+def step_callback(ctx_array, index):
     last = ctx_array[len(ctx_array) - 1]
 
     if last.meta['settings']:
