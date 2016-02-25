@@ -3,6 +3,7 @@ import click
 import install_steps
 import json
 import os
+import re
 import Utils.HandlerUtil as Util
 from Utils.WAAgentUtil import waagent
 from subprocess import call
@@ -42,7 +43,7 @@ def write_settings(settings_dict):
         tmpfile.write(json.dumps(settings_dict, indent=4, sort_keys=True))
 
 
-@click.group(chain=True, invoke_without_command=True)
+@click.group(invoke_without_command=True)
 @click.option('--index', default='index.yml', help='Manifest index file')
 @click.pass_context
 def cli(ctx, index):
@@ -50,11 +51,15 @@ def cli(ctx, index):
     waagent.LoggerInit('/var/log/waagent.log', '/dev/stdout')
     ctx.meta["settings"] = get_settings()
     ctx.meta["index-file"] = index
+
     group = ctx.command
     commands = sorted([c for c in group.commands])
 
     if ctx.invoked_subcommand is None:
-        cli(commands)
+        for command in commands:
+            command = re.sub('\d{2}_', '', command)
+            print "Running {0}...".format(command)
+            ctx.invoke(eval(command))
     else:
         pass
 
