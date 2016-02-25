@@ -3,10 +3,11 @@ import click
 import install_steps
 import json
 import os
+import sys
 import re
 import Utils.HandlerUtil as Util
 from Utils.WAAgentUtil import waagent
-from subprocess import call
+from subprocess import call, Popen, PIPE
 
 from install_steps import prep_containers_and_tables, \
     create_bosh_cert, process_template_manifests, copy_files_home, \
@@ -48,12 +49,22 @@ def write_settings(settings_dict):
 @click.pass_context
 def cli(ctx, index):
     # Get settings from CustomScriptForLinux extension configurations
-    waagent.LoggerInit('/var/log/waagent.log', '/dev/stdout')
-    ctx.meta["settings"] = get_settings()
+    waagent.LoggerInit('/var/log/waagent.log', '/dev/null')
+    ctx.meta["settings"] = settings = get_settings()
     ctx.meta["index-file"] = index
 
     group = ctx.command
     commands = sorted([c for c in group.commands])
+
+    # start logging to stdout and install.log
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+
+    username = settings["username"]
+    log_file = os.path.join("/home", username, "pcf_install.log")
+
+    tee = Popen(["tee", log_file], stdin=PIPE)
+    os.dup2(tee.stdin.fileno(), sys.stdout.fileno())
+    os.dup2(tee.stdin.fileno(), sys.stderr.fileno())
 
     if ctx.invoked_subcommand is None:
         for command in commands:

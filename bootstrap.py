@@ -98,7 +98,7 @@ symlink('/usr/local/lib/python2.7/dist-packages/azure/mgmt', '../../azure/mgmt')
 chdir("../..")
 
 index_file = "index-{0}.yml".format(sys.argv[1].lower())
-gamma_cmd = "./gamma.py --index {0} | tee ./install.log".format(index_file)
+gamma_cmd = "./gamma.py --index {0}".format(index_file)
 
 # start tmux, running deploy_bosh_and_releases
 call("tmux -S /tmp/shared-tmux-session new -d -s shared '{0}'".format(gamma_cmd), shell=True)
