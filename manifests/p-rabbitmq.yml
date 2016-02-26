@@ -42,7 +42,8 @@ resource_pools:
     name: bosh-azure-hyperv-ubuntu-trusty-go_agent
     version: latest
   cloud_properties:
-  instance_type: Standard_D1_v2
+    instance_type: Standard_D1_v2
+
 compilation:
   workers: 2
   network: default
