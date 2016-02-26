@@ -138,6 +138,13 @@ resource_pools:
       version: latest
     cloud_properties:
       instance_type: Standard_D2_v2
+  - name: errands
+    network: default
+    stemcell:
+      name: bosh-azure-hyperv-ubuntu-trusty-go_agent
+      version: latest
+    cloud_properties:
+      instance_type: Standard_D2_v2
 
   - name: database
     network: default
@@ -724,7 +731,7 @@ jobs:
         release: cf
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -735,7 +742,7 @@ jobs:
         release: diego
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -746,7 +753,7 @@ jobs:
         release: cf
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -757,7 +764,7 @@ jobs:
         release: cf
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -771,7 +778,7 @@ jobs:
         release: push-apps-manager-release
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -782,7 +789,7 @@ jobs:
         release: push-apps-manager-release
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -793,7 +800,7 @@ jobs:
         release: notifications
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -804,7 +811,7 @@ jobs:
         release: notifications
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -815,7 +822,7 @@ jobs:
         release: notifications-ui
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -826,7 +833,7 @@ jobs:
         release: notifications-ui
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -837,7 +844,7 @@ jobs:
         release: cf-autoscaling
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -848,7 +855,7 @@ jobs:
         release: cf-autoscaling
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -859,7 +866,7 @@ jobs:
         release: cf-autoscaling
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -870,7 +877,7 @@ jobs:
         release: cf-autoscaling
     lifecycle: errand
     instances: 1
-    resource_pool: common
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]

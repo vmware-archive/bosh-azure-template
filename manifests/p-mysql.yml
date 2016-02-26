@@ -11,6 +11,7 @@
 {% set mysql_proxy_2="10.0.16.65" %}
 {% set mysql_broker_1="10.0.16.66" %}
 {% set mysql_broker_2="10.0.16.67" %}
+{% set deployment_name="p-mysql" %}
 
 ---
 name: {{ deployment_name }}
