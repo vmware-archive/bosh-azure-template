@@ -44,7 +44,7 @@ def write_settings(settings_dict):
         tmpfile.write(json.dumps(settings_dict, indent=4, sort_keys=True))
 
 
-@click.group(invoke_without_command=True)
+@click.group(chain=True, invoke_without_command=True)
 @click.option('--index', default='index.yml', help='Manifest index file')
 @click.pass_context
 def cli(ctx, index):
@@ -76,11 +76,8 @@ def cli(ctx, index):
 
 
 @cli.resultcallback()
-def step_callback(ctx_array, index):
-    last = ctx_array[len(ctx_array) - 1]
-
-    if last.meta['settings']:
-        write_settings(last.meta['settings'])
+def step_callback(ctx, index):
+    write_settings(ctx.meta['settings'])
 
 
 @cli.command('01_prep_containers')
