@@ -11,6 +11,7 @@ from os.path import isfile, join
 
 files_to_archive = [
     'bosh.yml', 'setup_dns.py', 'create_cert.sh',
+    'gotty', '.gotty.crt', '.gotty.key',
     '98-msft-love-cf', 'gamma.py']
 
 for path in ["install_steps", "manifests"]:
