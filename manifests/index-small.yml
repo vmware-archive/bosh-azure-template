@@ -57,4 +57,3 @@ manifests:
     errands:
       - deploy-service-broker
       - register-service-broker
-      - destroy-service-broker   
