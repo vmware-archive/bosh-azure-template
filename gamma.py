@@ -76,8 +76,11 @@ def cli(ctx, index):
 
 
 @cli.resultcallback()
-def step_callback(ctx, index):
-    write_settings(ctx.meta['settings'])
+def step_callback(ctx_array, index):
+    last = ctx_array[len(ctx_array) - 1]
+
+    if last.meta['settings']:
+        write_settings(last.meta['settings'])
 
 
 @cli.command('01_prep_containers')
