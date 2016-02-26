@@ -51,7 +51,7 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_D2",
+      "defaultValue": "Standard_D2_v2",
       "allowedValues": [
         "Standard_A1",
         "Standard_A2",
@@ -60,7 +60,8 @@
         "Standard_D1",
         "Standard_D2",
         "Standard_D3",
-        "Standard_D4"
+        "Standard_D4",
+        "Standard_D2_v2"
       ],
       "metadata": {
         "description": "Size of vm"
@@ -152,7 +153,8 @@
     "devboxPublicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'),'-devbox'))]",
     "imagePublisher": "Canonical",
     "imageOffer": "UbuntuServer",
-    "ubuntuOSVersion": "14.04.2-LTS"
+    "ubuntuOSVersion": "14.04.2-LTS",
+    "webSessionPassword": "[uniqueString(parameters('adminSSHKey'))]"
   },
   "resources": [
     {
@@ -356,7 +358,7 @@
             "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-template/master/bootstrap.py"
           ],
           "adminSSHKey": "[parameters('adminSSHKey')]",
-          "commandToExecute": "[concat('python ./bootstrap.py ', parameters('installSize'))]",
+          "commandToExecute": "[concat('python ./bootstrap.py ', parameters('installSize'), ' ', variables('webSessionPassword'))]",
           "VNET-NAME": "[variables('virtualNetworkName')]",
           "SUBNET-NAME": "[variables('subnet1Name')]",
           "SUBNET-NAME-FOR-CF": "[variables('subnet2Name')]",
@@ -376,5 +378,11 @@
         }
       }
     }
-  ]
+  ],
+  "outputs": {
+   "ProgressMonitorURL" : {
+     "type" : "string",
+     "value": "[concat('https://gamma:', variables('webSessionPassword'), '@', variables('devboxPublicIPAddressID'))]"
+   }
+}
 }

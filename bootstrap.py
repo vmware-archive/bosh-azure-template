@@ -101,5 +101,5 @@ index_file = "index-{0}.yml".format(sys.argv[1].lower())
 gamma_cmd = "./gamma.py --index {0}".format(index_file)
 
 # start tmux, running deploy_bosh_and_releases
-call("tmux -S /tmp/shared-tmux-session new -d -s shared '{0}'".format(gamma_cmd), shell=True)
-call("chmod 777 /tmp/shared-tmux-session", shell=True)
+call("tmux new -d -s shared '{0}'".format(gamma_cmd), shell=True)
+call("./gotty -c gamma:{0} -t --tls-crt '.gotty.crt' --tls-key '.gotty.key' -p '443' tmux attach -t shared &".format(sys.argv[2]), shell=True)
