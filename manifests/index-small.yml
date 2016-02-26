@@ -46,4 +46,15 @@ manifests:
     file: p-redis.yml
     errands:
      - broker-registrar
-     - smoke-tests     
+     - smoke-tests
+
+  - release-name: p-spring-cloud-services
+    deployment-name: p-spring-cloud-services
+    release-number: "1524"
+    file-number: "3963"
+    stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
+    file: p-spring-cloud-services.yml
+    errands:
+      - deploy-service-broker
+      - register-service-broker
+      - destroy-service-broker   
