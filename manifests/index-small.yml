@@ -37,3 +37,13 @@ manifests:
     errands:
      - broker-registrar
      - acceptance-tests
+
+  - release-name: p-redis
+    deployment-name: p-redis
+    release-number: "1506"
+    file-number: "3928"
+    stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
+    file: p-redis.yml
+    errands:
+     - broker-registrar
+     - smoke-tests     
