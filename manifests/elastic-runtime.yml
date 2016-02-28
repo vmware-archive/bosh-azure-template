@@ -77,11 +77,11 @@ releases:
     version: "28"
 
 compilation:
-  workers: 4
+  workers: 8
   network: default
   reuse_compilation_vms: true
   cloud_properties:
-    instance_type: Standard_D2_v2
+    instance_type: Standard_D4_v2
 
 update:
   canaries: 1
