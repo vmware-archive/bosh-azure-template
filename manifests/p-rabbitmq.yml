@@ -15,7 +15,7 @@ name: {{ deployment_name }}
 director_uuid: {{ DIRECTOR_UUID }}
 releases:
 - name: cf-rabbitmq
-  version: 210.6.0
+  version: 210.7.0
 networks:
 - name: default
   subnets:
@@ -200,7 +200,7 @@ jobs:
     release: cf-rabbitmq
   lifecycle: errand
   instances: 1
-  resource_pool: broker-registrar
+  resource_pool: common
   networks:
   - name: default
     default:
@@ -224,7 +224,7 @@ jobs:
     release: cf-rabbitmq
   lifecycle: errand
   instances: 1
-  resource_pool: broker-deregistrar
+  resource_pool: common
   networks:
   - name: default
     default:

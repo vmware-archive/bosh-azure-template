@@ -54,7 +54,7 @@ resource_pools:
     version: latest
   cloud_properties:
     instance_type: Standard_D1_v2
-    
+
 - name: mysql-partition
   network: default
   stemcell:
@@ -293,6 +293,7 @@ jobs:
     max_in_flight: 1
 
 properties:
+  external_host: p-mysql.{{ system_domain }}
   cluster_ips:
   - {{ mysql_partition_1 }}
   - {{ mysql_partition_2 }}
@@ -304,7 +305,9 @@ properties:
     apps_domain: {{ apps_domain }}
     skip_ssl_validation: true
   proxy:
-    external_host: p-mysql.{{ system_domain }}
+    proxy_ips:
+    - {{ mysql_broker_1 }}
+    - {{ mysql_broker_2 }}
     api_username: admin
     api_password: "{{ 'mysql_api' | password(True) }}"
     proxy_count: 2
