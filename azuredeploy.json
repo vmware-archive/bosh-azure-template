@@ -216,6 +216,19 @@
               "priority": 1000,
               "direction": "Inbound"
             }
+          }, {
+            "name": "allow-https-to-jumpbox",
+            "properties": {
+              "description": "Allow Inbound HTTPS To Jumpbox",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "443",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(variables('devboxPrivateIPAddress'), '/32')]",
+              "access": "Allow",
+              "priority": 1100,
+              "direction": "Inbound"
+            }
           }
         ]
       }
@@ -382,7 +395,7 @@
   "outputs": {
    "ProgressMonitorURL" : {
      "type" : "string",
-     "value": "[concat('https://gamma:', variables('webSessionPassword'), '@', variables('devboxPublicIPAddressID'))]"
+     "value": "[concat('https://gamma:', variables('webSessionPassword'), '@', reference(concat(parameters('vmName'),'-devbox')).dnsSettings.fqdn)]"
    }
 }
 }
