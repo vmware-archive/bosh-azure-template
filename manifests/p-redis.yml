@@ -10,7 +10,9 @@
 {% set redis_partition_3="10.0.16.94" %}
 {% set redis_partition_4="10.0.16.95" %}
 {% set redis_partition_5="10.0.16.96" %}
+{% set deployment_name="p-rabbitmq" %}
 
+---
 name: {{ deployment_name }}
 director_uuid: {{ DIRECTOR_UUID }}
 releases:
@@ -44,7 +46,7 @@ resource_pools:
     name: bosh-azure-hyperv-ubuntu-trusty-go_agent
     version: latest
   cloud_properties:
-  instance_type: Standard_D1_v2
+    instance_type: Standard_D1_v2
 
 disk_pools:
 - name: redis-partition
@@ -114,7 +116,7 @@ jobs:
   persistent_disk_pool: redis-partition
 - name: dedicated-node-partition
   templates:
-  - name: dedicated-node-partition
+  - name: dedicated-node
     release: cf-redis
   - name: syslog-configurator
     release: cf-redis
@@ -150,7 +152,7 @@ jobs:
     release: cf-redis
   lifecycle: errand
   instances: 1
-  resource_pool: broker-registrar
+  resource_pool: common
   networks:
   - name: default
     default:
@@ -165,7 +167,7 @@ jobs:
     release: cf-redis
   lifecycle: errand
   instances: 1
-  resource_pool: broker-deregistrar
+  resource_pool: common
   networks:
   - name: default
     default:
@@ -180,7 +182,7 @@ jobs:
     release: cf-redis
   lifecycle: errand
   instances: 1
-  resource_pool: smoke-tests
+  resource_pool: common
   networks:
   - name: default
     default:

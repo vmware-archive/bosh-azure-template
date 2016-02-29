@@ -6,6 +6,7 @@
 {% set nfs_ip="10.0.16.8" %}
 {% set mysql_ip="10.0.16.9" %}
 {% set mysql_proxy_ip="10.0.16.10" %}
+{% set ha_proxy_ip="10.0.16.11" %}
 {% set system_domain="system."+root_domain %}
 {% set apps_domain="app."+root_domain %}
 {% set deployment_name="elastic-runtime" %}
@@ -106,6 +107,7 @@ networks:
     - {{ nfs_ip }}
     - {{ mysql_ip }}
     - {{ mysql_proxy_ip }}
+    - {{ ha_proxy_ip }}
     reserved:
     - 10.0.16.2-10.0.16.3
     - 10.0.16.61-10.0.31.254
@@ -721,6 +723,8 @@ jobs:
     networks:
       - name: default
         default: [dns, gateway]
+        static_ips:
+          - {{ ha_proxy_ip }}
       - name: public
         static_ips:
           - {{ CF_PUBLIC_IP_ADDRESS }}
