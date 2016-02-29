@@ -137,16 +137,16 @@ def download_from_pivnet_upload_to_bosh(ctx):
     return install_steps.download_from_pivnet_upload_to_bosh.do_step(ctx)
 
 
-@cli.command('10_deploy')
-@click.pass_context
-def deploy(ctx):
-    return install_steps.deploy.do_step(ctx)
-
-
-@cli.command('11_configure_security_groups')
+@cli.command('10_configure_security_groups')
 @click.pass_context
 def configure_security_groups(ctx):
     return install_steps.configure_security_groups.do_step(ctx)
+
+
+@cli.command('11_deploy')
+@click.pass_context
+def deploy(ctx):
+    return install_steps.deploy.do_step(ctx)
 
 
 @cli.command('12_run_errands')

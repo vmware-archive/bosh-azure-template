@@ -1,4 +1,5 @@
 from install_steps import bosh_client
+from install_steps import index_client
 from azure.mgmt.network import NetworkResourceProviderClient, SecurityRule
 from azure.mgmt.network.networkresourceprovider import SecurityRuleOperations
 from azure.mgmt.common import SubscriptionCloudCredentials
@@ -6,6 +7,8 @@ from urllib2 import Request
 from urllib2 import urlopen
 from urllib import urlencode
 import json
+import yaml
+import os
 
 
 def get_token_from_client_credentials(endpoint, client_id, client_secret):
@@ -19,6 +22,28 @@ def get_token_from_client_credentials(endpoint, client_id, client_secret):
     request.data = urlencode(payload)
     result = urlopen(request)
     return json.loads(result.read())['access_token']
+
+
+def get_ha_proxy_address(ctx):
+    client = index_client.IndexClient(ctx.meta['index-file'])
+    manifest = client.find_by_release('elastic-runtime')
+    settings = ctx.meta['settings']
+
+    username = settings["username"]
+    manifest_path = os.path.join("/home", username, 'manifests', manifest['file'])
+
+    with open(manifest_path, 'r') as stream:
+        content = stream.read()
+
+        try:
+            doc = yaml.load(content)
+        except yaml.YAMLError as exc:
+            print(exc)
+            return None
+
+    job = filter(lambda job: job['name'] == 'haproxy', doc['jobs'])[0]
+    default_net = filter(lambda net: net['name'] == 'default', job['networks'])[0]
+    return default_net['static_ips'][0]
 
 
 def do_step(context):
