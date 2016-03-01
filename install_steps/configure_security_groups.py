@@ -1,4 +1,3 @@
-from install_steps import bosh_client
 from install_steps import index_client
 from azure.mgmt.network import NetworkResourceProviderClient, SecurityRule
 from azure.mgmt.network.networkresourceprovider import SecurityRuleOperations
@@ -50,17 +49,13 @@ def do_step(context):
     settings = context.meta['settings']
 
     # cf specific configuration (configure security groups for haproxy)
-    deployment_name = "elastic-runtime"
     subscription_id = settings['SUBSCRIPTION-ID']
     tenant = settings['TENANT-ID']
     endpoint = "https://login.microsoftonline.com/{0}/oauth2/token".format(tenant)
     client_token = settings['CLIENT-ID']
     client_secret = settings['CLIENT-SECRET']
 
-    client = bosh_client.BoshClient("https://10.0.0.4:25555", "admin", "admin")
-    ip_table = client.ip_table(deployment_name)
-
-    ha_proxy_address = ip_table['haproxy'][0]
+    ha_proxy_address = get_ha_proxy_address(context)
 
     token = get_token_from_client_credentials(endpoint, client_token, client_secret)
     creds = SubscriptionCloudCredentials(subscription_id, token)
