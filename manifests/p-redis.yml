@@ -10,7 +10,7 @@
 {% set redis_partition_3="10.0.16.94" %}
 {% set redis_partition_4="10.0.16.95" %}
 {% set redis_partition_5="10.0.16.96" %}
-{% set deployment_name="p-rabbitmq" %}
+{% set deployment_name="p-redis" %}
 
 ---
 name: {{ deployment_name }}
@@ -24,7 +24,8 @@ networks:
   - range: 10.0.16.0/20
     gateway: 10.0.16.1
     dns:
-    - 10.0.0.2
+    - 8.8.8.8
+    - 8.8.4.4
     static:
     - {{ redis_broker_1 }}
     - {{ redis_partition_1 }}

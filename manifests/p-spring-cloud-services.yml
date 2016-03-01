@@ -1,20 +1,22 @@
 {% set root_domain=cf_ip+".xip.io" %}
 {% set system_domain="system."+root_domain %}
 {% set apps_domain="app."+root_domain %}
+{% set deployment_name="p-spring-cloud-services" %}
 
 ---
 name: {{ deployment_name }}
 director_uuid: {{ DIRECTOR_UUID }}
 releases:
 - name: spring-cloud-broker
-  version: 1.0.4-build.12
+  version: 1.0.5-build.9
 networks:
 - name: default
   subnets:
   - range: 10.0.16.0/20
     gateway: 10.0.16.1
     dns:
-    - 10.0.0.2
+    - 8.8.8.8
+    - 8.8.4.4
     static: []
     reserved:
     - 10.0.16.2-10.0.16.107
@@ -95,7 +97,7 @@ jobs:
     max_in_flight: 1
 disk_pools: []
 
-properties:
+properties: {}
 domain: {{ system_domain }}
 app_domains:
 - {{ apps_domain }}
