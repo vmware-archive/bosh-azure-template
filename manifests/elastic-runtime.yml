@@ -78,7 +78,7 @@ releases:
     version: "28"
 
 compilation:
-  workers: 8
+  workers: 4
   network: default
   reuse_compilation_vms: true
   cloud_properties:
