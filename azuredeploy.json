@@ -2,10 +2,10 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "newStorageAccountName": {
+    "storageAccountNamePrefixString": {
       "type": "string",
       "metadata": {
-        "description": "Unique DNS Name for the Storage Account where the Virtual Machine's disks will be placed. It must be between 3 and 24 characters in length and use numbers and lower-case letters only."
+        "description": "Unique DNS Name for the Storage Account prefix where the Virtual Machine's disks will be placed. It cano not be more than 10 characters in length and use numbers and lower-case letters only."
       }
     },
     "virtualNetworkName": {
@@ -43,12 +43,6 @@
         "description": "name of the security group for CF"
       }
     },
-    "vmName": {
-      "type": "string",
-      "metadata": {
-        "description": "name of the vm, will be used as DNS Name for the Public IP used to access the Virtual Machine"
-      }
-    },
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_D2_v2",
@@ -69,6 +63,7 @@
     },
     "adminUsername": {
       "type": "string",
+      "defaultValue": "pivotal",
       "metadata": {
         "description": "User name for the Virtual Machine."
       }
@@ -133,10 +128,12 @@
   },
   "variables": {
     "api-version": "2015-05-01-preview",
+    "newStorageAccountName": "[concat(parameters('storageAccountNamePrefixString'),uniquestring(resourceGroup().id, deployment().name))]",
+    "vmName": "[concat('myjumpbox',uniquestring(resourceGroup().id, deployment().name))]",
     "location": "[resourceGroup().location]",
     "storageAccountType": "Standard_GRS",
     "vmStorageAccountContainerName": "vhds",
-    "storageid": "[resourceId('Microsoft.Storage/storageAccounts', parameters('newStorageAccountName'))]",
+    "storageid": "[resourceId('Microsoft.Storage/storageAccounts', variables('newStorageAccountName'))]",
     "virtualNetworkName": "[parameters('virtualNetworkName')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "addressPrefix": "10.0.0.0/16",
@@ -148,9 +145,9 @@
     "subnet2Name": "[parameters('subnetNameForCloudFoundry')]",
     "subnet2Prefix": "10.0.16.0/20",
     "subnet2NSG": "[parameters('NSGNameForCF')]",
-    "nicName": "[parameters('vmName')]",
+    "nicName": "[variables('vmName')]",
     "devboxPrivateIPAddress": "10.0.0.100",
-    "devboxPublicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'),'-devbox'))]",
+    "devboxPublicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('vmName'),'-devbox'))]",
     "imagePublisher": "Canonical",
     "imageOffer": "UbuntuServer",
     "ubuntuOSVersion": "14.04.2-LTS",
@@ -159,7 +156,7 @@
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "[parameters('newStorageAccountName')]",
+      "name": "[variables('newStorageAccountName')]",
       "apiVersion": "[variables('api-version')]",
       "location": "[variables('location')]",
       "properties": {
@@ -169,19 +166,19 @@
     {
       "apiVersion": "[variables('api-version')]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[concat(parameters('vmName'),'-devbox')]",
+      "name": "[concat(variables('vmName'),'-devbox')]",
       "location": "[variables('location')]",
       "properties": {
         "publicIPAllocationMethod": "dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('vmName')]"
+          "domainNameLabel": "[variables('vmName')]"
         }
       }
     },
     {
       "apiVersion": "[variables('api-version')]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[concat(parameters('vmName'),'-bosh')]",
+      "name": "[concat(variables('vmName'),'-bosh')]",
       "location": "[variables('location')]",
       "properties": {
         "publicIPAllocationMethod": "static"
@@ -190,7 +187,7 @@
     {
       "apiVersion": "[variables('api-version')]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[concat(parameters('vmName'), '-cf')]",
+      "name": "[concat(variables('vmName'), '-cf')]",
       "location": "[variables('location')]",
       "properties": {
         "publicIPAllocationMethod": "static"
@@ -282,7 +279,7 @@
       "name": "[variables('nicName')]",
       "location": "[variables('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', parameters('vmName'), '-devbox')]",
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('vmName'), '-devbox')]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
       ],
       "properties": {
@@ -293,7 +290,7 @@
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[variables('devboxPrivateIPAddress')]",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(parameters('vmName'),'-devbox'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('vmName'),'-devbox'))]"
               },
               "subnet": {
                 "id": "[variables('subnet1Ref')]"
@@ -306,10 +303,10 @@
     {
       "apiversion": "[variables('api-version')]",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('vmName')]",
+      "name": "[variables('vmName')]",
       "location": "[variables('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/',parameters('newStorageAccountName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/',variables('newStorageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/',variables('nicName'))]"
       ],
       "properties": {
@@ -317,7 +314,7 @@
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "[parameters('vmName')]",
+          "computerName": "[variables('vmName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "linuxConfiguration": {
             "disablePasswordAuthentication": "true",
@@ -339,7 +336,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',parameters('vmName'),'-osdisk.vhd')]"
+              "uri": "[concat('http://',variables('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('vmName'),'-osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -356,11 +353,11 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('vmName'),'/initdevbox')]",
+      "name": "[concat(variables('vmName'),'/initdevbox')]",
       "apiVersion": "[variables('api-version')]",
       "location": "[variables('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.OSTCExtensions",
@@ -377,14 +374,14 @@
           "SUBNET-NAME-FOR-CF": "[variables('subnet2Name')]",
           "NSG-NAME-FOR-CF": "[variables('subnet2NSG')]",
           "SUBSCRIPTION-ID": "[subscription().subscriptionId]",
-          "STORAGE-ACCOUNT-NAME": "[parameters('newStorageAccountName')]",
+          "STORAGE-ACCOUNT-NAME": "[variables('newStorageAccountName')]",
           "STORAGE-ACCESS-KEY": "[listKeys(variables('storageid'),variables('api-version')).key1]",
           "RESOURCE-GROUP-NAME": "[resourceGroup().name]",
           "TENANT-ID": "[parameters('tenantID')]",
           "CLIENT-ID": "[parameters('clientID')]",
           "CLIENT-SECRET": "[parameters('clientSecret')]",
-          "cf-ip": "[reference(concat(parameters('vmName'),'-cf')).ipAddress]",
-          "bosh-ip": "[reference(concat(parameters('vmName'),'-bosh')).ipAddress]",
+          "cf-ip": "[reference(concat(variables('vmName'),'-cf')).ipAddress]",
+          "bosh-ip": "[reference(concat(variables('vmName'),'-bosh')).ipAddress]",
           "username": "[parameters('adminUserName')]",
           "enable-dns": "[parameters('enableDNSOnDevbox')]",
           "pivnet-api-token": "[parameters('pivnetAPIToken')]"
@@ -395,7 +392,7 @@
   "outputs": {
    "ProgressMonitorURL" : {
      "type" : "string",
-     "value": "[concat('https://gamma:', variables('webSessionPassword'), '@', reference(concat(parameters('vmName'),'-devbox')).dnsSettings.fqdn)]"
+     "value": "[concat('https://gamma:', variables('webSessionPassword'), '@', reference(concat(variables('vmName'),'-devbox')).dnsSettings.fqdn)]"
    }
 }
 }
