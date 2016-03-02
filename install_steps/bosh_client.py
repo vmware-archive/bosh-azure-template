@@ -39,11 +39,12 @@ class BoshClient:
     def wait_for_task(self, task_id):
         events = []
 
-        task_url = "{0}/tasks/{1}".format(self.bosh_url, task_id)
-        result = json.loads(self.get(task_url))
+        result = self.get_task(task_id)
+
         while result['state'] == 'queued' or result['state'] == 'processing':
-            result = json.loads(self.get(task_url))
+
             task_events = self.get_task_events(task_id)
+
             for event in task_events:
                 if 'error' in event:
                     print "{0} > \033[31m{1}\033[0m".format("Error".rjust(30, " "), event['error']['message'])
@@ -60,6 +61,9 @@ class BoshClient:
                                 event['task'], event['state'])
 
             time.sleep(3)
+
+            result = self.get_task(task_id)
+
         return result
 
     def get_uuid(self):
@@ -104,6 +108,11 @@ class BoshClient:
         result = self.post(errand_url, "{}", 'application/json')
         task_id = json.loads(result.read())["id"]
         return task_id
+
+    def get_task(self, task_id):
+        task_url = "{0}/tasks/{1}".format(
+            self.bosh_url, task_id)
+        return json.loads(self.get(task_url))
 
     def get_task_result(self, task_id):
         task_url = "{0}/tasks/{1}/output?type=result".format(

@@ -97,41 +97,41 @@ jobs:
     max_in_flight: 1
 disk_pools: []
 
-properties: {}
-domain: {{ system_domain }}
-app_domains:
-- {{ apps_domain }}
-ssl:
-  skip_cert_verify: true
-spring_cloud_broker:
-  product_name:
-  app_name:
-  app_uri:
-  broker:
-    org_name:
-    space_name:
-    user: spring_cloud_broker_user
-    password: "{{ 'spring_cloud_broker' | password(True) }}"
-    max_instances: 100
-  worker:
-    client_id:
-    client_secret: "{{ 'spring_cloud_client_sercret' | password(True) }}"
-    user: spring_cloud_worker_user
-    password: "{{ 'spring_cloud_worker' | password(True) }}"
-  instances:
-    org_name:
-    space_name:
-    instances_user: p-spring-cloud-services
-    instances_password: "{{ 'spring_cloud_services' | password(True) }}"
-  app_push:
-    timeout: 180
-    memory:
-  broker_dashboard_secret: "{{ 'spring_cloud_dashboard_sercret' | password(True) }}"
-  persistence_store_type:
-  encryption_key: fcd368cfeaf1b401afd6
-  cf:
-    admin_user: system_verification
-    admin_password: "{{ 'system_verification' | password }}"
-  uaa:
-    admin_client_id: scs_admin
-    admin_client_secret: "{{ 'scs_password' | password }}"
+properties:
+  domain: {{ system_domain }}
+  app_domains:
+  - {{ apps_domain }}
+  ssl:
+    skip_cert_verify: true
+  spring_cloud_broker:
+    product_name:
+    app_name:
+    app_uri:
+    broker:
+      org_name:
+      space_name:
+      user: spring_cloud_broker_user
+      password: "{{ 'spring_cloud_broker' | password(True) }}"
+      max_instances: 100
+    worker:
+      client_id:
+      client_secret: "{{ 'spring_cloud_client_sercret' | password(True) }}"
+      user: spring_cloud_worker_user
+      password: "{{ 'spring_cloud_worker' | password(True) }}"
+    instances:
+      org_name:
+      space_name:
+      instances_user: p-spring-cloud-services
+      instances_password: "{{ 'spring_cloud_services' | password(True) }}"
+    app_push:
+      timeout: 180
+      memory:
+    broker_dashboard_secret: "{{ 'spring_cloud_dashboard_sercret' | password(True) }}"
+    persistence_store_type:
+    encryption_key: fcd368cfeaf1b401afd6
+    cf:
+      admin_user: system_verification
+      admin_password: "{{ 'system_verification' | password }}"
+    uaa:
+      admin_client_id: scs_admin
+      admin_client_secret: "{{ 'scs_password' | password }}"

@@ -36,7 +36,6 @@ manifests:
     file: p-rabbitmq.yml
     errands:
      - broker-registrar
-     - acceptance-tests
 
   - release-name: p-redis
     deployment-name: p-redis

@@ -22,7 +22,15 @@ def do_step(context):
         manifest = open("{0}/manifests/{1}".format(home_dir, m['file'])).read()
         task_id = client.create_deployment(manifest)
 
-        client.wait_for_task(task_id)
+        task = client.wait_for_task(task_id)
+
+        while task['state'] == 'error':
+
+            print "Retrying deploy for {0}/manifests/{1}...".format(home_dir, m['file'])
+
+            task_id = client.create_deployment(manifest)
+            task = client.wait_for_task(task_id)
+
         print "Finished deploying {0}/manifests/{1}...".format(home_dir, m['file'])
 
     return context
