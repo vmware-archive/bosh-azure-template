@@ -14,16 +14,10 @@ deploying BOSH and CloudFoundry.
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "newStorageAccountName": {
-      "value": "mystorageaccount"
+    "storageAccountNamePrefixString": {
+      "value": "mystorage"
     },
-    "vmName": {
-      "value": "myjumpboxvm"
-    },
-    "adminUsername": {
-      "value": "admin"
-    },
-    "adminSSHKey": {
+   "adminSSHKey": {
       "value": "ssh-rsa XXXXxxxx"
     },
     "tenantID": {
@@ -44,9 +38,7 @@ deploying BOSH and CloudFoundry.
 
 - Give each parameter a suitable value;
 
-    - newStorageAccountName - this is a unique name for you Azure storage account.
-    - vmName - a name unique to your account for the "jumpbox" vm the ARM template will create.
-    - adminUsername - a username for the account created on the "jumpbox"
+    - storageAccountNamePrefixString - this is a unique prefix name for you Azure storage account.
     - adminSSHKey - your rsa public key that will be trusted by the "jumpbox"
     - tenantID - your tenant ID for the subscription you wish to use
     - clientID - the client ID associated to the subscription
