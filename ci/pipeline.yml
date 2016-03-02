@@ -1,0 +1,38 @@
+---
+
+resources:
+
+- name: github-release
+  type: github-release
+  source:
+    user: cf-platform-eng
+    repository: bosh-azure-template
+
+- name: s3-release
+  type: s3
+  source:
+    bucket: {{s3-bucket}}
+    regexp: .*-v(?P<version>.*)\.tgz
+    access_key_id: {{s3-access-key}}
+    secret_access_key: {{s3-secret}}
+
+jobs:
+
+- name: copy-release
+  plan:
+  - get: github-release
+    trigger: true
+  - task: copy-release
+    config:
+      platform: linux
+      image: docker:///alpine
+      inputs:
+      - name: github-release
+      outputs:
+      - name: s3-release
+      run:
+        path: sh
+        args: [ "-c", "cp github-release/*.tgz s3-release" ]
+  - put: s3-release
+    params:
+      from: s3-release/.*\.tgz
