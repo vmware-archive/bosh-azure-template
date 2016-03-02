@@ -1,4 +1,4 @@
-1---
+---
 manifests:
   - release-name: elastic-runtime  # pivnet release 1.6.16
     deployment-name: elastic-runtime
