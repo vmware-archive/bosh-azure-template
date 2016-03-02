@@ -211,7 +211,7 @@ properties:
     skip_ssl_validation: true
   broker:
     name: p-redis
-    host: p-redis.{{ system_domain }}
+    host: redis-broker.{{ apps_domain }}
     username: {{ 'redis_broker_user' | password(True) }}
     password: "{{ 'redis_broker_password' | password(True) }}"
   nats:

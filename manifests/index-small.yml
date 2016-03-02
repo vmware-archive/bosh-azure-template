@@ -1,4 +1,4 @@
----
+1---
 manifests:
   - release-name: elastic-runtime  # pivnet release 1.6.16
     deployment-name: elastic-runtime
@@ -36,7 +36,6 @@ manifests:
     file: p-rabbitmq.yml
     errands:
      - broker-registrar
-     - acceptance-tests
 
   - release-name: p-redis
     deployment-name: p-redis
