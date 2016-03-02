@@ -37,3 +37,31 @@ jobs:
   - put: s3-release
     params:
       from: s3-release/.*\.tgz
+  - task: copy-latest
+    config:
+      platform: linux
+      image: docker:///alpine
+      inputs:
+      - name: github-release
+      outputs:
+      - name: s3-release
+      run:
+        path: sh
+        args: [ "-c", "cp github-release/*.tgz s3-release/latest.tgz" ]
+  - put: s3-release
+    params:
+      from: s3-release/latest.tgz
+  - task: save-version
+    config:
+      platform: linux
+      image: docker:///alpine
+      inputs:
+      - name: github-release
+      outputs:
+      - name: s3-release
+      run:
+        path: sh
+        args: [ "-c", "ls github-release/*.tgz | sed 's/github-release\\/.*-//' | sed 's/.tgz//' >s3-release/version.txt" ]
+  - put: s3-release
+    params:
+      from: s3-release/version.txt
