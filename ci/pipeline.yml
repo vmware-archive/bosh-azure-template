@@ -7,6 +7,7 @@ resources:
   source:
     user: cf-platform-eng
     repository: bosh-azure-template
+    access_token: {{github-access-token}}
 
 - name: s3-release
   type: s3
