@@ -90,7 +90,7 @@ jobs:
           password: "{{ 'rmqadmin' | password(True) }}"
         broker:
           username: broker
-          password: "{{ 'rmqbroker' | password(True) }}"
+          password: "{{ 'rmqbroker' | password }}"
       plugins:
       - rabbitmq_management
       ssl:
