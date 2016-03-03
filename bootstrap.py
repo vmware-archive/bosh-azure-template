@@ -35,7 +35,7 @@ package_list = [
 
 print "Updating apt cache"
 cache = apt.cache.Cache()
-cache.update()
+cache.update(raise_on_error=False)
 cache.open(None)
 
 for package in package_list:
