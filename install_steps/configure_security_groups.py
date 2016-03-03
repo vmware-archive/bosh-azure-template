@@ -91,4 +91,19 @@ def do_step(context):
 
     rules_client.create_or_update("cf", settings['NSG-NAME-FOR-CF'], "https_inbound", rule)
 
+    rule = SecurityRule(
+        description="",
+        protocol="*",
+        source_port_range="*",
+        destination_port_range="2222",
+        source_address_prefix="*",
+        destination_address_prefix=ha_proxy_address,
+        access="Allow",
+        priority=1300,
+        direction="InBound"
+    )
+
+    rules_client.create_or_update("cf", settings['NSG-NAME-FOR-CF'], "ssh_proxy_inbound", rule)
+
+
     return context
