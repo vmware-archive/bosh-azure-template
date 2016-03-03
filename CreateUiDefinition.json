@@ -1,0 +1,89 @@
+{
+	"handler": "Microsoft.Compute.MultiVm",
+	"version": "0.0.1-preview",
+	"parameters": {
+		"basics": [
+        {
+			"name": "storageAccountNamePrefix",
+			"type": "Microsoft.Common.TextBox",
+			"label": "Storage Account Name Prefix",
+			"defaultValue": "",
+			"constraints": {
+				"required": true,
+				"regex": "^[a-z0-9A-Z]{1,10}$",
+				"validationMessage": "Only letters and numbers are allowed, and the value must be 1-10 characters long."
+			}
+		},
+        {
+			"name": "sshKeyData",
+			"type": "Microsoft.Common.TextBox",
+			"label": "SSH Public Key",
+			"defaultValue": ""
+
+		},
+        {
+			"name": "tenantID",
+			"type": "Microsoft.Common.TextBox",
+			"label": "Tenant ID",
+			"defaultValue": "",
+			"constraints": {
+				"required": true
+			}
+		},
+        {
+			"name": "clientID",
+			"type": "Microsoft.Common.TextBox",
+			"label": "Client ID",
+			"defaultValue": "",
+			"constraints": {
+				"required": true
+			}
+		},
+        {
+			"name": "clientSecret",
+			"type": "Microsoft.Common.TextBox",
+			"label": "Client Secret",
+			"constraints": {
+				"required": true
+			}
+		},
+        {
+			"name": "pivnetAPIToken",
+			"type": "Microsoft.Common.TextBox",
+			"label": "Pivotal Network Token",
+			"defaultValue": "",
+			"constraints": {
+				"required": true
+			}
+		},
+        {
+			"name": "deploymentSize",
+			"type": "Microsoft.Common.DropDown",
+			"label": "PCF Deployment size",
+			"defaultValue": "Small",
+			"toolTip": "",
+			"constraints": {
+				"allowedValues": [{
+					"label": "Small",
+					"value": "Small"
+				}, {
+					"label": "Medium",
+					"value": "Medium"
+				}, {
+					"label": "Large",
+					"value": "Large"
+				}]
+			}
+		}],
+		"steps": [],
+		"outputs": {
+            "storageAccountNamePrefixString": "[basics('storageAccountNamePrefix')]",
+			"adminSSHKey": "[basics('sshKeyData')]",
+			"tenantID": "[basics('tenantID')]",
+			"clientID": "[basics('clientID')]",
+			"clientSecret": "[basics('clientSecret')]",
+			"pivnetAPIToken": "[basics('pivnetAPIToken')]",
+			"installSize": "[basics('deploymentSize')]"
+		}
+	}
+}

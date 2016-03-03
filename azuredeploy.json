@@ -5,7 +5,7 @@
     "storageAccountNamePrefixString": {
       "type": "string",
       "metadata": {
-        "description": "Unique DNS Name for the Storage Account prefix where the Virtual Machine's disks will be placed. It cano not be more than 10 characters in length and use numbers and lower-case letters only."
+        "description": "Unique DNS Name for the Storage Account prefix where the Virtual Machine's disks will be placed. It can not be more than 10 characters in length and use numbers and lower-case letters only."
       }
     },
     "virtualNetworkName": {
