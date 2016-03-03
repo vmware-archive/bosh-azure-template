@@ -6,3 +6,5 @@ bosh/
 azure/
 Utils/
 HandlerEnvironment.json
+gotty
+.gotty.*
