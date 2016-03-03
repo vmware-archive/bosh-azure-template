@@ -9,6 +9,13 @@ resources:
     repository: bosh-azure-template
     access_token: {{github-access-token}}
 
+- name: github-repo
+  type: git
+  source:
+    paths: [ "bootstrap.py" ]
+    branch: master
+    uri: http://github.com/cf-platform-eng/bosh-azure-template.git
+
 - name: s3-release
   type: s3
   source:
@@ -20,6 +27,25 @@ resources:
 
 jobs:
 
+- name: copy-bootstrap
+  plan:
+  - get: github-repo
+    trigger: true
+  - task: copy-bootstrap
+    config:
+      platform: linux
+      image: docker:///alpine
+      inputs:
+      - name: github-repo
+      outputs:
+      - name: s3-release
+      run:
+        path: sh
+        args: [ "-c", "cp github-repo/bootstrap.py s3-release" ]
+  - put: s3-release
+    params:
+      from: s3-release/bootstrap.py
+ 
 - name: copy-release
   plan:
   - get: github-release
