@@ -56,18 +56,8 @@ pip_packages = ['jinja2', 'azure', 'azure-mgmt', 'click']
 for package in pip_packages:
     pip.main(['install', package])
 
-gh_url = 'https://s3-us-west-2.amazonaws.com/bosh-azure-releases/latest.tgz'
+release_url = 'https://s3-us-west-2.amazonaws.com/bosh-azure-releases/latest.tgz'
 
-req = urllib2.Request(gh_url)
-headers = req.headers = {
-    'Content-Type': 'application/json'
-}
-
-# upload the release asset
-handler = urllib2.urlopen(req)
-release = json.loads(handler.read())
-
-release_url = release['assets'][0]['browser_download_url']
 res = urllib2.urlopen(release_url)
 
 code = res.getcode()
