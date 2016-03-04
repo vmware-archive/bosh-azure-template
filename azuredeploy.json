@@ -5,7 +5,7 @@
     "storageAccountNamePrefixString": {
       "type": "string",
       "metadata": {
-        "description": "Unique DNS Name for the Storage Account prefix where the Virtual Machine's disks will be placed. It cano not be more than 10 characters in length and use numbers and lower-case letters only."
+        "description": "Unique DNS Name for the Storage Account prefix where the Virtual Machine's disks will be placed. It can not be more than 10 characters in length and use numbers and lower-case letters only."
       }
     },
     "virtualNetworkName": {
@@ -365,7 +365,7 @@
         "typeHandlerVersion": "1.2",
         "settings": {
           "fileUris": [
-            "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-template/master/bootstrap.py"
+            "https://s3-us-west-2.amazonaws.com/bosh-azure-releases/bootstrap.py"
           ],
           "adminSSHKey": "[parameters('adminSSHKey')]",
           "commandToExecute": "[concat('python ./bootstrap.py ', parameters('installSize'), ' ', variables('webSessionPassword'))]",

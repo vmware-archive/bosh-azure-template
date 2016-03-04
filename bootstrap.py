@@ -56,7 +56,7 @@ pip_packages = ['jinja2', 'azure', 'azure-mgmt', 'click']
 for package in pip_packages:
     pip.main(['install', package])
 
-gh_url = 'https://api.github.com/repos/cf-platform-eng/bosh-azure-template/releases/latest'
+gh_url = 'https://s3-us-west-2.amazonaws.com/bosh-azure-releases/latest.tgz'
 
 req = urllib2.Request(gh_url)
 headers = req.headers = {
