@@ -46,17 +46,6 @@
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_D2_v2",
-      "allowedValues": [
-        "Standard_A1",
-        "Standard_A2",
-        "Standard_A3",
-        "Standard_A4",
-        "Standard_D1",
-        "Standard_D2",
-        "Standard_D3",
-        "Standard_D4",
-        "Standard_D2_v2"
-      ],
       "metadata": {
         "description": "Size of vm"
       }
@@ -116,18 +105,13 @@
     "installSize": {
       "type": "string",
       "defaultValue": "Small",
-      "allowedValues": [
-        "Small",
-        "Medium",
-        "Large"
-      ],
       "metadata": {
         "description": "Size of the install"
       }
     }
   },
   "variables": {
-    "api-version": "2015-05-01-preview",
+    "api-version": "2015-06-15",
     "newStorageAccountName": "[concat(parameters('storageAccountNamePrefixString'),uniquestring(resourceGroup().id, deployment().name))]",
     "vmName": "[concat('myjumpbox',uniquestring(resourceGroup().id, deployment().name))]",
     "location": "[resourceGroup().location]",
@@ -194,7 +178,7 @@
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('subnet1NSG')]",
       "location": "[variables('location')]",
@@ -231,7 +215,7 @@
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('subnet2NSG')]",
       "location": "[variables('location')]"
@@ -390,9 +374,13 @@
     }
   ],
   "outputs": {
-   "ProgressMonitorURL" : {
-     "type" : "string",
-     "value": "[concat('https://gamma:', variables('webSessionPassword'), '@', reference(concat(variables('vmName'),'-devbox')).dnsSettings.fqdn)]"
-   }
-}
+      "ProgressMonitorURL" : {
+          "type" : "string",
+          "value": "[concat('https://gamma:', variables('webSessionPassword'), '@', reference(concat(variables('vmName'),'-devbox')).dnsSettings.fqdn)]"
+      },
+      "Jumpbox-FQDN": {
+          "type" : "string",
+          "value": "[reference(concat(variables('vmName'),'-devbox')).dnsSettings.fqdn]"
+      }      
+  }
 }
