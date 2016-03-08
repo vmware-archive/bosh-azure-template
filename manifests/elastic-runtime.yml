@@ -13,7 +13,7 @@
 
 ---
 ssl_pem: &ssl_pem |
-  {{ ha_proxy_cert }}
+{{ ha_proxy_cert | indent(2, True) }}
 system_domain: &system_domain {{ system_domain }}
 apps_domain: &apps_domain {{ apps_domain }}
 
