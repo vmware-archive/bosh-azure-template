@@ -10,7 +10,7 @@ from Utils.WAAgentUtil import waagent
 from subprocess import call, Popen, PIPE
 
 from install_steps import prep_containers_and_tables, \
-    create_bosh_cert, process_template_manifests, copy_files_home, \
+    create_certs, process_template_manifests, copy_files_home, \
     install_bosh_init, setup_dns, deploy_bosh, set_director_id, \
     download_from_pivnet_upload_to_bosh, deploy, configure_security_groups, \
     run_errands
@@ -89,10 +89,10 @@ def prep_containers(ctx):
     return install_steps.prep_containers_and_tables.do_step(ctx)
 
 
-@cli.command('02_create_bosh_cert')
+@cli.command('02_create_certs')
 @click.pass_context
-def create_bosh_cert(ctx):
-    return install_steps.create_bosh_cert.do_step(ctx)
+def create_certs(ctx):
+    return install_steps.create_certs.do_step(ctx)
 
 
 @cli.command('03_process_template_manifests')

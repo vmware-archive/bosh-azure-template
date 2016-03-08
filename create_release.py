@@ -14,7 +14,7 @@ files_to_archive = [
     'gotty', '.gotty.crt', '.gotty.key',
     '98-msft-love-cf', 'gamma.py']
 
-for path in ["install_steps", "manifests"]:
+for path in ["install_steps", "manifests", "certs"]:
     files_to_archive += [join(path, f) for f in listdir(path)
                          if isfile(join(path, f)) and not f.endswith('.pyc')]
 
