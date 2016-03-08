@@ -130,8 +130,8 @@ properties:
     persistence_store_type:
     encryption_key: fcd368cfeaf1b401afd6
     cf:
-      admin_user: system_verification
-      admin_password: "{{ 'system_verification' | password }}"
+      admin_user: admin
+      admin_password: "{{ 'cf_admin' | password(True) }}"
     uaa:
-      admin_client_id: scs_admin
-      admin_client_secret: "{{ 'scs_password' | password }}"
+      admin_client_id: admin
+      admin_client_secret: "{{ 'admin_client_secret' | password }}"
