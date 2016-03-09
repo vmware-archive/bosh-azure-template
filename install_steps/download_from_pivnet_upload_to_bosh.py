@@ -13,6 +13,7 @@ def authorizedPost(url, token):
     req = urllib2.Request(url)
     req.add_header("Authorization", "Token {0}".format(token))
     req.add_header("Accept", "application/json")
+    req.add_header("User-Agent", "azure-pcf-poc-install/1.0.0 (azure-marketplace@pivotal.io)")
     req.data = ''
 
     res = urllib2.urlopen(req)
