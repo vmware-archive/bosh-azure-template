@@ -60,8 +60,9 @@ networks:
   - range: 10.0.16.0/20
     gateway: 10.0.16.1
     dns:
+    - 168.63.129.16
+    - 168.62.167.9
     - 8.8.8.8
-    - 8.8.4.4
     static:
     - {{ consul_ip }} # consul
     - {{ nats_ip }} # nats
