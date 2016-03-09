@@ -4,9 +4,11 @@
 #
 #   1.  everything will be created against the selected ("Default") Azure subscription
 #   2.  current User has sufficient privileges to create AAD application and service principal
-#   3.  location is lotterized against US only { centralus, eastus, eastus2, northcentralus, southcentralus, westus }
-#   4.  creating a new Resource Group, instead of re-using an existing RG
-#   5.  Vnet and subnets are based off of ARM template ranges of 10.2.0.0/16, 10.2.0.0/24, and 10.2.16.0/20
+#   3.  Azure CLI is installed on the machine this script is run
+#
+#   This script will return clientID, tenantID, client-secret that can be used to
+#   populate Azure marketplace offer of Pivotal cloud foundry.
+
 #
 
 # ensure ARM mode
