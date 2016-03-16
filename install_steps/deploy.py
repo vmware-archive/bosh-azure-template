@@ -24,7 +24,11 @@ def do_step(context):
 
         task = client.wait_for_task(task_id)
 
-        while task['state'] == 'error':
+        retries = 0
+
+        while task['state'] == 'error' and retries < 5:
+
+            retries += 1
 
             print "Retrying deploy for {0}/manifests/{1}...".format(home_dir, m['file'])
 
