@@ -75,7 +75,7 @@ def do_step(context):
         direction="InBound"
     )
 
-    rules_client.create_or_update("cf", settings['NSG-NAME-FOR-CF'], "http_inbound", rule)
+    rules_client.create_or_update(settings['RESOURCE-GROUP-NAME'], settings['NSG-NAME-FOR-CF'], "http_inbound", rule)
 
     rule = SecurityRule(
         description="",
@@ -89,7 +89,7 @@ def do_step(context):
         direction="InBound"
     )
 
-    rules_client.create_or_update("cf", settings['NSG-NAME-FOR-CF'], "https_inbound", rule)
+    rules_client.create_or_update(settings['RESOURCE-GROUP-NAME'], settings['NSG-NAME-FOR-CF'], "https_inbound", rule)
 
     rule = SecurityRule(
         description="",
@@ -103,7 +103,7 @@ def do_step(context):
         direction="InBound"
     )
 
-    rules_client.create_or_update("cf", settings['NSG-NAME-FOR-CF'], "ssh_proxy_inbound", rule)
+    rules_client.create_or_update(settings['RESOURCE-GROUP-NAME'], settings['NSG-NAME-FOR-CF'], "ssh_proxy_inbound", rule)
 
 
     return context
