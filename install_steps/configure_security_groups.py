@@ -9,6 +9,18 @@ import json
 import yaml
 import os
 
+import Utils.HandlerUtil as Util
+from Utils.WAAgentUtil import waagent
+
+def get_protected_settings():
+    hutil = Util.HandlerUtility(
+        waagent.Log,
+        waagent.Error,
+        "bosh-deploy-script")
+    hutil.do_parse_context("enable")
+
+    return hutil.get_protected_settings()
+
 
 def get_token_from_client_credentials(endpoint, client_id, client_secret):
     payload = {
@@ -54,6 +66,11 @@ def do_step(context):
     endpoint = "https://login.microsoftonline.com/{0}/oauth2/token".format(tenant)
     client_token = settings['CLIENT-ID']
     client_secret = settings['CLIENT-SECRET']
+
+    protectedSettings = get_protected_settings()
+
+    print "Client sercret from protectedSettings %s" %protectedSettings['CLIENT-SECRET']
+
 
     ha_proxy_address = get_ha_proxy_address(context)
 
