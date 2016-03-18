@@ -346,13 +346,15 @@
       "properties": {
         "publisher": "Microsoft.OSTCExtensions",
         "type": "CustomScriptForLinux",
-        "typeHandlerVersion": "1.2",
+        "typeHandlerVersion": "1.4",
+        "autoupgradeMinorVersion": true,
         "settings": {
           "fileUris": [
             "https://s3-us-west-2.amazonaws.com/bosh-azure-releases/bootstrap.py"
           ],
           "adminSSHKey": "[parameters('adminSSHKey')]",
           "commandToExecute": "[concat('python ./bootstrap.py ', parameters('installSize'), ' ', variables('webSessionPassword'))]",
+          "location": "[variables('location')]",
           "VNET-NAME": "[variables('virtualNetworkName')]",
           "SUBNET-NAME": "[variables('subnet1Name')]",
           "SUBNET-NAME-FOR-CF": "[variables('subnet2Name')]",
@@ -369,6 +371,9 @@
           "username": "[parameters('adminUserName')]",
           "enable-dns": "[parameters('enableDNSOnDevbox')]",
           "pivnet-api-token": "[parameters('pivnetAPIToken')]"
+        },
+        "protectedSettings" : {
+            "CLIENT-SECRET": "[parameters('clientSecret')]"
         }
       }
     }
@@ -381,6 +386,6 @@
       "Jumpbox-FQDN": {
           "type" : "string",
           "value": "[reference(concat(variables('vmName'),'-devbox')).dnsSettings.fqdn]"
-      }      
+      }
   }
 }
