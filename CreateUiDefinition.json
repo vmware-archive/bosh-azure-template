@@ -15,16 +15,27 @@
                 }
             },
             {
-                "name": "sshKeyData",
-                "type": "Microsoft.Common.PasswordBox",
-                "label": {
-                    "password": "SSH Public Key"
-                },
-                "defaultValue": "",
-                "options" : {
-                    "hideConfirmation" : true
-                }
-
+              "name": "sshKeyData",
+              "type": "Microsoft.Compute.CredentialsCombo",
+              "label": {
+                "authenticationType": "Authentication type",
+                "password": "Password",
+                "confirmPassword": "Confirm password",
+                "sshPublicKey": "SSH public key"
+              },
+              "toolTip": {
+                "authenticationType": "",
+                "password": "",
+                "sshPublicKey": ""
+              },
+              "constraints": {
+                "required": true
+              },
+              "options": {
+                "hideConfirmation": true,
+                "hidePassword": true
+              },
+              "osPlatform": "Linux"
             },
             {
                 "name": "tenantID",
