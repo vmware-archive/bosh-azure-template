@@ -1050,7 +1050,7 @@ properties:
       username: autoscale_admin
       password: "{{ 'autoscale_admin' | password }}"
 
-  request_timeout_in_seconds: 900
+  request_timeout_in_seconds: 180
 
   ha_proxy:
     ssl_pem: *ssl_pem
