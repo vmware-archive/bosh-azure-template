@@ -65,11 +65,12 @@ def do_step(context):
     tenant = settings['TENANT-ID']
     endpoint = "https://login.microsoftonline.com/{0}/oauth2/token".format(tenant)
     client_token = settings['CLIENT-ID']
+    client_secret = settings['CLIENT-SECRET']
 
 
     protectedSettings = get_protected_settings()
 
-    client_secret = protectedSettings['CLIENT-SECRET']
+
 
     print "Client sercret from protectedSettings %s" %protectedSettings['CLIENT-SECRET']
 
