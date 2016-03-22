@@ -156,7 +156,7 @@ def run_errands(ctx):
 
 @cli.command('13_display_creds')
 @click.pass_context
-def run_errands(ctx):
+def display_creds(ctx):
     return install_steps.display_creds.do_step(ctx)
 
 if __name__ == '__main__':
