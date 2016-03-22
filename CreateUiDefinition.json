@@ -86,7 +86,8 @@
             "tenantID": "[basics('tenantID')]",
             "clientID": "[basics('clientID')]",
             "clientSecret": "[basics('clientSecret')]",
-            "pivnetAPIToken": "[basics('pivnetAPIToken')]"
+            "pivnetAPIToken": "[basics('pivnetAPIToken')]",
+            "location": "[location()]"
         }
     }
 }

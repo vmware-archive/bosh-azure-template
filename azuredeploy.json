@@ -108,13 +108,20 @@
       "metadata": {
         "description": "Size of the install"
       }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "westus",
+      "metadata": {
+        "description": "location where you want to deploy resources"
+      }
     }
   },
   "variables": {
     "api-version": "2015-06-15",
     "newStorageAccountName": "[concat(parameters('storageAccountNamePrefixString'),uniquestring(resourceGroup().id, deployment().name))]",
     "vmName": "[concat('myjumpbox',uniquestring(resourceGroup().id, deployment().name))]",
-    "location": "[resourceGroup().location]",
+    "location": "[parameters('location')]",
     "storageAccountType": "Standard_GRS",
     "vmStorageAccountContainerName": "vhds",
     "storageid": "[resourceId('Microsoft.Storage/storageAccounts', variables('newStorageAccountName'))]",
