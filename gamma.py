@@ -13,7 +13,7 @@ from install_steps import prep_containers_and_tables, \
     create_certs, process_template_manifests, copy_files_home, \
     install_bosh_init, setup_dns, deploy_bosh, set_director_id, \
     download_from_pivnet_upload_to_bosh, deploy, configure_security_groups, \
-    run_errands
+    run_errands, display_creds
 
 
 def get_settings():
@@ -153,6 +153,11 @@ def deploy(ctx):
 @click.pass_context
 def run_errands(ctx):
     return install_steps.run_errands.do_step(ctx)
+
+@cli.command('13_display_creds')
+@click.pass_context
+def run_errands(ctx):
+    return install_steps.display_creds.do_step(ctx)
 
 if __name__ == '__main__':
     cli()
