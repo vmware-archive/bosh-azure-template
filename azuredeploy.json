@@ -372,7 +372,6 @@
           "RESOURCE-GROUP-NAME": "[resourceGroup().name]",
           "TENANT-ID": "[parameters('tenantID')]",
           "CLIENT-ID": "[parameters('clientID')]",
-          "CLIENT-SECRET": "[parameters('clientSecret')]",
           "cf-ip": "[reference(concat(variables('vmName'),'-cf')).ipAddress]",
           "bosh-ip": "[reference(concat(variables('vmName'),'-bosh')).ipAddress]",
           "username": "[parameters('adminUserName')]",
