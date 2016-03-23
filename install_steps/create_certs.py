@@ -41,7 +41,7 @@ def do_step(context):
 
     cf_ip = settings["cf-ip"]
     call("openssl genrsa -out bosh/certs/server.key 2048", shell=True)
-    call("openssl req -new -out bosh/certs/sub1.csr -key bosh/certs/server.key -config bosh/certs/openssl.conf -subj \"/C=US/ST=CA/L=San Francisco/O=Pivotal Labs/OU=Platform Engineering/CN={{ cf_ip }}.xip.io\"".format(cf_ip), shell=True)
+    call("openssl req -new -out bosh/certs/sub1.csr -key bosh/certs/server.key -config bosh/certs/openssl.conf -subj \"/C=US/ST=CA/L=San Francisco/O=Pivotal Labs/OU=Platform Engineering/CN={0}.xip.io\"".format(cf_ip), shell=True)
     call("openssl req -text -noout -in bosh/certs/sub1.csr", shell=True)
     call("openssl x509 -req -days 3650 -in bosh/certs/sub1.csr -signkey bosh/certs/server.key -out bosh/certs/sub1.crt -extensions v3_req -extfile bosh/certs/openssl.conf", shell=True)
     call("openssl x509 -in bosh/certs/sub1.crt -text -noout", shell=True)
