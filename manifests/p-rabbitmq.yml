@@ -22,9 +22,7 @@ networks:
   - range: 10.0.16.0/20
     gateway: 10.0.16.1
     dns:
-    - 168.63.129.16
-    - 168.62.167.9
-    - 8.8.8.8
+    - 10.0.0.100
     static:
     - {{ rabbitmq_server_1 }}
     - {{ rabbitmq_server_2 }}
