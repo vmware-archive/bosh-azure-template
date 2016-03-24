@@ -82,7 +82,7 @@
         "steps": [],
         "outputs": {
             "storageAccountNamePrefixString": "[basics('storageAccountNamePrefix')]",
-            "adminSSHKey": "[basics('sshKeyData')]",
+            "adminSSHKey": "[basics('sshKeyData').sshPublicKey]",
             "tenantID": "[basics('tenantID')]",
             "clientID": "[basics('clientID')]",
             "clientSecret": "[basics('clientSecret')]",
