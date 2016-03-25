@@ -10,13 +10,8 @@ manifests:
      - smoke-tests
      - push-apps-manager
      - push-app-usage-service
-     - notifications
-     - notifications-tests
-     - notifications-ui
-     - notifications-ui-tests
      - autoscaling
      - autoscaling-register-broker
-     - autoscaling-tests
 
   - release-name: p-mysql
     deployment-name: p-mysql
@@ -26,7 +21,6 @@ manifests:
     file: p-mysql.yml
     errands:
      - broker-registrar
-     - acceptance-tests
 
   - release-name: pivotal-rabbitmq-service
     deployment-name: p-rabbitmq
@@ -45,7 +39,6 @@ manifests:
     file: p-redis.yml
     errands:
      - broker-registrar
-     - smoke-tests
 
   - release-name: p-spring-cloud-services
     deployment-name: p-spring-cloud-services
