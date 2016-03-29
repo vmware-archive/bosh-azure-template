@@ -354,7 +354,7 @@
         "publisher": "Microsoft.OSTCExtensions",
         "type": "CustomScriptForLinux",
         "typeHandlerVersion": "1.4",
-        "autoupgradeMinorVersion": true,
+        "autoupgradeMinorVersion": false,
         "settings": {
           "fileUris": [
             "https://s3-us-west-2.amazonaws.com/bosh-azure-releases/bootstrap.py"
