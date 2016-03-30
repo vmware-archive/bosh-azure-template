@@ -119,6 +119,7 @@
   },
   "variables": {
     "api-version": "2015-06-15",
+    "extensionName": "initdevbox",
     "newStorageAccountName": "[concat(parameters('storageAccountNamePrefixString'),uniquestring(resourceGroup().id, deployment().name))]",
     "vmName": "[concat('myjumpbox',uniquestring(resourceGroup().id, deployment().name))]",
     "location": "[parameters('location')]",
@@ -386,6 +387,10 @@
     }
   ],
   "outputs": {
+      "scriptoutput": {
+          "value": "[split(split(reference(resourceId('Microsoft.Compute/virtualMachines/extensions',variables('vmName'),variables('extensionName')),providers('Microsoft.Compute', 'virtualMachines').apiVersions[0]).instanceView.statuses[0].message,'---')[2],'###QUOTACHECK###')[1]]",
+          "type": "string"
+      },
       "ProgressMonitorURL" : {
           "type" : "string",
           "value": "[concat('https://gamma:', variables('webSessionPassword'), '@', reference(concat(variables('vmName'),'-devbox')).dnsSettings.fqdn)]"
