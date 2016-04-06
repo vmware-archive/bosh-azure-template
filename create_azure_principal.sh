@@ -9,7 +9,25 @@
 #   This script will return clientID, tenantID, client-secret that can be used to
 #   populate Azure marketplace offer of Pivotal cloud foundry.
 
-#
+usage ()
+{
+  echo "$0 <azure subscription name>"
+  echo '           This script creates a new Azure Service Principal under this subscription, '
+  echo '           returning a clientID, tenantID, client-secret that can be used to'
+  echo '           populate Azure marketplace offer of Pivotal Cloud Foundry.'
+  echo
+  echo '           e.g. "Pay-As-You-Go" is a common subscription name.  ' 
+  echo
+  echo '           Note that Azure Free Trials do not have sufficient'
+  echo '           quota and are currently not supported.'
+  echo
+}
+
+if [ "$#" -ne 1 ]
+then
+  usage
+  exit
+fi
 
 # ensure ARM mode
 #
@@ -27,7 +45,12 @@ azure login
 azure account list --json
 
 NAME=`azure account list | grep Enabled | grep true | awk -F '[[:space:]][[:space:]]+' '{ print $2 }'`
-SUBSCRIPTIONID=`azure account list | grep Enabled | grep true | awk -F '[[:space:]][[:space:]]+' '{ print $3 }'`
+SUBSCRIPTIONID=`azure account list | grep "$1" | grep true | awk -F '[[:space:]][[:space:]]+' '{ print $3 }'`
+
+if [ -z $SUBSCRIPTIONID ]; then
+  echo "Subscription $1 not found."
+  exit
+fi
 
 TENANTID=`azure account list --json | grep -A6 ${SUBSCRIPTIONID} | tail -1 | awk -F':' '{ print $2 }' | tr -d ',' | tr -d '"' `
 
