@@ -114,7 +114,7 @@ jobs:
       client_id: {{ CLIENT_ID }}
       client_secret: {{ CLIENT_SECRET }}
       ssh_user: vcap
-      ssh_public_key: {{ SSH_CERTIFICATE }}
+      ssh_public_key: {{ SSH_PUB_KEY }}
       default_security_group: BoshSecurityGroup
 
     agent: {mbus: "nats://nats:nats-password@10.0.0.4:4222"}
