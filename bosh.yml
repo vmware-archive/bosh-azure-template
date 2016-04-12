@@ -114,9 +114,9 @@ jobs:
       client_id: {{ CLIENT_ID }}
       client_secret: {{ CLIENT_SECRET }}
       ssh_user: vcap
-      ssh_certificate: {{ SSH_CERTIFICATE }}
+      ssh_public_key: {{ SSH_CERTIFICATE }}
       default_security_group: BoshSecurityGroup
-      
+
     agent: {mbus: "nats://nats:nats-password@10.0.0.4:4222"}
 
     ntp: &ntp [0.north-america.pool.ntp.org]
