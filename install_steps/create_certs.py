@@ -17,9 +17,9 @@ def do_step(context):
     settings = context.meta['settings']
 
     # Generate the private key and certificate
-    call("sh ssh-keygen -b 2048 -t rsa -f ./id_rsa_bosh -q -N """, shell=True)
-    copy("id_rsa_bosh", "./bosh/bosh")
-    copy("id_rsa_bosh.pub", "./bosh/bosh")
+    call("ssh-keygen -b 2048 -t rsa -f ./id_rsa_bosh -q -N ''", shell=True)
+    copy("id_rsa_bosh", "./bosh")
+    copy("id_rsa_bosh.pub", "./bosh")
 
     with open('id_rsa_bosh.pub', 'r') as tmpfile:
         ssh_key = tmpfile.read()

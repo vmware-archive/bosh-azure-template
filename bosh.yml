@@ -128,7 +128,7 @@ cloud_provider:
     host: 10.0.0.4
     port: 22
     user: vcap
-    private_key: ~/bosh
+    private_key: ~/id_rsa_bosh
 
   mbus: https://mbus-user:mbus-password@10.0.0.4:6868
 
