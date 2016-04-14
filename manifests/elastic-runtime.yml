@@ -95,6 +95,7 @@ resource_pools:
       version: latest
     cloud_properties:
       instance_type: Standard_D1_v2
+      security_group: {{ NSG_NAME_FOR_CF }}
 
   - name: cells
     network: default
@@ -103,6 +104,8 @@ resource_pools:
       version: latest
     cloud_properties:
       instance_type: Standard_D2_v2
+      security_group: {{ NSG_NAME_FOR_CF }}
+
   - name: errands
     network: default
     stemcell:
@@ -110,6 +113,7 @@ resource_pools:
       version: latest
     cloud_properties:
       instance_type: Standard_D2_v2
+      security_group: {{ NSG_NAME_FOR_CF }}
 
   - name: database
     network: default
@@ -118,6 +122,7 @@ resource_pools:
       version: latest
     cloud_properties:
       instance_type: Standard_D4_v2
+      security_group: {{ NSG_NAME_FOR_CF }}
 
 disk_pools:
   - name: consul

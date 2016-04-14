@@ -114,9 +114,9 @@ jobs:
       client_id: {{ CLIENT_ID }}
       client_secret: {{ CLIENT_SECRET }}
       ssh_user: vcap
-      ssh_certificate: {{ SSH_CERTIFICATE }}
+      ssh_public_key: {{ SSH_PUB_KEY }}
       default_security_group: BoshSecurityGroup
-      
+
     agent: {mbus: "nats://nats:nats-password@10.0.0.4:4222"}
 
     ntp: &ntp [0.north-america.pool.ntp.org]
@@ -128,7 +128,7 @@ cloud_provider:
     host: 10.0.0.4
     port: 22
     user: vcap
-    private_key: ~/bosh
+    private_key: ~/id_rsa_bosh
 
   mbus: https://mbus-user:mbus-password@10.0.0.4:6868
 

@@ -43,6 +43,7 @@ resource_pools:
     version: latest
   cloud_properties:
     instance_type: Standard_D1_v2
+    security_group: {{ NSG_NAME_FOR_CF }}
 
 compilation:
   workers: 2

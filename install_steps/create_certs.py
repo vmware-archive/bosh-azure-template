@@ -17,14 +17,14 @@ def do_step(context):
     settings = context.meta['settings']
 
     # Generate the private key and certificate
-    call("sh create_cert.sh", shell=True)
-    copy("bosh.key", "./bosh/bosh")
-    with open('bosh_cert.pem', 'r') as tmpfile:
-        ssh_cert = tmpfile.read()
-    ssh_cert = "|\n" + ssh_cert
-    ssh_cert = "\n        ".join([line for line in ssh_cert.split('\n')])
+    call("ssh-keygen -b 2048 -t rsa -f ./id_rsa_bosh -q -N ''", shell=True)
+    copy("id_rsa_bosh", "./bosh")
+    copy("id_rsa_bosh.pub", "./bosh")
 
-    settings['SSH_CERTIFICATE'] = ssh_cert
+    with open('id_rsa_bosh.pub', 'r') as tmpfile:
+        ssh_key = tmpfile.read()
+
+    settings['SSH_PUB_KEY'] = ssh_key
     settings['cf_ip'] = settings['cf-ip']
 
     # template openssl config
