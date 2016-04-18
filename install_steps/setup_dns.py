@@ -16,7 +16,7 @@ def do_step(context):
     if enable_dns:
         try:
             cf_ip = settings["cf-ip"]
-            dns_ip = re.search('\d+\.\d+\.\d+\.\d+', urllib2.urlopen("http://www.whatismyip.com").read()).group(0)
+            dns_ip = re.search('\d+\.\d+\.\d+\.\d+', urllib2.urlopen("http://www.whereisip.net/").read()).group(0)
             fqdn = settings["cf-ip"] + ".xip.io"
             call("python setup_dns.py -d {0} -i 10.0.16.11 -e {1} -n {2} >/dev/null 2>&1".format(fqdn, cf_ip, dns_ip), shell=True)
             # Update motd
