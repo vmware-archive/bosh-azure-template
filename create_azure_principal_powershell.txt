@@ -1,30 +1,30 @@
-param  
-( 
-    # Azure Subscription name  
-    [Parameter(Mandatory = $true)] 
+param
+(
+    # Azure Subscription name
+    [Parameter(Mandatory = $true)]
     [String]$SubscriptionName,
 
-    # Azure Application homepage 
-    [Parameter(Mandatory = $false)] 
+    # Azure Application homepage
+    [Parameter(Mandatory = $false)]
     [String]$ApplicationHomePage,
 
-    # Azure application uir 
-    [Parameter(Mandatory = $false)] 
+    # Azure application uir
+    [Parameter(Mandatory = $false)]
     [String]$ApplicationURI,
 
-    # Azure application password 
-    [Parameter(Mandatory = $false)] 
+    # Azure application password
+    [Parameter(Mandatory = $false)]
     [String]$ApplicationPwd,
 
-    # Application name  
-    [Parameter(Mandatory = $false)] 
+    # Application name
+    [Parameter(Mandatory = $false)]
     [String]$ApplicationName,
 
     # VMName
-    [Parameter(Mandatory = $false)] 
+    [Parameter(Mandatory = $false)]
     [String]$VMName
 
-) 
+)
 
 Login-AzureRmAccount
 
@@ -71,9 +71,15 @@ If (!$PSBoundParameters.ContainsKey('VMName'))
 
 $ADApplication = New-AzureRmADApplication -DisplayName $ApplicationName -HomePage $ApplicationHomePage -IdentifierUris $ApplicationURI -Password $ApplicationPwd
 
+Start-Sleep -s 2
+
 $AzureServicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $ADApplication.ApplicationId
 
+Start-Sleep -s 10
+
 $RoleAssignment = New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName $ADApplication.ApplicationId
+
+Start-Sleep -s 4
 
 $obj = [PSCustomObject]@{
 
