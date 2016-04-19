@@ -43,7 +43,9 @@
                 "label": "Tenant ID",
                 "defaultValue": "",
                 "constraints": {
-                    "required": true
+                    "required": true,
+                    "regex": "^(([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12})$",
+                    "validationMessage": "Invalid GUID"
                 }
             },
             {
@@ -52,7 +54,9 @@
                 "label": "Client ID",
                 "defaultValue": "",
                 "constraints": {
-                    "required": true
+                    "required": true,
+                    "regex": "^(([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12})$",
+                    "validationMessage": "Invalid GUID"
                 }
             },
             {
