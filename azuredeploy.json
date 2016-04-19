@@ -367,6 +367,7 @@
           "SUBNET-NAME": "[variables('subnet1Name')]",
           "SUBNET-NAME-FOR-CF": "[variables('subnet2Name')]",
           "NSG-NAME-FOR-CF": "[variables('subnet2NSG')]",
+          "NSG-NAME-FOR-BOSH": "[variables('subnet1NSG')]",
           "SUBSCRIPTION-ID": "[subscription().subscriptionId]",
           "STORAGE-ACCOUNT-NAME": "[variables('newStorageAccountName')]",
           "STORAGE-ACCESS-KEY": "[listKeys(variables('storageid'),variables('api-version')).key1]",
