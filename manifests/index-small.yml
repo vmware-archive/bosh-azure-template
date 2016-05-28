@@ -2,8 +2,8 @@
 manifests:
   - release-name: elastic-runtime  # pivnet release 1.6.16
     deployment-name: elastic-runtime
-    release-number: "1485"
-    file-number: "3888"
+    release-number: "1775"
+    file-number: "4703"
     stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
     file: elastic-runtime.yml
     errands:
@@ -15,8 +15,8 @@ manifests:
 
   - release-name: p-mysql
     deployment-name: p-mysql
-    release-number: "1509"
-    file-number: "3930"
+    release-number: "1770"
+    file-number: "4696"
     stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
     file: p-mysql.yml
     errands:
@@ -24,8 +24,8 @@ manifests:
 
   - release-name: pivotal-rabbitmq-service
     deployment-name: p-rabbitmq
-    release-number: "1523"
-    file-number: "3962"
+    release-number: "1799"
+    file-number: "4766"
     stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
     file: p-rabbitmq.yml
     errands:
@@ -33,8 +33,8 @@ manifests:
 
   - release-name: p-redis
     deployment-name: p-redis
-    release-number: "1506"
-    file-number: "3928"
+    release-number: "1763"
+    file-number: "4680"
     stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
     file: p-redis.yml
     errands:
@@ -42,10 +42,11 @@ manifests:
 
   - release-name: p-spring-cloud-services
     deployment-name: p-spring-cloud-services
-    release-number: "1524"
-    file-number: "3963"
+    release-number: "1735"
+    file-number: "4527"
     stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
     file: p-spring-cloud-services.yml
     errands:
       - deploy-service-broker
       - register-service-broker
+r

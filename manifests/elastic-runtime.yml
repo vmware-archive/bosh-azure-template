@@ -22,17 +22,17 @@ director_uuid: {{ DIRECTOR_UUID }}
 
 releases:
   - name: cf-mysql
-    version: "23"
+    version: "25.2"
   - name: cf
-    version: "225.12"
+    version: "235.3.1"
   - name: diego
-    version: "0.1446.1"
+    version: "0.1467.0"
   - name: garden-linux
-    version: "0.330.0"
+    version: "0.337.0"
   - name: etcd
-    version: "18"
+    version: "48"
   - name: push-apps-manager-release
-    version: "397"
+    version: "621"
   - name: notifications
     version: "19"
   - name: notifications-ui
@@ -484,6 +484,35 @@ jobs:
         release: cf
       - name: nfs_mounter
         release: cf
+
+      - name: stager
+        release: cf
+      - name: tps
+        release: cf
+      - name: cc_uploader
+        release: cf
+      - name: nsync
+        release: cf
+
+      - name: binary-buildpack
+        release: cf
+      - name: go-buildpack
+        release: cf
+      - name: java-buildpack
+        release: cf
+      - name: java-offline-buildpack
+        release: cf
+      - name: nodejs-buildpack
+        release: cf
+      - name: php-buildpack
+        release: cf
+      - name: python-buildpack
+        release: cf
+      - name: ruby-buildpack
+        release: cf
+      - name: staticfile-buildpack
+        release: cf
+
     instances: 1
     resource_pool: common
     networks:
@@ -494,6 +523,7 @@ jobs:
         routes:
           - name: api
             port: 9022
+            registration_interval: 20s
             tags:
               component: CloudController
             uris:
@@ -569,6 +599,7 @@ jobs:
         routes:
           - name: uaa
             port: 8080
+            registration_interval: 20s
             uris:
               - "uaa.{{ system_domain }}"
               - "*.uaa.{{ system_domain }}"
@@ -583,21 +614,13 @@ jobs:
     templates:
       - name: auctioneer
         release: diego
-      - name: cc_uploader
-        release: diego
       - name: converger
         release: diego
       - name: file_server
         release: diego
-      - name: nsync
-        release: diego
       - name: route_emitter
         release: diego
       - name: ssh_proxy
-        release: diego
-      - name: stager
-        release: diego
-      - name: tps
         release: diego
       - name: consul_agent
         release: cf
@@ -609,17 +632,6 @@ jobs:
     networks:
       - name: default
         default: [dns, gateway]
-    properties:
-      consul:
-        agent:
-          services:
-            auctioneer: {}
-            cc_uploader: {}
-            file_server: {}
-            nsync: {}
-            ssh_proxy: {}
-            stager: {}
-            tps: {}
 
   - name: diego-cell
     templates:
@@ -671,10 +683,12 @@ jobs:
         routes:
           - name: doppler
             port: 8081
+            registration_interval: 20s
             uris:
               - "doppler.{{ system_domain }}"
           - name: loggregator
             port: 8080
+            registration_interval: 20s
             uris:
               - "loggregator.{{ system_domain }}"
 
@@ -701,17 +715,6 @@ jobs:
     templates:
       - name: smoke-tests
         release: cf
-    lifecycle: errand
-    instances: 1
-    resource_pool: errands
-    networks:
-      - name: default
-        default: [dns, gateway]
-
-  - name: diego-acceptance-tests
-    templates:
-      - name: acceptance-tests
-        release: diego
     lifecycle: errand
     instances: 1
     resource_pool: errands
@@ -747,17 +750,6 @@ jobs:
   - name: push-apps-manager
     templates:
       - name: push-apps-manager
-        release: push-apps-manager-release
-    lifecycle: errand
-    instances: 1
-    resource_pool: errands
-    networks:
-      - name: default
-        default: [dns, gateway]
-
-  - name: push-app-usage-service
-    templates:
-      - name: push-app-usage-service
         release: push-apps-manager-release
     lifecycle: errand
     instances: 1
@@ -860,6 +852,10 @@ properties:
     apps: default
     services: default
 
+  metron_endpoint:
+    shared_secret: {{ 'metron_endpoint' | password }}
+
+
   ssl:
     skip_cert_verify: true
     https_only_mode: true
@@ -882,6 +878,7 @@ properties:
     encrypt_keys:
       - {{ 'consul' | password }}
     agent:
+      domain: cf.internal
       servers:
         lan:
           - {{ consul_ip }} # should be a static IP?
@@ -1031,6 +1028,10 @@ properties:
     - {{ mysql_ip }}
   admin_password: "{{ 'cf_admin' | password(True) }}"
   database_startup_timeout: 1200
+  bootstrap_endpoint:
+    username: admin
+    password: {{ 'bootstrap_endpoint' | password }}
+
   innodb_buffer_pool_size: 2147483648
   max_connections: 1500
   seeded_databases:
@@ -1095,11 +1096,28 @@ properties:
     allow_app_ssh_access: true
     default_to_diego_backend: true
     buildpacks:
+      blobstore_type: fog
+      fog_connection:
+        provider: local
+        local_root: /var/vcap/nfs/shared/buildpacks
     droplets:
+      blobstore_type: fog
+      fog_connection:
+        provider: local
+        local_root: /var/vcap/nfs/shared/droplets
+    packages:
+      blobstore_type: fog
+      fog_connection:
+        provider: local
+        local_root: /var/vcap/nfs/shared/packages
+    resource_pool:
+      blobstore_type: fog
+      fog_connection:
+        provider: local
+        local_root: /var/vcap/nfs/shared/resource_pool
+
     service_name: cloud-controller-ng
     external_protocol: https
-    packages:
-    resource_pool:
     bootstrap_admin_email: admin
     bulk_api_password: "{{ 'cc_bulk_api' | password }}"
     client_max_body_size: 1024M
@@ -1112,21 +1130,21 @@ properties:
     external_host: api
     install_buildpacks:
       - name: staticfile_buildpack
-        package: buildpack_staticfile
+        package: staticfile-buildpack
       - name: java_buildpack_offline
         package: buildpack_java_offline
       - name: ruby_buildpack
-        package: buildpack_ruby
+        package: ruby-buildpack
       - name: nodejs_buildpack
-        package: buildpack_nodejs
+        package: nodejs-buildpack
       - name: go_buildpack
-        package: buildpack_go
+        package: go-buildpack
       - name: python_buildpack
-        package: buildpack_python
+        package: python-buildpack
       - name: php_buildpack
-        package: buildpack_php
+        package: php-buildpack
       - name: binary_buildpack
-        package: buildpack_binary
+        package: binary-buildpack
     internal_api_user: internal_api_user
     internal_api_password: "{{ internal_api | password }}"
     logging_level: debug
@@ -1160,6 +1178,11 @@ properties:
     min_cli_version: 6.7.0
     min_recommended_cli_version: 6.11.2
 
+    diego:
+      nsync_url: http://cloud-controller-ng.service.cf.internal:8787
+      stager_url: http://cloud-controller-ng.service.cf.internal:8888
+      tps_url: http://cloud-controller-ng.service.cf.internal:1518
+
   uaadb:
     address: {{ mysql_proxy_ip }}
     port: 3306
@@ -1173,6 +1196,39 @@ properties:
         name: uaa_db
 
   uaa:
+    sslCertificate: |
+{{ ha_proxy_cert | indent(6, True) }}
+    sslPrivateKey: |
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIEpAIBAAKCAQEA7eat16GnClm94PkrBrI9v3p8xAaylHICRYy9Bsqnh9BX07Bw
+      iZgfBjhXaqi/LvX/MrrqRRkD64XP+RPA+Js72wC5txavB+JilmvHMgyB+erS/xN7
+      zAHwf7vP5lMAgPCxlzHcYNo0kLfxtzZ0e5ovN5yc49tuo3Lz7mi1ADqxyjykxHa7
+      w3ayqWWGm5lmB/3OxU1wxxGeE14tL5DyeKqBsMJgv3jFNh3bM8Fwp6ZYtFZWo5zU
+      MQO+gZLawbvWR4gSCQi8VASi9Y2tTZ0I9Nz8DTwxHkmblnWuLBoy9iykW7B6JDFG
+      2L6G9xryEoC5EarLxpJo7Jjab/Imcf84HeFO3QIDAQABAoIBAGRnJdlKnR/uLgfj
+      wPfrg8nrHPryRK4Hy9OkiSZzou7bzCVIYsZ/UCCk6KfYHg/ovFKhtjuBSjk9WT+q
+      yZdilIliLf8KcMZoEemgBQqnYreiFniWtXmtG94c2qo/P4grjRfdcD/j96lYKIiF
+      T/XWZbUXwNMdif0rh62HvVQicWSDEUqo47/sI2ONBRkGc5EHOJKTsOuzdvq1BNUq
+      WGQYxmi28VkRPjWgKAmo2hh76qrLr8LIL5xwd15iiVDENCVJ/HP90aZtRxjB+DLx
+      042XLLVEVGnVvH+jjScNLrFhV16k8I+gaSVG06Qfj+YPd/t2E67gMf0yvrW6r6sO
+      C3kW0QECgYEA+KpIeZIE/9cmH5retdRTG7QQ2f2e61hdN4CUJzCeXKqQMXkUbHQ3
+      q1kR1lG4LdjEULh1gZ8va3hV+rXgUXNRTbz7oNH2V/tH7DDvzRHz7Rd3uqF0Zmwx
+      2LIajejPXlYlxKfi1dC83K6rlWveCTQ2GVj7dRQFZQZlWIJpD2MBDp0CgYEA9Osd
+      Sg/nKH2EsV75RN6lo++zhx9ygbrYrwZXB+IDLjg/N0fsRYQrm1wGPyDLQQSpcZ8S
+      wMUfgloayidxjXW496WwXrEmHKTVaRn+Ci4YkIZW1V/QsnawFG1qzIWj57d6OQxh
+      BQMoJo7b2weyASqssR+c0AOW0bt3q5dBBXvHLUECgYEA26hwRRO73tQLFTgVK8HX
+      eE1j5WyoiXSRQ4oNVWEZQvpYTZuLcxJmarJPk2a0r6sgH74R7uLTXLf8G2+2K70W
+      QPmDvdg7KBUMv5OrAReuxe1JEk+1JxTEI4uQ8XKKW+b1jfZP5lhxvO9/GosipDa+
+      4z07Q3zgFxHDTKBGdhUaxfECgYEAj/QBax6dx3a/H2GrMYeL5CdnZexd6VJhOb6I
+      OOHm7KuyvFNR1CozV0VnhoNH9BdBYL8WzqcONhev11IHtBWVejmwyHdm5z8bEINu
+      hZ1CYvAS6ac/iyWnqNoHA98oz3FQLWfRPpj0aHVfVAXZ4kWq6xChosH5S5zcYcat
+      OQPftgECgYBIPntDcaLoLxpu+ZhxDTxcja4tTZjo5ncaKACLjt2yv5qlztbnBhd/
+      tdk29VhlzWaQmDQAneeIasvg/2VDM3d6yWxOXari2coCZouqHcWiRMR1Mz5u57Qp
+      Hn0tIpY0cvqY+uaLXXWeyifWnBbpxnKrM1blwiqSOSUHTksmw7XeqQ==
+      -----END RSA PRIVATE KEY-----
+
+    ssl:
+      port: 443
     require_https: true
     ldap:
       profile_type: search-and-bind
