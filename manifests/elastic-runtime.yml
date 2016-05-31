@@ -105,6 +105,9 @@ resource_pools:
     cloud_properties:
       instance_type: Standard_D2_v2
       security_group: {{ NSG_NAME_FOR_CF }}
+      ephemeral_disk:
+        use_temporary_disk: false
+        size: 20_000
 
   - name: errands
     network: default
@@ -853,8 +856,7 @@ properties:
     services: default
 
   metron_endpoint:
-    shared_secret: {{ 'metron_endpoint' | password }}
-
+    shared_secret: {{ 'logging_secret' | password }}
 
   ssl:
     skip_cert_verify: true
@@ -1146,7 +1148,7 @@ properties:
       - name: binary_buildpack
         package: binary-buildpack
     internal_api_user: internal_api_user
-    internal_api_password: "{{ internal_api | password }}"
+    internal_api_password: "{{ 'internal_api' | password }}"
     logging_level: debug
     maximum_health_check_timeout: 600
     quota_definitions:
@@ -1172,7 +1174,7 @@ properties:
       - name: windows2012R2
         description: Microsoft Windows / .Net 64 bit
     staging_upload_user: staging_upload_user
-    staging_upload_password: "{{ staging_upload | password }}"
+    staging_upload_password: "{{ 'staging_upload' | password }}"
     tasks_disabled: true
     uaa_resource_id: "cloud_controller,cloud_controller_service_permissions"
     min_cli_version: 6.7.0
@@ -1329,6 +1331,16 @@ properties:
         scope: "openid,cloud_controller.read,cloud_controller.write,password.write,console.admin,console.support,cloud_controller.admin"
         access-token-validity: 1209600
         refresh-token-validity: 1209600
+      apps_manager_js:
+        override: true
+        autoapprove:
+        - cloud_controller.read
+        - cloud_controller.write
+        - cloud_controller.admin
+        scope: cloud_controller.read,cloud_controller.write,cloud_controller.admin
+        authorized-grant-types: implicit
+        access-token-validity: 28800
+
       cf:
         id: cf
         override: true
