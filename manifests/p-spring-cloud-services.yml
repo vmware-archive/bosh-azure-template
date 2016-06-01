@@ -1,4 +1,4 @@
-{% set root_domain=cf_ip+".xip.io" %}
+{% set root_domain=cf_ip+".cf.pcfazure.com" %}
 {% set system_domain="system."+root_domain %}
 {% set apps_domain="app."+root_domain %}
 {% set deployment_name="p-spring-cloud-services" %}

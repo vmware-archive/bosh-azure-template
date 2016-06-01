@@ -1,4 +1,4 @@
-{% set root_domain=cf_ip+".xip.io" %}
+{% set root_domain=cf_ip+".cf.pcfazure.com" %}
 {% set consul_ip="10.0.16.4" %}
 {% set nats_ip="10.0.16.5" %}
 {% set router_ip="10.0.16.6" %}
