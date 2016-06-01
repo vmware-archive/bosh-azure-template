@@ -18,7 +18,7 @@ name: {{ deployment_name }}
 director_uuid: {{ DIRECTOR_UUID }}
 releases:
 - name: cf-mysql
-  version: '24.1'
+  version: '24.2'
 - name: mysql-backup
   version: '1'
 - name: service-backup

@@ -15,7 +15,7 @@ name: {{ deployment_name }}
 director_uuid: {{ DIRECTOR_UUID }}
 releases:
 - name: cf-rabbitmq
-  version: 210.7.0
+  version: 215.0.0
 networks:
 - name: default
   subnets:
