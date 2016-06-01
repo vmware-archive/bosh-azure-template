@@ -3,8 +3,8 @@ name: bosh
 
 releases:
 - name: bosh
-  url: https://bosh.io/d/github.com/cloudfoundry/bosh?v=256.2
-  sha1: ff2f4e16e02f66b31c595196052a809100cfd5a8
+  url: https://bosh.io/d/github.com/cloudfoundry/bosh?v=255.8
+  sha1: 6b12652650b87810dcef1be1f6a6d23f1c0c13a7
 - name: bosh-azure-cpi
   url: https://bosh.io/d/github.com/cloudfoundry-incubator/bosh-azure-cpi-release?v=11
   sha1: 395fc05c11ead59711188ebd0a684842a03dc93d
@@ -37,6 +37,7 @@ jobs:
 - name: bosh
   templates:
   - {name: nats, release: bosh}
+  - {name: redis, release: bosh}
   - {name: postgres, release: bosh}
   - {name: powerdns, release: bosh}
   - {name: blobstore, release: bosh}
@@ -57,6 +58,11 @@ jobs:
       address: 127.0.0.1
       user: nats
       password: nats-password
+
+    redis:
+      listen_addresss: 127.0.0.1
+      address: 127.0.0.1
+      password: redis-password
 
     postgres: &db
       host: 127.0.0.1
