@@ -9,7 +9,6 @@ manifests:
     errands:
      - smoke-tests
      - push-apps-manager
-     - push-app-usage-service
      - autoscaling
      - autoscaling-register-broker
 
@@ -49,4 +48,3 @@ manifests:
     errands:
       - deploy-service-broker
       - register-service-broker
-
