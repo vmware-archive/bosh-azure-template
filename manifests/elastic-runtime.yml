@@ -107,7 +107,7 @@ resource_pools:
       security_group: {{ NSG_NAME_FOR_CF }}
       ephemeral_disk:
         use_temporary_disk: false
-        size: 20_000
+        size: 250_000
 
   - name: errands
     network: default
