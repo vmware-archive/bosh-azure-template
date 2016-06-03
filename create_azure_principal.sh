@@ -16,7 +16,7 @@ usage ()
   echo '           returning a clientID, tenantID, client-secret that can be used to'
   echo '           populate Azure marketplace offer of Pivotal Cloud Foundry.'
   echo
-  echo '           e.g. "Pay-As-You-Go" is a common subscription name.  ' 
+  echo '           e.g. "Pay-As-You-Go" is a common subscription name.  '
   echo
   echo '           Note that Azure Free Trials do not have sufficient'
   echo '           quota and are currently not supported.'
@@ -87,11 +87,11 @@ CLIENTID=`azure ad app create --name "$PCFBOSHNAME" --password "$CLIENTSECRET" -
 
 SPNAME="http://PCFBOSHv${SPVER}"
 
-sleep 2
+sleep 10
 
 azure ad sp create $CLIENTID
 
-sleep 4
+sleep 10
 
 azure role assignment create --roleName "Contributor"  --spn "$SPNAME" --subscription $SUBSCRIPTIONID
 
