@@ -1,4 +1,4 @@
-{% set root_domain=cf_ip+".xip.io" %}
+{% set root_domain=cf_ip+".cf.pcfazure.com" %}
 {% set system_domain="system."+root_domain %}
 {% set apps_domain="app."+root_domain %}
 
@@ -15,7 +15,7 @@ name: {{ deployment_name }}
 director_uuid: {{ DIRECTOR_UUID }}
 releases:
 - name: cf-rabbitmq
-  version: 210.7.0
+  version: 215.0.0
 networks:
 - name: default
   subnets:

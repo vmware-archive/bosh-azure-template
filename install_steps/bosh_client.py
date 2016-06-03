@@ -4,7 +4,6 @@ import json
 import base64
 import time
 
-
 class BoshClient:
 
     def __init__(self, url, username, password):
@@ -19,6 +18,7 @@ class BoshClient:
             (self.username, self.password)).replace(
             '\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
+
         result = urlopen(request).read()
         return result
 
