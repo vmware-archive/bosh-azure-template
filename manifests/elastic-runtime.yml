@@ -815,6 +815,8 @@ jobs:
     networks:
       - name: default
         default: [dns, gateway]
+    properties:
+      domain: {{ apps_domain }}
 
   - name: autoscaling-register-broker
     templates:
