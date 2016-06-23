@@ -32,12 +32,13 @@ manifests:
 
   - release-name: p-redis
     deployment-name: p-redis
-    release-number: "1763"
-    file-number: "4680"
+    release-number: "1876"
+    file-number: "4965"
     stemcell: "https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-trusty-go_agent"
     file: p-redis.yml
     errands:
      - broker-registrar
+
 
   - release-name: p-spring-cloud-services
     deployment-name: p-spring-cloud-services
