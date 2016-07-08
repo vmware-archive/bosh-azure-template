@@ -92,7 +92,7 @@ resource_pools:
     network: default
     stemcell:
       name: bosh-azure-hyperv-ubuntu-trusty-go_agent
-      version: latest
+      version: 3232.4
     cloud_properties:
       instance_type: Standard_D1_v2
       security_group: {{ NSG_NAME_FOR_CF }}
@@ -101,7 +101,7 @@ resource_pools:
     network: default
     stemcell:
       name: bosh-azure-hyperv-ubuntu-trusty-go_agent
-      version: latest
+      version: 3232.4
     cloud_properties:
       instance_type: Standard_D2_v2
       security_group: {{ NSG_NAME_FOR_CF }}
@@ -113,7 +113,7 @@ resource_pools:
     network: default
     stemcell:
       name: bosh-azure-hyperv-ubuntu-trusty-go_agent
-      version: latest
+      version: 3232.4
     cloud_properties:
       instance_type: Standard_D2_v2
       security_group: {{ NSG_NAME_FOR_CF }}
@@ -122,7 +122,7 @@ resource_pools:
     network: default
     stemcell:
       name: bosh-azure-hyperv-ubuntu-trusty-go_agent
-      version: latest
+      version: 3232.4
     cloud_properties:
       instance_type: Standard_D4_v2
       security_group: {{ NSG_NAME_FOR_CF }}
@@ -815,8 +815,6 @@ jobs:
     networks:
       - name: default
         default: [dns, gateway]
-    properties:
-      domain: {{ apps_domain }}
 
   - name: autoscaling-register-broker
     templates:
@@ -828,6 +826,8 @@ jobs:
     networks:
       - name: default
         default: [dns, gateway]
+    properties:
+      domain: {{ system_domain }}
 
   - name: autoscaling-destroy-broker
     templates:
@@ -839,6 +839,8 @@ jobs:
     networks:
       - name: default
         default: [dns, gateway]
+    properties:
+      domain: {{ system_domain }}
 
   - name: autoscaling-tests
     templates:
