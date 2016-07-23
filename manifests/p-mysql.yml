@@ -20,7 +20,7 @@ releases:
 - name: cf-mysql
   version: '24.2'
 - name: mysql-backup
-  version: '1'
+  version: '1.1'
 - name: service-backup
   version: '1'
 networks:
