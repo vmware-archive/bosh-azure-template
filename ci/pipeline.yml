@@ -44,7 +44,7 @@ jobs:
         args: [ "-c", "cp github-repo/bootstrap.py s3-release" ]
   - put: s3-release
     params:
-      from: s3-release/bootstrap.py
+      file: s3-release/bootstrap.py
  
 - name: copy-release
   plan:
