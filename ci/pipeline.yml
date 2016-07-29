@@ -36,7 +36,7 @@ jobs:
         args: [ "-c", "cp github-release/*.tgz s3-release" ]
   - put: s3-release
     params:
-      from: s3-release/.*\.tgz
+      file: s3-release/*.tgz
   - task: copy-latest
     config:
       platform: linux
@@ -50,7 +50,7 @@ jobs:
         args: [ "-c", "cp github-release/*.tgz s3-release/latest.tgz" ]
   - put: s3-release
     params:
-      from: s3-release/latest.tgz
+      file: s3-release/latest.tgz
   - task: save-version
     config:
       platform: linux
@@ -64,4 +64,4 @@ jobs:
         args: [ "-c", "ls github-release/*.tgz | sed 's/github-release\\/.*-//' | sed 's/.tgz//' >s3-release/version.txt" ]
   - put: s3-release
     params:
-      from: s3-release/version.txt
+      file: s3-release/version.txt
