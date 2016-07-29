@@ -5,7 +5,7 @@
     "storageAccountNamePrefixString": {
       "type": "string",
       "metadata": {
-        "description": "Unique DNS Name for the Storage Account prefix where the Virtual Machine's disks will be placed. It cano not be more than 10 characters in length and use numbers and lower-case letters only."
+        "description": "Unique DNS Name for the Storage Account prefix where the Virtual Machine's disks will be placed. It can not be more than 10 characters in length and use numbers and lower-case letters only."
       }
     },
     "virtualNetworkName": {
@@ -46,17 +46,6 @@
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_D2_v2",
-      "allowedValues": [
-        "Standard_A1",
-        "Standard_A2",
-        "Standard_A3",
-        "Standard_A4",
-        "Standard_D1",
-        "Standard_D2",
-        "Standard_D3",
-        "Standard_D4",
-        "Standard_D2_v2"
-      ],
       "metadata": {
         "description": "Size of vm"
       }
@@ -116,21 +105,24 @@
     "installSize": {
       "type": "string",
       "defaultValue": "Small",
-      "allowedValues": [
-        "Small",
-        "Medium",
-        "Large"
-      ],
       "metadata": {
         "description": "Size of the install"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "westus",
+      "metadata": {
+        "description": "location where you want to deploy resources"
       }
     }
   },
   "variables": {
-    "api-version": "2015-05-01-preview",
+    "api-version": "2015-06-15",
+    "extensionName": "initdevbox",
     "newStorageAccountName": "[concat(parameters('storageAccountNamePrefixString'),uniquestring(resourceGroup().id, deployment().name))]",
     "vmName": "[concat('myjumpbox',uniquestring(resourceGroup().id, deployment().name))]",
-    "location": "[resourceGroup().location]",
+    "location": "[parameters('location')]",
     "storageAccountType": "Standard_GRS",
     "vmStorageAccountContainerName": "vhds",
     "storageid": "[resourceId('Microsoft.Storage/storageAccounts', variables('newStorageAccountName'))]",
@@ -194,7 +186,7 @@
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('subnet1NSG')]",
       "location": "[variables('location')]",
@@ -231,7 +223,7 @@
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[variables('subnet2NSG')]",
       "location": "[variables('location')]"
@@ -362,17 +354,20 @@
       "properties": {
         "publisher": "Microsoft.OSTCExtensions",
         "type": "CustomScriptForLinux",
-        "typeHandlerVersion": "1.2",
+        "typeHandlerVersion": "1.4",
+        "autoupgradeMinorVersion": false,
         "settings": {
           "fileUris": [
-            "https://raw.githubusercontent.com/cf-platform-eng/bosh-azure-template/master/bootstrap.py"
+            "https://s3-us-west-2.amazonaws.com/bosh-azure-releases/bootstrap.py"
           ],
           "adminSSHKey": "[parameters('adminSSHKey')]",
           "commandToExecute": "[concat('python ./bootstrap.py ', parameters('installSize'), ' ', variables('webSessionPassword'))]",
+          "location": "[variables('location')]",
           "VNET-NAME": "[variables('virtualNetworkName')]",
           "SUBNET-NAME": "[variables('subnet1Name')]",
           "SUBNET-NAME-FOR-CF": "[variables('subnet2Name')]",
           "NSG-NAME-FOR-CF": "[variables('subnet2NSG')]",
+          "NSG-NAME-FOR-BOSH": "[variables('subnet1NSG')]",
           "SUBSCRIPTION-ID": "[subscription().subscriptionId]",
           "STORAGE-ACCOUNT-NAME": "[variables('newStorageAccountName')]",
           "STORAGE-ACCESS-KEY": "[listKeys(variables('storageid'),variables('api-version')).key1]",
@@ -385,14 +380,25 @@
           "username": "[parameters('adminUserName')]",
           "enable-dns": "[parameters('enableDNSOnDevbox')]",
           "pivnet-api-token": "[parameters('pivnetAPIToken')]"
+        },
+        "protectedSettings" : {
+            "CLIENT-SECRET": "[parameters('clientSecret')]"
         }
       }
     }
   ],
   "outputs": {
-   "ProgressMonitorURL" : {
-     "type" : "string",
-     "value": "[concat('https://gamma:', variables('webSessionPassword'), '@', reference(concat(variables('vmName'),'-devbox')).dnsSettings.fqdn)]"
-   }
-}
+      "scriptoutput": {
+          "value": "[split(split(reference(resourceId('Microsoft.Compute/virtualMachines/extensions',variables('vmName'),variables('extensionName')),providers('Microsoft.Compute', 'virtualMachines').apiVersions[0]).instanceView.statuses[0].message,'---')[2],'###QUOTACHECK###')[1]]",
+          "type": "string"
+      },
+      "ProgressMonitorURL" : {
+          "type" : "string",
+          "value": "[concat('https://gamma:', variables('webSessionPassword'), '@', reference(concat(variables('vmName'),'-devbox')).dnsSettings.fqdn)]"
+      },
+      "Jumpbox-FQDN": {
+          "type" : "string",
+          "value": "[reference(concat(variables('vmName'),'-devbox')).dnsSettings.fqdn]"
+      }
+  }
 }

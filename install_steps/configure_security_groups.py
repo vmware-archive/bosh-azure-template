@@ -9,6 +9,18 @@ import json
 import yaml
 import os
 
+import Utils.HandlerUtil as Util
+from Utils.WAAgentUtil import waagent
+
+def get_protected_settings():
+    hutil = Util.HandlerUtility(
+        waagent.Log,
+        waagent.Error,
+        "bosh-deploy-script")
+    hutil.do_parse_context("enable")
+
+    return hutil.get_protected_settings()
+
 
 def get_token_from_client_credentials(endpoint, client_id, client_secret):
     payload = {
@@ -55,6 +67,14 @@ def do_step(context):
     client_token = settings['CLIENT-ID']
     client_secret = settings['CLIENT-SECRET']
 
+
+    protectedSettings = get_protected_settings()
+
+
+
+    print "Client sercret from protectedSettings %s" %protectedSettings['CLIENT-SECRET']
+
+
     ha_proxy_address = get_ha_proxy_address(context)
 
     token = get_token_from_client_credentials(endpoint, client_token, client_secret)
@@ -75,7 +95,7 @@ def do_step(context):
         direction="InBound"
     )
 
-    rules_client.create_or_update("cf", settings['NSG-NAME-FOR-CF'], "http_inbound", rule)
+    rules_client.create_or_update(settings['RESOURCE-GROUP-NAME'], settings['NSG-NAME-FOR-CF'], "http_inbound", rule)
 
     rule = SecurityRule(
         description="",
@@ -89,6 +109,21 @@ def do_step(context):
         direction="InBound"
     )
 
-    rules_client.create_or_update("cf", settings['NSG-NAME-FOR-CF'], "https_inbound", rule)
+    rules_client.create_or_update(settings['RESOURCE-GROUP-NAME'], settings['NSG-NAME-FOR-CF'], "https_inbound", rule)
+
+    rule = SecurityRule(
+        description="",
+        protocol="*",
+        source_port_range="*",
+        destination_port_range="2222",
+        source_address_prefix="*",
+        destination_address_prefix=ha_proxy_address,
+        access="Allow",
+        priority=1300,
+        direction="InBound"
+    )
+
+    rules_client.create_or_update(settings['RESOURCE-GROUP-NAME'], settings['NSG-NAME-FOR-CF'], "ssh_proxy_inbound", rule)
+
 
     return context

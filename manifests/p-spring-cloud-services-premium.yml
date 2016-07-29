@@ -1,4 +1,4 @@
-{% set root_domain=cf_ip+".cf.pcfazure.com" %}
+{% set root_domain=cf_ip+".xip.io" %}
 {% set system_domain="system."+root_domain %}
 {% set apps_domain="app."+root_domain %}
 {% set deployment_name="p-spring-cloud-services" %}
@@ -8,7 +8,7 @@ name: {{ deployment_name }}
 director_uuid: {{ DIRECTOR_UUID }}
 releases:
 - name: spring-cloud-broker
-  version: 1.0.9-build.7
+  version: 1.0.5-build.9
 networks:
 - name: default
   subnets:
@@ -31,15 +31,14 @@ resource_pools:
     name: bosh-azure-hyperv-ubuntu-trusty-go_agent
     version: latest
   cloud_properties:
-    instance_type: Standard_D1_v2
-    security_group: {{ NSG_NAME_FOR_CF }}
+    instance_type: Standard_DS1
 
 compilation:
   workers: 2
   network: default
   reuse_compilation_vms: true
   cloud_properties:
-    instance_type: Standard_D4_v2
+    instance_type: Standard_DS4
 
 update:
   canaries: 1

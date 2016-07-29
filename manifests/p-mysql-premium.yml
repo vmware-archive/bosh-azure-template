@@ -1,4 +1,4 @@
-{% set root_domain=cf_ip+".cf.pcfazure.com" %}
+{% set root_domain=cf_ip+".xip.io" %}
 {% set system_domain="system."+root_domain %}
 {% set apps_domain="app."+root_domain %}
 
@@ -18,9 +18,9 @@ name: {{ deployment_name }}
 director_uuid: {{ DIRECTOR_UUID }}
 releases:
 - name: cf-mysql
-  version: '24.2'
+  version: '24.1'
 - name: mysql-backup
-  version: '1.1'
+  version: '1'
 - name: service-backup
   version: '1'
 networks:
@@ -52,8 +52,7 @@ resource_pools:
     name: bosh-azure-hyperv-ubuntu-trusty-go_agent
     version: latest
   cloud_properties:
-    instance_type: Standard_D1_v2
-    security_group: {{ NSG_NAME_FOR_CF }}
+    instance_type: Standard_DS1
 
 - name: mysql-partition
   network: default
@@ -61,8 +60,7 @@ resource_pools:
     name: bosh-azure-hyperv-ubuntu-trusty-go_agent
     version: latest
   cloud_properties:
-    instance_type: Standard_D2_v2
-    security_group: {{ NSG_NAME_FOR_CF }}
+    instance_type: Standard_DS2
 
 disk_pools:
 - name: mysql-partition
@@ -73,7 +71,7 @@ compilation:
   network: default
   reuse_compilation_vms: true
   cloud_properties:
-    instance_type: Standard_D4_v2
+    instance_type: Standard_DS4
 
 update:
   canaries: 1

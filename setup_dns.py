@@ -67,8 +67,7 @@ options {
         auth-nxdomain no;    # conform to RFC1035
         listen-on { any; };
         forwarders {
-             8.8.8.8;
-             8.8.4.4;
+          168.63.129.16;
         };
 };
 """
