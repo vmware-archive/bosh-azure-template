@@ -25,6 +25,33 @@ resources:
     access_key_id: {{s3-access-key}}
     secret_access_key: {{s3-secret}}
 
+- name: s3-release-latest
+  type: s3
+  source:
+    bucket: {{s3-bucket}}
+    region_name: us-west-2
+    versioned_file: latest.tgz
+    access_key_id: {{s3-access-key}}
+    secret_access_key: {{s3-secret}}
+
+- name: s3-release-version
+  type: s3
+  source:
+    bucket: {{s3-bucket}}
+    region_name: us-west-2
+    versioned_file: version.txt
+    access_key_id: {{s3-access-key}}
+    secret_access_key: {{s3-secret}}
+
+- name: s3-release-bootstrap
+  type: s3
+  source:
+    bucket: {{s3-bucket}}
+    region_name: us-west-2
+    versioned_file: bootstrap.py
+    access_key_id: {{s3-access-key}}
+    secret_access_key: {{s3-secret}}
+
 jobs:
 
 - name: copy-bootstrap
@@ -38,14 +65,14 @@ jobs:
       inputs:
       - name: github-repo
       outputs:
-      - name: s3-release
+      - name: s3-release-bootstrap
       run:
         path: sh
-        args: [ "-c", "cp github-repo/bootstrap.py s3-release" ]
-  - put: s3-release
+        args: [ "-c", "cp github-repo/bootstrap.py s3-release-bootstrap/bootstrap.py" ]
+  - put: s3-release-bootstrap
     params:
-      file: s3-release/bootstrap.py
- 
+      file: s3-release-bootstrap/bootstrap.py
+
 - name: copy-release
   plan:
   - get: github-release
@@ -71,13 +98,13 @@ jobs:
       inputs:
       - name: github-release
       outputs:
-      - name: s3-release
+      - name: s3-release-latest
       run:
         path: sh
-        args: [ "-c", "cp github-release/*.tgz s3-release/latest.tgz" ]
-  - put: s3-release
+        args: [ "-c", "cp github-release/*.tgz s3-release-latest/latest.tgz" ]
+  - put: s3-release-latest
     params:
-      file: s3-release/latest.tgz
+      file: s3-release-latest/latest.tgz
   - task: save-version
     config:
       platform: linux
@@ -85,10 +112,10 @@ jobs:
       inputs:
       - name: github-release
       outputs:
-      - name: s3-release
+      - name: s3-release-version
       run:
         path: sh
-        args: [ "-c", "ls github-release/*.tgz | sed 's/github-release\\/.*-//' | sed 's/.tgz//' >s3-release/version.txt" ]
-  - put: s3-release
+        args: [ "-c", "ls github-release/*.tgz | sed 's/github-release\\/.*-//' | sed 's/.tgz//' >s3-release-version/version.txt" ]
+  - put: s3-release-version
     params:
-      file: s3-release/version.txt
+      file: s3-release-version/version.txt
