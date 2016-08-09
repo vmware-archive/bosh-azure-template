@@ -1,8 +1,8 @@
-from urllib2 import urlopen
-from urllib2 import Request
+import requests
 import json
 import base64
 import time
+import re
 
 class BoshClient:
 
@@ -12,28 +12,29 @@ class BoshClient:
         self.password = password
 
     def get(self, url):
-        request = Request(url)
+        s = requests.Session()
+
         base64string = base64.encodestring(
             '%s:%s' %
             (self.username, self.password)).replace(
             '\n', '')
-        request.add_header("Authorization", "Basic %s" % base64string)
 
-        result = urlopen(request).read()
-        return result
+        s.headers.update({'Authorization': "Basic %s" % base64string})
+
+        result = s.get(url, verify=False)
+        return result.text
 
     def post(self, url, data, content_type):
-        request = Request(url)
-        request.data = data
-        request.add_header("Content-Type", content_type)
+        s = requests.Session()
+        s.headers.update({'content-type': content_type})
 
         base64string = base64.encodestring(
             '%s:%s' %
             (self.username, self.password)).replace(
             '\n', '')
-        request.add_header("Authorization", "Basic %s" % base64string)
 
-        result = urlopen(request)
+        s.headers.update({'Authorization': "Basic %s" % base64string})
+        result = s.post(url, data=data, verify=False, allow_redirects=False)
         return result
 
     def wait_for_task(self, task_id):
@@ -134,15 +135,25 @@ class BoshClient:
         stemcells_url = "{0}/stemcells".format(self.bosh_url)
         payload = '{"location":"%s"}' % stemcell_url
         result = self.post(stemcells_url, payload, 'application/json')
-        task_id = json.loads(result.read())["id"]
-        return task_id
+    	if result.status_code == 302:
+    		m = re.search('\/tasks\/(\d+)', result.headers['location'])
+    		task_id = m.group(1)
+
+    		return task_id
+    	else:
+    	  	return None
 
     def upload_release(self, release_url):
         releases_url = "{0}/releases".format(self.bosh_url)
         payload = '{"location":"%s"}' % release_url
         result = self.post(releases_url, payload, 'application/json')
-        task_id = json.loads(result.read())["id"]
-        return task_id
+    	if result.status_code == 302:
+    		m = re.search('\/tasks\/(\d+)', result.headers['location'])
+    		task_id = m.group(1)
+
+    		return task_id
+    	else:
+    	  	return None
 
     def ip_table(self, deployment_name):
         url = "{0}/deployments/{1}/vms?format=full".format(
