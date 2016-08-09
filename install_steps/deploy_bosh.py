@@ -1,5 +1,6 @@
 import os
 import bosh_client
+import requests
 from urllib2 import URLError
 from subprocess import call
 
@@ -20,7 +21,7 @@ def do_step(context):
     client = bosh_client.BoshClient("https://10.0.0.4:25555", "admin", "admin")
     try:
         client.get_info()
-    except URLError:
+    except requests.exceptions.ConnectionError:
         res = None
 
         while res != 0:
