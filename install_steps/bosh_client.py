@@ -35,7 +35,14 @@ class BoshClient:
 
         s.headers.update({'Authorization': "Basic %s" % base64string})
         result = s.post(url, data=data, verify=False, allow_redirects=False)
-        return result
+
+        if result.status_code == 302:
+    		m = re.search('\/tasks\/(\d+)', result.headers['location'])
+    		task_id = m.group(1)
+
+    		return task_id
+        else:
+            return result.text
 
     def wait_for_task(self, task_id):
         events = []
@@ -97,8 +104,7 @@ class BoshClient:
     def create_deployment(self, manifest):
         deployments_url = "{0}/deployments".format(self.bosh_url)
         result = self.post(deployments_url, manifest, 'text/yaml')
-        task_id = json.loads(result.read())["id"]
-        return task_id
+        return result
 
     def run_errand(self, deployment_name, errand_name):
         errand_url = "{0}/deployments/{1}/errands/{2}/runs".format(
@@ -107,8 +113,7 @@ class BoshClient:
             errand_name
         )
         result = self.post(errand_url, "{}", 'application/json')
-        task_id = json.loads(result.read())["id"]
-        return task_id
+        return result
 
     def get_task(self, task_id):
         task_url = "{0}/tasks/{1}".format(
@@ -135,25 +140,13 @@ class BoshClient:
         stemcells_url = "{0}/stemcells".format(self.bosh_url)
         payload = '{"location":"%s"}' % stemcell_url
         result = self.post(stemcells_url, payload, 'application/json')
-    	if result.status_code == 302:
-    		m = re.search('\/tasks\/(\d+)', result.headers['location'])
-    		task_id = m.group(1)
-
-    		return task_id
-    	else:
-    	  	return None
+        return result
 
     def upload_release(self, release_url):
         releases_url = "{0}/releases".format(self.bosh_url)
         payload = '{"location":"%s"}' % release_url
         result = self.post(releases_url, payload, 'application/json')
-    	if result.status_code == 302:
-    		m = re.search('\/tasks\/(\d+)', result.headers['location'])
-    		task_id = m.group(1)
-
-    		return task_id
-    	else:
-    	  	return None
+    	return result
 
     def ip_table(self, deployment_name):
         url = "{0}/deployments/{1}/vms?format=full".format(
