@@ -10,8 +10,8 @@
                 "defaultValue": "",
                 "constraints": {
                     "required": true,
-                    "regex": "^[a-z0-9A-Z]{1,10}$",
-                    "validationMessage": "Only letters and numbers are allowed, and the value must be 1-10 characters long."
+                    "regex": "^[a-z0-9]{1,10}$",
+                    "validationMessage": "Only lower-case letters and numbers are allowed, and the value must be 1-10 characters long."
                 }
             },
             {
@@ -38,39 +38,19 @@
               "osPlatform": "Linux"
             },
             {
-                "name": "tenantID",
-                "type": "Microsoft.Common.TextBox",
-                "label": "Tenant ID",
-                "defaultValue": "",
+                "name": "servicePrincipal",
+                "type": "Microsoft.Common.FileUpload",
+                "label": "Service Principal",
+                "toolTip": "",
                 "constraints": {
                     "required": true,
-                    "regex": "^(([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12})$",
-                    "validationMessage": "Invalid GUID"
-                }
-            },
-            {
-                "name": "clientID",
-                "type": "Microsoft.Common.TextBox",
-                "label": "Client ID",
-                "defaultValue": "",
-                "constraints": {
-                    "required": true,
-                    "regex": "^(([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12})$",
-                    "validationMessage": "Invalid GUID"
-                }
-            },
-            {
-                "name": "clientSecret",
-                "type": "Microsoft.Common.PasswordBox",
-                "label": {
-                    "password": "Client Secret"
+                    "accept": ".json"
                 },
-                "defaultValue": "",
-                "options" : {
-                    "hideConfirmation" : true
-                },
-                "constraints": {
-                    "required": true
+                "options": {
+                    "multiple": false,
+                    "uploadMode": "file",
+                    "openMode": "text",
+                    "encoding": "UTF-8"
                 }
             },
             {
@@ -87,9 +67,9 @@
         "outputs": {
             "storageAccountNamePrefixString": "[basics('storageAccountNamePrefix')]",
             "adminSSHKey": "[basics('sshKeyData').sshPublicKey]",
-            "tenantID": "[basics('tenantID')]",
-            "clientID": "[basics('clientID')]",
-            "clientSecret": "[basics('clientSecret')]",
+            "tenantID": "[parse(basics('servicePrincipal')).tenantID]",
+            "clientID": "[parse(basics('servicePrincipal')).clientID]",
+            "clientSecret": "[parse(basics('servicePrincipal')).clientSecret]",
             "pivnetAPIToken": "[basics('pivnetAPIToken')]",
             "location": "[location()]"
         }
