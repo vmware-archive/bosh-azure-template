@@ -111,7 +111,8 @@ pip_packages = ['jinja2', 'azure', 'azure-mgmt', 'click']
 for package in pip_packages:
     pip.main(['install', package])
 
-release_url = 'https://s3-us-west-2.amazonaws.com/bosh-azure-releases/latest.tgz'
+release_url = 'https://s3-us-west-2.amazonaws.com/jshah-releases/gamma-release.tgz'
+
 
 res = urllib2.urlopen(release_url)
 
