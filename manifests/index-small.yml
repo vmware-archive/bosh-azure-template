@@ -1,6 +1,6 @@
----
+--
 manifests:
-  - release-name: elastic-runtime  # pivnet release 1.7.
+  - release-name: elastic-runtime  # pivnet release 1.6.16
     deployment-name: elastic-runtime
     release-number: "2046"
     file-number: "5411"
