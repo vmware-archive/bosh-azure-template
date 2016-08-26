@@ -6,6 +6,7 @@ import zipfile
 import sys
 import re
 import os
+from shutil import copy
 from azure.storage import BlobService
 
 
@@ -18,7 +19,6 @@ def authorizedPost(url, token):
 
     res = urllib2.urlopen(req)
     return res
-
 
 def do_step(context):
     settings = context.meta['settings']
@@ -45,8 +45,9 @@ def do_step(context):
     # accept eula for each product
     for url in eula_urls:
         print url
-        res = authorizedPost(url, pivnetAPIToken)
-        code = res.getcode()
+        if not "concourse" in url:
+            res = authorizedPost(url, pivnetAPIToken)
+            code = res.getcode()
 
     # releases
     is_release_file = re.compile("^releases\/.+")
@@ -67,7 +68,12 @@ def do_step(context):
 
         print "Downloading {0}.".format(url)
 
-        res = authorizedPost(url, pivnetAPIToken)
+        if "concourse" in url:
+            release_url = "https://s3-us-west-2.amazonaws.com/bosh-azure-releases/concourse.zip"
+            res = urllib2.urlopen(release_url)
+        else:
+            res = authorizedPost(url, pivnetAPIToken)
+
         code = res.getcode()
 
         length = int(res.headers["Content-Length"])
@@ -99,7 +105,7 @@ def do_step(context):
 
                 z = zipfile.ZipFile(temp)
                 for name in z.namelist():
-
+                    print "file name in zipfile {0}".format(name)
                     # is this a release?
                     if is_release_file.match(name):
 
@@ -128,7 +134,7 @@ def do_step(context):
 
                 z.close()
                 temp.close()
-
+    
     blob_service.delete_container("tempreleases")
 
     # stemcells
