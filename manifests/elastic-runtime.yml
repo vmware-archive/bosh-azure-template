@@ -1,11 +1,11 @@
 {% set root_domain=cf_ip+".cf.pcfazure.com" %}
-{% set consul_ip="10.0.16.5" %}
+{% set consul_ip="10.0.16.4" %}
 {% set nats_ip="10.0.16.5" %}
-{% set router_ip="10.0.16.5" %}
-{% set etcd_ip="10.0.16.5" %}
-{% set nfs_ip="10.0.16.5" %}
+{% set router_ip="10.0.16.6" %}
+{% set etcd_ip="10.0.16.7" %}
+{% set nfs_ip="10.0.16.8" %}
 {% set mysql_ip="10.0.16.9" %}
-{% set mysql_proxy_ip="10.0.16.9" %}
+{% set mysql_proxy_ip="10.0.16.10" %}
 {% set ha_proxy_ip="10.0.16.11" %}
 {% set system_domain="system."+root_domain %}
 {% set apps_domain="app."+root_domain %}
@@ -24,28 +24,28 @@ releases:
   - name: cf-mysql
     version: "25.2"
   - name: cf
-    version: "235.5.50"
+    version: "235.3.1"
   - name: diego
-    version: "0.1467.25"
+    version: "0.1467.0"
   - name: garden-linux
-    version: "0.338.0"
+    version: "0.337.0"
   - name: etcd
     version: "48"
   - name: push-apps-manager-release
-    version: "629.4"
+    version: "621"
   - name: notifications
-    version: "24"
+    version: "19"
   - name: notifications-ui
-    version: "17"
+    version: "10"
   - name: cf-autoscaling
-    version: "34"
+    version: "28"
 
 compilation:
-  workers: 2
+  workers: 4
   network: default
   reuse_compilation_vms: true
   cloud_properties:
-    instance_type: Standard_D2_v2
+    instance_type: Standard_D4_v2
 
 update:
   canaries: 1
@@ -92,177 +92,128 @@ resource_pools:
     network: default
     stemcell:
       name: bosh-azure-hyperv-ubuntu-trusty-go_agent
-      version: 3232.13
-    cloud_properties:
-      instance_type: Standard_D2_v2
-      security_group: {{ NSG_NAME_FOR_CF }}
-
-  - name: small
-    network: default
-    stemcell:
-      name: bosh-azure-hyperv-ubuntu-trusty-go_agent
-      version: 3232.13
+      version: 3232.4
     cloud_properties:
       instance_type: Standard_D1_v2
       security_group: {{ NSG_NAME_FOR_CF }}
 
+  - name: cells
+    network: default
+    stemcell:
+      name: bosh-azure-hyperv-ubuntu-trusty-go_agent
+      version: 3232.4
+    cloud_properties:
+      instance_type: Standard_D2_v2
+      security_group: {{ NSG_NAME_FOR_CF }}
+      ephemeral_disk:
+        use_temporary_disk: false
+        size: 250_000
+
+  - name: errands
+    network: default
+    stemcell:
+      name: bosh-azure-hyperv-ubuntu-trusty-go_agent
+      version: 3232.4
+    cloud_properties:
+      instance_type: Standard_D2_v2
+      security_group: {{ NSG_NAME_FOR_CF }}
+
+  - name: database
+    network: default
+    stemcell:
+      name: bosh-azure-hyperv-ubuntu-trusty-go_agent
+      version: 3232.4
+    cloud_properties:
+      instance_type: Standard_D4_v2
+      security_group: {{ NSG_NAME_FOR_CF }}
+
 disk_pools:
-  - name: common
-    disk_size: 204800
+  - name: consul
+    disk_size: 1024
+
+  - name: etcd
+    disk_size: 1024
+
+  - name: nfs
+    disk_size: 102400
+
+  - name: mysql
+    disk_size: 102400
+
+  - name: diego-database
+    disk_size: 1024
+
+  - name: diego-brain
+    disk_size: 1024
 
 jobs:
-  - name: mysql
-    templates:
-      - name: mysql
-        release: cf-mysql
-      - name: consul_agent
-        release: cf
-
-    instances: 1
-    resource_pool: common
-    persistent_disk_pool: common
-    networks:
-      - name: default
-        default: [dns, gateway]
-        static_ips:
-        - {{ mysql_ip }}
-    update:
-      serial: True
-    properties:
-      consul:
-        agent:
-          mode: server
-
-
-  - name: general
+  - name: nats
     templates:
       - name: nats
         release: cf
       - name: metron_agent
         release: cf
-      - name: consul_agent
-        release: cf
-      - name: etcd
-        release: cf
-      - name: etcd_metrics_server
-        release: cf
-      - name: debian_nfs_server
-        release: cf
-      - name: gorouter
-        release: cf
-      - name: cloud_controller_ng
-        release: cf
-      - name: route_registrar
-        release: cf
-      - name: nfs_mounter
-        release: cf
-      - name: cloud_controller_clock
-        release: cf
-      - name: doppler
-        release: cf
-      - name: syslog_drain_binder
-        release: cf
-
-      - name: stager
-        release: cf
-      - name: tps
-        release: cf
-      - name: cc_uploader
-        release: cf
-      - name: nsync
-        release: cf
-
-      - name: binary-buildpack
-        release: cf
-      - name: go-buildpack
-        release: cf
-      - name: java-buildpack
-        release: cf
-      - name: java-offline-buildpack
-        release: cf
-      - name: nodejs-buildpack
-        release: cf
-      - name: php-buildpack
-        release: cf
-      - name: python-buildpack
-        release: cf
-      - name: ruby-buildpack
-        release: cf
-      - name: staticfile-buildpack
-        release: cf
-
-      - name: cloud_controller_worker
-        release: cf
-      - name: collector
-        release: cf
-
-      - name: uaa
-        release: cf
-      - name: statsd-injector
-        release: cf
-
     instances: 1
     resource_pool: common
-    persistent_disk_pool: common
     networks:
       - name: default
         default: [dns, gateway]
         static_ips:
         - {{ nats_ip }}
-    properties:
-      etcd:
-        peer_require_ssl: false
-        require_ssl: false
-      consul:
-        agent:
-          services:
-            cloud_controller_ng: {}
-            uaa: {}
 
-      route_registrar:
-        routes:
-          - name: api
-            port: 9022
-            registration_interval: 20s
-            tags:
-              component: CloudController
-            uris:
-              - "api.{{ system_domain }}"
-          - name: uaa
-            port: 8082
-            registration_interval: 20s
-            uris:
-              - "uaa.{{ system_domain }}"
-              - "*.uaa.{{ system_domain }}"
-              - "login.{{ system_domain }}"
-              - "*.login.{{ system_domain }}"
-
-      update:
-        serial: True
-
-  - name: diego
+  - name: consul
     templates:
-      - name: etcd
-        release: etcd
-      - name: bbs
-        release: diego
-      - name: auctioneer
-        release: diego
-      - name: converger
-        release: diego
-      - name: file_server
-        release: diego
-      - name: route_emitter
-        release: diego
-      - name: ssh_proxy
-        release: diego
       - name: consul_agent
         release: cf
       - name: metron_agent
         release: cf
     instances: 1
     resource_pool: common
-    persistent_disk_pool: common
+    persistent_disk_pool: consul
+    networks:
+      - name: default
+        default: [dns, gateway]
+        static_ips:
+        - {{ consul_ip }}
+    properties:
+      consul:
+        agent:
+          mode: server
+
+  - name: etcd
+    templates:
+      - name: etcd
+        release: cf
+      - name: etcd_metrics_server
+        release: cf
+      - name: metron_agent
+        release: cf
+    instances: 1
+    resource_pool: common
+    persistent_disk_pool: etcd
+    networks:
+      - name: default
+        default: [dns, gateway]
+        static_ips:
+        - {{ etcd_ip }}
+    properties:
+      etcd:
+        peer_require_ssl: false
+        require_ssl: false
+
+  - name: diego-database
+    templates:
+      - name: etcd
+        release: etcd
+      - name: bbs
+        release: diego
+      - name: consul_agent
+        release: cf
+      - name: metron_agent
+        release: cf
+    instances: 1
+    resource_pool: database
+    persistent_disk_pool: diego-database
     networks:
       - name: default
         default: [dns, gateway]
@@ -465,7 +416,225 @@ jobs:
       consul:
         agent:
           services:
+            bbs: {}
             etcd: {}
+
+  - name: nfs
+    templates:
+      - name: debian_nfs_server
+        release: cf
+      - name: metron_agent
+        release: cf
+    instances: 1
+    resource_pool: common
+    persistent_disk_pool: nfs
+    networks:
+      - name: default
+        default: [dns, gateway]
+        static_ips:
+          - {{ nfs_ip }}
+
+  - name: router
+    templates:
+      - name: gorouter
+        release: cf
+      - name: metron_agent
+        release: cf
+    instances: 1
+    resource_pool: common
+    networks:
+      - name: default
+        default: [dns, gateway]
+        static_ips:
+        - {{ router_ip }}
+
+  - name: mysql-proxy
+    templates:
+      - name: proxy
+        release: cf-mysql
+    instances: 1
+    resource_pool: common
+    networks:
+      - name: default
+        default: [dns, gateway]
+        static_ips:
+        - {{ mysql_proxy_ip }}
+
+  - name: mysql
+    templates:
+      - name: mysql
+        release: cf-mysql
+    instances: 1
+    resource_pool: database
+    persistent_disk_pool: mysql
+    networks:
+      - name: default
+        default: [dns, gateway]
+        static_ips:
+        - {{ mysql_ip }}
+    update:
+      serial: True
+
+  - name: cloud-controller
+    templates:
+      - name: cloud_controller_ng
+        release: cf
+      - name: metron_agent
+        release: cf
+      - name: consul_agent
+        release: cf
+      - name: route_registrar
+        release: cf
+      - name: nfs_mounter
+        release: cf
+
+      - name: stager
+        release: cf
+      - name: tps
+        release: cf
+      - name: cc_uploader
+        release: cf
+      - name: nsync
+        release: cf
+
+      - name: binary-buildpack
+        release: cf
+      - name: go-buildpack
+        release: cf
+      - name: java-buildpack
+        release: cf
+      - name: java-offline-buildpack
+        release: cf
+      - name: nodejs-buildpack
+        release: cf
+      - name: php-buildpack
+        release: cf
+      - name: python-buildpack
+        release: cf
+      - name: ruby-buildpack
+        release: cf
+      - name: staticfile-buildpack
+        release: cf
+
+    instances: 1
+    resource_pool: common
+    networks:
+      - name: default
+        default: [dns, gateway]
+    properties:
+      route_registrar:
+        routes:
+          - name: api
+            port: 9022
+            registration_interval: 20s
+            tags:
+              component: CloudController
+            uris:
+              - "api.{{ system_domain }}"
+      consul:
+        agent:
+          services:
+            cloud_controller_ng: {}
+    update:
+      serial: True
+
+  - name: clock-global
+    templates:
+      - name: cloud_controller_clock
+        release: cf
+      - name: metron_agent
+        release: cf
+      - name: nfs_mounter
+        release: cf
+    instances: 1
+    resource_pool: common
+    networks:
+      - name: default
+        default: [dns, gateway]
+
+  - name: cloud-controller-worker
+    templates:
+      - name: cloud_controller_worker
+        release: cf
+      - name: metron_agent
+        release: cf
+      - name: consul_agent
+        release: cf
+      - name: nfs_mounter
+        release: cf
+    instances: 1
+    resource_pool: common
+    networks:
+      - name: default
+        default: [dns, gateway]
+
+  - name: collector
+    templates:
+      - name: collector
+        release: cf
+      - name: metron_agent
+        release: cf
+    instances: 1
+    resource_pool: common
+    networks:
+      - name: default
+        default: [dns, gateway]
+
+  - name: uaa
+    templates:
+      - name: uaa
+        release: cf
+      - name: metron_agent
+        release: cf
+      - name: consul_agent
+        release: cf
+      - name: route_registrar
+        release: cf
+      - name: statsd-injector
+        release: cf
+    instances: 1
+    resource_pool: common
+    networks:
+      - name: default
+        default: [dns, gateway]
+    properties:
+      route_registrar:
+        routes:
+          - name: uaa
+            port: 8080
+            registration_interval: 20s
+            uris:
+              - "uaa.{{ system_domain }}"
+              - "*.uaa.{{ system_domain }}"
+              - "login.{{ system_domain }}"
+              - "*.login.{{ system_domain }}"
+      consul:
+        agent:
+          services:
+            uaa: {}
+
+  - name: diego-brain
+    templates:
+      - name: auctioneer
+        release: diego
+      - name: converger
+        release: diego
+      - name: file_server
+        release: diego
+      - name: route_emitter
+        release: diego
+      - name: ssh_proxy
+        release: diego
+      - name: consul_agent
+        release: cf
+      - name: metron_agent
+        release: cf
+    instances: 1
+    resource_pool: common
+    persistent_disk_pool: diego-brain
+    networks:
+      - name: default
+        default: [dns, gateway]
 
   - name: diego-cell
     templates:
@@ -480,21 +649,35 @@ jobs:
       - name: metron_agent
         release: cf
     instances: 3
+    resource_pool: cells
+    networks:
+      - name: default
+        default: [dns, gateway]
+
+  - name: doppler
+    templates:
+      - name: doppler
+        release: cf
+      - name: metron_agent
+        release: cf
+      - name: syslog_drain_binder
+        release: cf
+    instances: 1
     resource_pool: common
     networks:
       - name: default
         default: [dns, gateway]
 
-  - name: loggregator
+  - name: loggregator-trafficcontroller
     templates:
-      - name: metron_agent
-        release: cf
       - name: loggregator_trafficcontroller
+        release: cf
+      - name: metron_agent
         release: cf
       - name: route_registrar
         release: cf
     instances: 1
-    resource_pool: small
+    resource_pool: common
     networks:
       - name: default
         default: [dns, gateway]
@@ -521,7 +704,7 @@ jobs:
       - name: consul_agent
         release: cf
     instances: 1
-    resource_pool: small
+    resource_pool: common
     networks:
       - name: default
         default: [dns, gateway]
@@ -537,10 +720,35 @@ jobs:
         release: cf
     lifecycle: errand
     instances: 1
-    resource_pool: small
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
+
+  - name: acceptance-tests
+    templates:
+      - name: acceptance-tests
+        release: cf
+    lifecycle: errand
+    instances: 1
+    resource_pool: errands
+    networks:
+      - name: default
+        default: [dns, gateway]
+
+  - name: acceptance-tests-internetless
+    templates:
+      - name: acceptance-tests
+        release: cf
+    lifecycle: errand
+    instances: 1
+    resource_pool: errands
+    networks:
+      - name: default
+        default: [dns, gateway]
+    properties:
+      acceptance_tests:
+        include_internet_dependent: false
 
   - name: push-apps-manager
     templates:
@@ -548,7 +756,51 @@ jobs:
         release: push-apps-manager-release
     lifecycle: errand
     instances: 1
-    resource_pool: small
+    resource_pool: errands
+    networks:
+      - name: default
+        default: [dns, gateway]
+
+  - name: notifications
+    templates:
+      - name: deploy-notifications
+        release: notifications
+    lifecycle: errand
+    instances: 1
+    resource_pool: errands
+    networks:
+      - name: default
+        default: [dns, gateway]
+
+  - name: notifications-tests
+    templates:
+      - name: test-notifications
+        release: notifications
+    lifecycle: errand
+    instances: 1
+    resource_pool: errands
+    networks:
+      - name: default
+        default: [dns, gateway]
+
+  - name: notifications-ui
+    templates:
+      - name: deploy-notifications-ui
+        release: notifications-ui
+    lifecycle: errand
+    instances: 1
+    resource_pool: errands
+    networks:
+      - name: default
+        default: [dns, gateway]
+
+  - name: notifications-ui-tests
+    templates:
+      - name: test-notifications-ui
+        release: notifications-ui
+    lifecycle: errand
+    instances: 1
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -559,7 +811,7 @@ jobs:
         release: cf-autoscaling
     lifecycle: errand
     instances: 1
-    resource_pool: small
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -570,7 +822,7 @@ jobs:
         release: cf-autoscaling
     lifecycle: errand
     instances: 1
-    resource_pool: small
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -583,7 +835,7 @@ jobs:
         release: cf-autoscaling
     lifecycle: errand
     instances: 1
-    resource_pool: small
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -596,7 +848,7 @@ jobs:
         release: cf-autoscaling
     lifecycle: errand
     instances: 1
-    resource_pool: small
+    resource_pool: errands
     networks:
       - name: default
         default: [dns, gateway]
@@ -950,7 +1202,6 @@ properties:
         name: uaa_db
 
   uaa:
-    port: 8082
     sslCertificate: |
 {{ ha_proxy_cert | indent(6, True) }}
     sslPrivateKey: |
@@ -983,7 +1234,7 @@ properties:
       -----END RSA PRIVATE KEY-----
 
     ssl:
-      port: -1
+      port: 8443
     require_https: true
     ldap:
       profile_type: search-and-bind
