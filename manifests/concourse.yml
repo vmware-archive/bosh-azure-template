@@ -41,7 +41,7 @@ resource_pools:
   network: default
   stemcell:
     name: bosh-azure-hyperv-ubuntu-trusty-go_agent
-    version: 3232.4
+    version: 3232.17
   cloud_properties:
     instance_type: Standard_D12_v2
     security_group: {{ NSG_NAME_FOR_CF }}
