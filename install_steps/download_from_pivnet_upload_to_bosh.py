@@ -105,7 +105,7 @@ def do_step(context):
 
                 z = zipfile.ZipFile(temp)
                 for name in z.namelist():
-                    print "file name in zipfile {0}".format(name)
+                    #print "file name in zipfile {0}".format(name)
                     # is this a release?
                     if is_release_file.match(name):
 
@@ -134,7 +134,7 @@ def do_step(context):
 
                 z.close()
                 temp.close()
-    
+
     blob_service.delete_container("tempreleases")
 
     # stemcells

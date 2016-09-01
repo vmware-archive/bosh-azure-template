@@ -19,30 +19,34 @@ def do_step(context):
     for m in manifests['manifests']:
         print "Running errands for {0}/manifests/{1}...".format(home_dir, m['file'])
 
-        for errand in m['errands']:
-            print "Running errand {0}".format(errand)
-
-            task_id = client.run_errand(m['deployment-name'], errand)
-            task = client.wait_for_task(task_id)
-
-            retries = 0
-
-            while task['state'] == 'error' and retries < 5:
-
-                retries += 1
-
-                print "Retrying errand {0}".format(errand)
+        try:
+            for errand in m['errands']:
+                print "Running errand {0}".format(errand)
 
                 task_id = client.run_errand(m['deployment-name'], errand)
                 task = client.wait_for_task(task_id)
 
-            result = client.get_task_result(task_id)
-            print "Errand finished with exit code {0}".format(result['exit_code'])
+                retries = 0
 
-            print "=========== STDOUT ==========="
-            print result['stdout'].encode('utf8')
+                while task['state'] == 'error' and retries < 5:
 
-            print "=========== STDERR ==========="
-            print result['stderr'].encode('utf8')
+                    retries += 1
+
+                    print "Retrying errand {0}".format(errand)
+
+                    task_id = client.run_errand(m['deployment-name'], errand)
+                    task = client.wait_for_task(task_id)
+
+                result = client.get_task_result(task_id)
+        except KeyError:
+            print "Ignoring KeyError exception"
+                  
+        print "Errand finished with exit code {0}".format(result['exit_code'])
+
+        print "=========== STDOUT ==========="
+        print result['stdout'].encode('utf8')
+
+        print "=========== STDERR ==========="
+        print result['stderr'].encode('utf8')
 
     return context
