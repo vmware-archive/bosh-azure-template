@@ -4,7 +4,7 @@
 {% set ci_domain="ci."+system_domain %}
 
 
-{% set ci_ip="10.0.16.97" %}
+{% set ci_ip="10.0.16.113" %}
 {% set nats_ip="10.0.16.5" %}
 
 {% set deployment_name="concourse" %}
@@ -30,8 +30,8 @@ networks:
     static:
     - {{ ci_ip }}
     reserved:
-    - 10.0.16.2-10.0.16.90
-    - 10.0.16.108-10.0.31.254
+    - 10.0.16.2-10.0.16.112
+    - 10.0.16.118-10.0.31.254
     cloud_properties:
       virtual_network_name: {{ VNET_NAME }}  # <--- Replace with virtual network name
       subnet_name: {{ SUBNET_NAME_FOR_CF }} # <--- Replace with subnet name for cloud foundry VMs
