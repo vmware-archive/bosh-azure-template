@@ -89,10 +89,11 @@ class BoshClient:
         items = []
 
         for line in result.split("\n"):
-            try:
-                items.append(json.loads(line))
-            except ValueError:
-                pass
+            if not "Ignoring cloud config" in line:
+                try:
+                    items.append(json.loads(line))
+                except ValueError:
+                    pass
 
         return items
 
