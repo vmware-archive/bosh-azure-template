@@ -1,0 +1,3 @@
+[submodule "meta-azure-service-broker"]
+	path = meta-azure-service-broker
+	url = https://github.com/Azure/meta-azure-service-broker.git
