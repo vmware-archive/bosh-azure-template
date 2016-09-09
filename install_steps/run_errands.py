@@ -38,15 +38,16 @@ def do_step(context):
                     task = client.wait_for_task(task_id)
 
                 result = client.get_task_result(task_id)
+                print "Errand finished with exit code {0}".format(result['exit_code'])
+
+                print "=========== STDOUT ==========="
+                print result['stdout'].encode('utf8')
+
+                print "=========== STDERR ==========="
+                print result['stderr'].encode('utf8')
+
+
         except KeyError:
             print "Ignoring KeyError exception"
-
-        print "Errand finished with exit code {0}".format(result['exit_code'])
-
-        print "=========== STDOUT ==========="
-        print result['stdout'].encode('utf8')
-
-        print "=========== STDERR ==========="
-        print result['stderr'].encode('utf8')
 
     return context

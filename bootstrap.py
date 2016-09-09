@@ -83,7 +83,10 @@ package_list = [
     "libreadline6-dev",
     "libyaml-dev",
     "sqlite3",
-    "libffi-dev"]
+    "libffi-dev",
+    "nodejs",
+    "nodejs-legacy",
+    "npm"]
 
 print "Updating apt cache"
 
@@ -111,9 +114,10 @@ pip_packages = ['jinja2', 'azure', 'azure-mgmt', 'click']
 for package in pip_packages:
     pip.main(['install', package])
 
-release_url = 'https://s3-us-west-2.amazonaws.com/jshah-releases/gamma-release.tgz'
+call("npm install -g sql-cli", shell=True)
+call("curl https://s3.amazonaws.com/go-cli/releases/v6.21.1/cf-cli_6.21.1_linux_x86-64.tgz | tar xvz", shell=True)
 
-
+release_url = 'https://s3-us-west-2.amazonaws.com/test-epsilon/gamma-release.tgz'
 res = urllib2.urlopen(release_url)
 
 code = res.getcode()

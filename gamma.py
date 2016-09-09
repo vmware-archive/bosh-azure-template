@@ -13,7 +13,7 @@ from install_steps import prep_containers_and_tables, \
     create_certs, process_template_manifests, copy_files_home, \
     install_bosh_init, setup_dns, deploy_bosh, set_director_id, \
     download_from_pivnet_upload_to_bosh, deploy, configure_security_groups, \
-    run_errands, display_creds
+    run_errands, deploy_metabroker, display_creds
 
 
 def get_settings():
@@ -154,7 +154,12 @@ def deploy(ctx):
 def run_errands(ctx):
     return install_steps.run_errands.do_step(ctx)
 
-@cli.command('13_display_creds')
+@cli.command('13_deploy_metabroker')
+@click.pass_context
+def deploy_metabroker(ctx):
+    return install_steps.deploy_metabroker.do_step(ctx)
+
+@cli.command('14_display_creds')
 @click.pass_context
 def display_creds(ctx):
     return install_steps.display_creds.do_step(ctx)

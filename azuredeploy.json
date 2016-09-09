@@ -102,6 +102,13 @@
         "description": "API Token for Pivotal Network"
       }
     },
+    "metabrokerEnvironment": {
+      "type": "string",
+      "defaultValue": "AzureCloud",
+      "metadata": {
+        "description": "AzureCloud or AzureChinaCloud"
+      }
+    },
     "installSize": {
       "type": "string",
       "defaultValue": "Small",
@@ -121,6 +128,11 @@
     "api-version": "2015-06-15",
     "extensionName": "initdevbox",
     "newStorageAccountName": "[concat(parameters('storageAccountNamePrefixString'),uniquestring(resourceGroup().id, deployment().name))]",
+    "databaseAccountName": "[concat('docdb',uniquestring(resourceGroup().id, deployment().name))]",
+    "sqlServerAdminLogin": "sqladmin",
+    "sqlServerAdminPassword": "[concat(parameters('clientSecret'),uniquestring(resourceGroup().id, deployment().name))]",
+    "sqlServerName": "[concat('sqlserver',uniquestring(resourceGroup().id, deployment().name))]",
+    "sqlDatabaseName": "azuremetabroker",
     "vmName": "[concat('myjumpbox',uniquestring(resourceGroup().id, deployment().name))]",
     "location": "[parameters('location')]",
     "storageAccountType": "Standard_GRS",
@@ -344,6 +356,61 @@
       }
     },
     {
+      "apiVersion": "2015-04-08",
+      "type": "Microsoft.DocumentDB/databaseAccounts",
+      "name": "[variables('databaseAccountName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "DocumentDB"
+      },
+      "properties": {
+        "name": "[variables('databaseAccountName')]",
+        "databaseAccountOfferType": "Standard"
+      }
+    },
+    {
+      "name": "[variables('sqlServerName')]",
+      "type": "Microsoft.Sql/servers",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2014-04-01-preview",
+      "dependsOn": [ ],
+      "tags": {
+        "displayName": "SQL Server"
+      },
+      "properties": {
+        "administratorLogin": "[variables('sqlServerAdminLogin')]",
+        "administratorLoginPassword": "[variables('sqlServerAdminPassword')]",
+        "version": "12.0"
+      },
+      "resources": [
+        {
+          "name": "AllowAllWindowsAzureIps",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "0.0.0.0"
+          }
+        },
+        {
+          "name": "[variables('sqlDatabaseName')]",
+          "type": "databases",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[variables('sqlServerName')]"
+          ],
+          "tags": {
+            "displayName": "SQL Database"
+          }
+        }
+      ]
+    },
+    {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'),'/initdevbox')]",
       "apiVersion": "[variables('api-version')]",
@@ -358,7 +425,7 @@
         "autoupgradeMinorVersion": false,
         "settings": {
           "fileUris": [
-            "https://s3-us-west-2.amazonaws.com/jshah-releases/bootstrap.py"
+            "https://s3-us-west-2.amazonaws.com/test-epsilon/bootstrap.py"
           ],
           "adminSSHKey": "[parameters('adminSSHKey')]",
           "commandToExecute": "[concat('python ./bootstrap.py ', parameters('installSize'), ' ', variables('webSessionPassword'))]",
@@ -379,6 +446,15 @@
           "bosh-ip": "[reference(concat(variables('vmName'),'-bosh')).ipAddress]",
           "username": "[parameters('adminUserName')]",
           "enable-dns": "[parameters('enableDNSOnDevbox')]",
+          "databaseAccountName": "[variables('databaseAccountName')]",
+          "documentdb-endpoint": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('databaseAccountName'))).documentEndpoint]",
+          "documentdb-masterkey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('databaseAccountName')), '2015-04-08').primaryMasterKey]",
+          "sqlServerAdminLogin": "[variables('sqlServerAdminLogin')]",
+          "sqlServerAdminPassword": "[variables('sqlServerAdminPassword')]",
+          "sqlServerName": "[variables('sqlServerName')]",
+          "sqlDatabaseName": "[variables('sqlDatabaseName')]",
+          "sqlServerFQDN": "[reference(concat('Microsoft.Sql/servers/', variables('sqlServerName'))).fullyQualifiedDomainName]",
+          "metabrokerenvironment": "[parameters('metabrokerEnvironment')]",
           "pivnet-api-token": "[parameters('pivnetAPIToken')]"
         },
         "protectedSettings" : {
