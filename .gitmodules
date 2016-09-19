@@ -1,3 +1,6 @@
 [submodule "meta-azure-service-broker"]
 	path = meta-azure-service-broker
 	url = https://github.com/Azure/meta-azure-service-broker.git
+[submodule "pivotal-cf-apigee"]
+	path = pivotal-cf-apigee
+	url = https://github.com/apigee/pivotal-cf-apigee.git
