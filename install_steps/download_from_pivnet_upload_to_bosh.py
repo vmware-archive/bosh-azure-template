@@ -43,11 +43,11 @@ def do_step(context):
     stemcell_urls = [m['stemcell'] for m in manifests['manifests']]
 
     # accept eula for each product
-    for url in eula_urls:
-        print url
-        if not "concourse" in url:
-            res = authorizedPost(url, pivnetAPIToken)
-            code = res.getcode()
+    # for url in eula_urls:
+    #     print url
+    #     if not "concourse" in url:
+    #         res = authorizedPost(url, pivnetAPIToken)
+    #         code = res.getcode()
 
     # releases
     is_release_file = re.compile("^releases\/.+")
@@ -78,6 +78,10 @@ def do_step(context):
 
         length = int(res.headers["Content-Length"])
 
+        if code is 451:
+            print "**** EULA HAS NOT BEEN ACCEPTED ****"
+            exit()
+
         # content-length
         if code is 200:
 
@@ -105,7 +109,7 @@ def do_step(context):
 
                 z = zipfile.ZipFile(temp)
                 for name in z.namelist():
-                    
+
                     # is this a release?
                     if is_release_file.match(name):
 

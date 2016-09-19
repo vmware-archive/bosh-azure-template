@@ -36,6 +36,10 @@ def password(key, sshpubkey, short=False):
 
 def do_step(context):
     settings = context.meta['settings']
+    apigeerequired = settings['apigeeEdge']
+
+    if apigeerequired == "ApigeeNotRequired":
+        exit()
     sshpubkey = settings['adminSSHKey']
     client_secret = settings['CLIENT-SECRET']
     apigee_dashboard_url = settings['managementUI']
