@@ -1,9 +1,14 @@
-# Gamma - An Azure deployment template for BOSH and CF
+# Epsilon - An Azure deployment template for BOSH and CF
 
 ### Quickstart
 
-This repository contains, amongst other things, an Azure Resource Manager template for
-deploying BOSH and CloudFoundry.
+This repository contains an Azure Resource Manager template for
+deploying BOSH and Pivotal CloudFoundry. 
+
+It also deploys 
+- Concourse  https://github.com/concourse/concourse
+- Azure Service Meta broker https://github.com/Azure/meta-azure-service-broker
+- Apigee Edge Service Broker https://github.com/apigee/pivotal-cf-apigee/tree/master/apigee-cf-service-broker 
 
 
 - Clone this repository `$ git clone https://github.com/cf-platform-eng/bosh-azure-template`
