@@ -74,6 +74,12 @@ def do_step(context):
     with open('pivotal-cf-apigee/apigee-cf-service-broker/manifest.yml', 'w') as f:
         f.write(manifest)
 
+    print "============================================================"
+    print "api_endpoint            : {0}".format(api_endpoint)
+    print "Apigee broker user      : {0}".format(apigeebroker_user)
+    print "Apigee broker password  : {0}".format(apigeebroker_password)
+    print "============================================================"
+
     call ("./cf login --skip-ssl-validation -a {0} -u {1}  -p {2}".format(api_endpoint, cf_user, cf_admin_password), shell=True)
     call ("./cf target -o system -s development" , shell=True)
     call ("./cf create-service p-redis shared-vm apigee_cf_service_broker-p-redis", shell=True)

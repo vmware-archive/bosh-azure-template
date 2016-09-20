@@ -136,7 +136,14 @@ def do_step(context):
     with open('meta-azure-service-broker/manifest.yml', 'w') as f:
         f.write(manifest)
 
+    print "============================================================"
+    print "api_endpoint         : {0}".format(api_endpoint)
+    print "Metabroker user      : {0}".format(metabroker_user)
+    print "Metabroker password  : {0}".format(metabroker_password)
+    print "============================================================"
+
     call ("./cf login --skip-ssl-validation -a {0} -u {1}  -p {2}".format(api_endpoint, cf_user, cf_admin_password), shell=True)
+    call ("./cf target -o system", shell=True)
     call ("./cf create-space development", shell=True)
     call ("./cf target -o system -s development" , shell=True)
     call ("./cf push -p ./meta-azure-service-broker -f ./meta-azure-service-broker/manifest.yml", shell=True)
