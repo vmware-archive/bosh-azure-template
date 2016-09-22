@@ -103,7 +103,7 @@ resource_pools:
       name: bosh-azure-hyperv-ubuntu-trusty-go_agent
       version: 3232.4
     cloud_properties:
-      instance_type: Standard_D2_v2
+      instance_type: Standard_D11_v2
       security_group: {{ NSG_NAME_FOR_CF }}
       ephemeral_disk:
         use_temporary_disk: false
