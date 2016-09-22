@@ -5,6 +5,24 @@
 This repository contains an Azure Resource Manager template for
 deploying BOSH and Pivotal CloudFoundry. 
 
+Before you deploy the template make sure you have accepted Pivotal End User License Agreement:
+
+Elastic Runtime 1.7.15:
+https://network.pivotal.io/products/elastic-runtime/releases/2134/eula
+
+MySQL for PCF 1.7.8:
+https://network.pivotal.io/products/p-mysql/releases/1770/eula
+
+RabbitMQ for PCF 1.6.0:
+https://network.pivotal.io/products/pivotal-rabbitmq-service/releases/1799/eula
+
+Redis for PCF 1.5.15:
+https://network.pivotal.io/products/p-redis/releases/1876/eula
+
+Spring Cloud Services for PCF 1.0.9:
+https://network.pivotal.io/products/p-spring-cloud-services/releases/1735/eula
+
+
 It also deploys 
 - Concourse  https://github.com/concourse/concourse
 - Azure Service Meta broker https://github.com/Azure/meta-azure-service-broker
