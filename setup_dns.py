@@ -29,16 +29,6 @@ view "internal" {{
   }};
   include "{1}named.conf.default-zones";
 }};
-view "external" {{
-  match-clients {{ any; }};
-  allow-query {{ any; }};
-  recursion no;
-  zone "{0}" IN {{
-    type master;
-    file "{1}{3}";
-  }};
-  include "{1}named.conf.default-zones";
-}};
 """
 DNS_CONF_OPT_FILE = 'named.conf.options'
 DNS_CONF_OPT = """\
@@ -72,7 +62,6 @@ options {
 };
 """
 LAN_ZONE_FILE = 'cf.com.lan'
-WAN_ZONE_FILE = 'cf.com.wan'
 ZONE_CONF = """\
 ;
 ; BIND data file for local loopback interface
@@ -132,27 +121,24 @@ def parse_dns_info(parser):
         print "Can not get the internal IP of DNS (IP of eth0). Exit!"
         sys.exit()
 
-    dns_external_ip = None
     cf_external_ip = None
     settings_filename = options.settings_filename
     if settings_filename and os.path.isfile(settings_filename):
-        dns_external_ip, cf_external_ip = parse_settings(settings_filename)
+        cf_external_ip = parse_settings(settings_filename)
 
-    # If external IPs of CF and DNS are specified as arguments, adopt them.
-    if options.dns_external_ip:
-        dns_external_ip = options.dns_external_ip
+    # If external IPs of CF is specified as arguments, adopt them.
     if options.cf_external_ip:
         cf_external_ip = options.cf_external_ip
 
-    if not (dns_external_ip and cf_external_ip):
-        print "Can't get the external IP for CloudFoundry or DNS."
+    if not (cf_external_ip):
+        print "Can't get the external IP for CloudFoundry"
         print "Exit!"
         sys.exit()
 
     if options.verbose:
-        print domain_name, cf_external_ip, dns_external_ip, cf_internal_ip, dns_internal_ip
+        print domain_name, cf_external_ip, cf_internal_ip, dns_internal_ip
 
-    return domain_name, cf_external_ip, dns_external_ip, cf_internal_ip, dns_internal_ip
+    return domain_name, cf_external_ip, cf_internal_ip, dns_internal_ip
 
 
 def parse_settings(file):
@@ -181,15 +167,13 @@ if __name__ == '__main__':
                       help="The internal IP of CloudFoundry")
     parser.add_option("-e", "--cf-external", dest="cf_external_ip",
                       help="The external IP of CloudFoundry")
-    parser.add_option("-n", "--dns-external", dest="dns_external_ip",
-                      help="The external IP of DNS")
     parser.add_option("-s", "--settings", dest="settings_filename",
                       help="The file name of json settings")
     parser.add_option("-v", "--verbose",
                       action="store_true", dest="verbose",
                       help="Print verbose information")
 
-    domain_name, cf_external_ip, dns_external_ip, cf_internal_ip, dns_internal_ip = parse_dns_info(
+    domain_name, cf_external_ip, cf_internal_ip, dns_internal_ip = parse_dns_info(
         parser)
     domain_name_prefix = domain_name.split('.')[0]
     zone_name = '.'.join(domain_name.split('.')[1:])
@@ -202,8 +186,7 @@ if __name__ == '__main__':
     dns_conf = DNS_CONF.format(
         zone_name,
         DNS_DIR,
-        LAN_ZONE_FILE,
-        WAN_ZONE_FILE)
+        LAN_ZONE_FILE)
     dns_conf_file = os.path.join(DNS_DIR, DNS_CONF_FILE)
     set_config(dns_conf_file, dns_conf)
 
@@ -217,14 +200,6 @@ if __name__ == '__main__':
         domain_name_prefix)
     lan_zone_file = os.path.join(DNS_DIR, LAN_ZONE_FILE)
     set_config(lan_zone_file, lan_zone_conf)
-
-    wan_zone_conf = ZONE_CONF.format(
-        dns_external_ip,
-        cf_external_ip,
-        zone_name,
-        domain_name_prefix)
-    wan_zone_file = os.path.join(DNS_DIR, WAN_ZONE_FILE)
-    set_config(wan_zone_file, wan_zone_conf)
 
     change_eth0_to_static(dns_internal_ip)
     call(
