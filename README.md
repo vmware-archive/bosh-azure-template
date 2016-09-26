@@ -5,7 +5,7 @@
 This repository contains an Azure Resource Manager template for
 deploying BOSH and Pivotal CloudFoundry. 
 
-Before you deploy the template make sure you have accepted Pivotal End User License Agreement:
+#### Before you deploy the template make sure you have accepted Pivotal End User License Agreement:
 
 Elastic Runtime 1.7.15:
 https://network.pivotal.io/products/elastic-runtime/releases/2134/eula
