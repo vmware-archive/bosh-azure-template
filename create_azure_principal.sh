@@ -95,22 +95,4 @@ sleep 10
 
 azure role assignment create --roleName "Contributor"  --spn "$SPNAME" --subscription $SUBSCRIPTIONID
 
-
-echo "{"
-echo "  \"\$schema\": \"http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#\","
-echo "  \"contentVersion\": \"1.0.0.0\","
-echo "  \"parameters\": {"
-echo "     \"SUBSCRIPTION_ID\": {"
-echo "       \"value\": \"$SUBSCRIPTIONID\""
-echo "    },"
-echo "     \"tenantID\": {"
-echo "       \"value\": \"$TENANTID\""
-echo "    },"
-echo "     \"clientID\": {"
-echo "       \"value\": \"$CLIENTID\""
-echo "    },"
-echo "     \"CLIENTSECRET\": {"
-echo "       \"value\": \"$CLIENTSECRET\""
-echo "    }"
-echo "  }"
-echo "}"
+printf '{"subscriptionID":"%s","tenantID":"%s","clientID":"%s","clientSecret":"%s"}' "$SUBSCRIPTIONID" "$TENANTID" "$CLIENTID" "$CLIENTSECRET" >> azure-credentials.json
