@@ -1,3 +1,5 @@
+# bosh-azure-template is no longer actively maintained by VMware.
+
 # Gamma - An Azure deployment template for BOSH and CF
 
 ### Quickstart
