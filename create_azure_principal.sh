@@ -52,7 +52,8 @@ if [ -z $SUBSCRIPTIONID ]; then
   exit
 fi
 
-TENANTID=`azure account list --json | grep -A6 ${SUBSCRIPTIONID} | tail -1 | awk -F':' '{ print $2 }' | tr -d ',' | tr -d '"' `
+TENANTID=`azure account show ${1} | grep "Tenant ID" | awk '{ print $5 }'`
+echo "Tenant ID:"$TENANTID
 
 # for multiple subscriptions, select the appropriate
 #
@@ -89,7 +90,7 @@ SPNAME="http://PCFBOSHv${SPVER}"
 
 sleep 10
 
-azure ad sp create $CLIENTID
+azure ad sp create -a $CLIENTID -n "$SPNAME"
 
 sleep 10
 
